@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Gestión de Cierres</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4;">
+
+    <!-- Cabecera y navegación principal -->
+    <header style="background: #2c3e50; color: white; padding: 15px 20px;">
+        <h1 style="margin: 0 0 10px 0; font-size: 1.4rem;">Restaurante El Olivo — Admin</h1>
+        <nav>
+            <a href="dashboard.html" style="color: white; margin-right: 15px; text-decoration: none;">Dashboard</a>
+            <a href="reservas.html" style="color: white; margin-right: 15px; text-decoration: none;">Reservas</a>
+            <a href="usuarios.html" style="color: white; margin-right: 15px; text-decoration: none;">Usuarios</a>
+            <a href="carta.html" style="color: white; margin-right: 15px; text-decoration: none;">Carta</a>
+            <a href="horarios.html" style="color: white; margin-right: 15px; text-decoration: none;">Horarios</a>
+            <a href="cierres.html" style="color: #f39c12; margin-right: 15px; text-decoration: none; font-weight: bold;">Cierres</a>
+            <a href="../../frontend/index.html" style="color: #e74c3c; text-decoration: none; float: right;">Cerrar sesión</a>
+        </nav>
+    </header>
+
+    <main style="padding: 30px;">
+
+        <h2 style="color: #2c3e50;">Gestión de Cierres</h2>
+
+        <!-- Nota informativa -->
+        <p style="background: #fef9e7; border: 1px solid #f9e79f; border-radius: 4px; padding: 12px 16px; color: #b7950b; font-size: 0.9rem;">
+            <strong>Nota:</strong> En las fechas cerradas no se podrán crear nuevas reservas. Las reservas ya existentes no se ven afectadas.
+        </p>
+
+        <!-- Formulario para añadir un nuevo cierre -->
+        <section style="background: white; border: 1px solid #ddd; border-radius: 4px; padding: 20px; margin-bottom: 30px; border-top: 4px solid #e74c3c;">
+            <h3 style="margin-top: 0; color: #2c3e50;">Añadir cierre</h3>
+            <form style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: #555; margin-bottom: 5px;" for="fecha-cierre">Fecha</label>
+                    <input type="date" id="fecha-cierre" style="padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem;">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; font-size: 0.85rem; color: #555; margin-bottom: 5px;" for="motivo-cierre">Motivo</label>
+                    <input type="text" id="motivo-cierre" placeholder="Ej: Festivo, Vacaciones, Reformas..." style="width: 100%; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; box-sizing: border-box;">
+                </div>
+                <div>
+                    <button type="submit" style="padding: 9px 20px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: bold;">Añadir cierre</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Tabla de cierres registrados -->
+        <section style="background: white; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+            <h3 style="margin-top: 0; color: #2c3e50;">Cierres registrados</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Fecha</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Motivo</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">01/05/2026</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Festivo — Día del Trabajo</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            <button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">Eliminar</button>
+                        </td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">15/08/2026</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Vacaciones de verano</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            <button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">Eliminar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">25/12/2026</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Navidad — Cierre anual</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            <button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">Eliminar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</body>
+</html>

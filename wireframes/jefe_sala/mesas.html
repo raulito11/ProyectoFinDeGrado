@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesas del Día — Jefe de Sala — Wireframe</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
+
+    <!-- Aviso de wireframe -->
+    <p style="background: #fffbe6; border-bottom: 1px solid #e6c200; padding: 6px 20px; font-size: 13px; color: #7a6000; margin: 0;">
+        [WIREFRAME] — Sin estilos reales ni JavaScript
+    </p>
+
+    <!-- Cabecera del restaurante -->
+    <header style="background: #2c2c2c; color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="margin: 0; font-size: 22px;">Restaurante El Olivo</h1>
+        <nav>
+            <a href="horario.html"
+               style="color: #ccc; margin-right: 20px; text-decoration: none;">
+                Horario
+            </a>
+            <a href="mesas.html"
+               style="color: white; margin-right: 20px; text-decoration: none; font-weight: bold; border-bottom: 2px solid white;">
+                Mesas del día
+            </a>
+            <a href="../cliente/login.html"
+               style="color: #ccc; text-decoration: none;">
+                Cerrar sesión
+            </a>
+        </nav>
+    </header>
+
+    <main style="padding: 24px 32px;">
+
+        <h2 style="margin-bottom: 4px;">Mesas del Día — Panel Jefe de Sala</h2>
+        <p style="color: #555; margin-top: 0; margin-bottom: 20px;">
+            Asigna o reasigna mesas a las reservas del día seleccionado.
+        </p>
+
+        <!-- Selector de fecha -->
+        <div style="margin-bottom: 24px;">
+            <label for="fecha" style="font-size: 14px; color: #333; margin-right: 8px; font-weight: bold;">
+                Fecha:
+            </label>
+            <input
+                type="date"
+                id="fecha"
+                value="2026-04-14"
+                style="padding: 6px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <!-- Tabla de reservas del día con columna de acción para el jefe -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+            <thead>
+                <tr style="background: #f0f0f0; text-align: left;">
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Hora</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">N.º personas</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Nombre cliente</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Notas</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Estado</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Mesa asignada</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- Reserva 1: 13:00 — confirmada con mesa asignada -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">13:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">4</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">María García</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">Alergia al gluten</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #1a7f37; background: #d4f0dc; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            confirmada
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; font-weight: bold;">Mesa 3</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <!-- Mesa ya asignada: botón de reasignar -->
+                        <button
+                            style="padding: 5px 12px; font-size: 13px; cursor: pointer; background: #fff; border: 1px solid #2c6fad; color: #2c6fad; border-radius: 4px;">
+                            Reasignar
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Reserva 2: 14:00 — pendiente sin mesa -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">14:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">2</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Carlos López</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">—</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #9a5e00; background: #fff0c4; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            pendiente
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #aaa; font-style: italic;">Sin asignar</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <!-- Reserva pendiente: botón principal activo -->
+                        <button
+                            style="padding: 5px 12px; font-size: 13px; cursor: pointer; background: #2c6fad; border: 1px solid #2c6fad; color: white; border-radius: 4px; font-weight: bold;">
+                            Asignar mesa
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Reserva 3: 20:30 — confirmada con mesa asignada -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">20:30</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">6</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Ana Martínez</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">Cumpleaños, mesa especial</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #1a7f37; background: #d4f0dc; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            confirmada
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; font-weight: bold;">Mesa 7</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <!-- Mesa ya asignada: botón de reasignar -->
+                        <button
+                            style="padding: 5px 12px; font-size: 13px; cursor: pointer; background: #fff; border: 1px solid #2c6fad; color: #2c6fad; border-radius: 4px;">
+                            Reasignar
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Reserva 4: 21:00 — pendiente sin mesa -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">21:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">3</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Pedro Sánchez</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">—</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #9a5e00; background: #fff0c4; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            pendiente
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #aaa; font-style: italic;">Sin asignar</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <!-- Reserva pendiente: botón principal activo -->
+                        <button
+                            style="padding: 5px 12px; font-size: 13px; cursor: pointer; background: #2c6fad; border: 1px solid #2c6fad; color: white; border-radius: 4px; font-weight: bold;">
+                            Asignar mesa
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Reserva 5: 22:00 — cancelada -->
+                <tr style="background: #fafafa; color: #999;">
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">22:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">2</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Laura Ruiz</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #bbb;">—</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #a00; background: #fde8e8; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            cancelada
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #ccc; font-style: italic;">—</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <!-- Reserva cancelada: botón deshabilitado -->
+                        <button
+                            disabled
+                            style="padding: 5px 12px; font-size: 13px; cursor: not-allowed; background: #eee; border: 1px solid #ccc; color: #aaa; border-radius: 4px;">
+                            No disponible
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <!-- Modal de asignación (representado como bloque estático en el wireframe) -->
+        <div style="margin-top: 32px; border: 2px dashed #2c6fad; padding: 20px; border-radius: 6px; max-width: 380px;">
+            <p style="margin: 0 0 10px 0; font-size: 13px; color: #2c6fad; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                [Wireframe] Modal: Asignar mesa
+            </p>
+            <p style="margin: 0 0 6px 0; font-size: 14px; color: #333;">
+                Reserva seleccionada: <strong>Carlos López — 14:00 — 2 personas</strong>
+            </p>
+            <label for="num-mesa" style="font-size: 14px; color: #333; display: block; margin-bottom: 6px;">
+                Número de mesa:
+            </label>
+            <input
+                type="number"
+                id="num-mesa"
+                placeholder="Ej: 5"
+                min="1"
+                style="padding: 6px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; width: 100px; margin-bottom: 14px; display: block;">
+            <div style="display: flex; gap: 10px;">
+                <button style="padding: 7px 18px; font-size: 14px; background: #2c6fad; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    Confirmar
+                </button>
+                <button style="padding: 7px 18px; font-size: 14px; background: #fff; color: #555; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+        <!-- Nota informativa exclusiva del jefe de sala -->
+        <p style="margin-top: 28px; padding: 10px 16px; background: #f0f4f8; border-left: 4px solid #2c6fad; color: #444; font-size: 14px;">
+            Solo el jefe de sala puede asignar y reasignar mesas. Los camareros solo tienen acceso de visualizacion.
+        </p>
+
+    </main>
+
+</body>
+</html>

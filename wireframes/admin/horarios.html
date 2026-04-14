@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Configuración de Horarios</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4;">
+
+    <!-- Cabecera y navegación principal -->
+    <header style="background: #2c3e50; color: white; padding: 15px 20px;">
+        <h1 style="margin: 0 0 10px 0; font-size: 1.4rem;">Restaurante El Olivo — Admin</h1>
+        <nav>
+            <a href="dashboard.html" style="color: white; margin-right: 15px; text-decoration: none;">Dashboard</a>
+            <a href="reservas.html" style="color: white; margin-right: 15px; text-decoration: none;">Reservas</a>
+            <a href="usuarios.html" style="color: white; margin-right: 15px; text-decoration: none;">Usuarios</a>
+            <a href="carta.html" style="color: white; margin-right: 15px; text-decoration: none;">Carta</a>
+            <a href="horarios.html" style="color: #f39c12; margin-right: 15px; text-decoration: none; font-weight: bold;">Horarios</a>
+            <a href="cierres.html" style="color: white; margin-right: 15px; text-decoration: none;">Cierres</a>
+            <a href="../../frontend/index.html" style="color: #e74c3c; text-decoration: none; float: right;">Cerrar sesión</a>
+        </nav>
+    </header>
+
+    <main style="padding: 30px;">
+
+        <h2 style="color: #2c3e50;">Configuración de Horarios</h2>
+
+        <!-- Nota informativa -->
+        <p style="background: #eaf4fb; border: 1px solid #aed6f1; border-radius: 4px; padding: 12px 16px; color: #2980b9; font-size: 0.9rem;">
+            <strong>Nota:</strong> Los horarios afectan a la disponibilidad de nuevas reservas. Solo se podrán hacer reservas en los intervalos marcados como activos.
+        </p>
+
+        <!-- Tabla de slots horarios -->
+        <section style="background: white; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+            <table style="width: 100%; border-collapse: collapse; max-width: 600px;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Hora inicio</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Hora fin</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Activo</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Turno de comida: 13:00 - 17:00 (intervalos de 30 min = 8 slots) -->
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">13:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">13:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">13:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">14:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">14:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">14:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">14:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">15:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">15:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">15:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">15:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">16:00</td>
+                        <!-- Slot inactivo -->
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #2ecc71; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Activar</button></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">16:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">16:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #2ecc71; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Activar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">16:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">17:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #2ecc71; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Activar</button></td>
+                    </tr>
+                    <!-- Turno de cena: 20:00 - 24:00 (intervalos de 30 min = 8 slots) -->
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">20:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">20:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">20:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">21:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">21:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">21:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">21:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">22:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">22:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">22:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">22:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">23:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" checked disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Desactivar</button></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">23:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">23:30</td>
+                        <!-- Slot inactivo en cena -->
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #2ecc71; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Activar</button></td>
+                    </tr>
+                    <tr style="background: #fafafa;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">23:30</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">00:00</td>
+                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><input type="checkbox" disabled></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><button style="padding: 5px 12px; background: #2ecc71; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85rem;">Activar</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</body>
+</html>

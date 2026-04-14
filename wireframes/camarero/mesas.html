@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesas del Día — Wireframe</title>
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
+
+    <!-- Aviso de wireframe -->
+    <p style="background: #fffbe6; border-bottom: 1px solid #e6c200; padding: 6px 20px; font-size: 13px; color: #7a6000; margin: 0;">
+        [WIREFRAME] — Sin estilos reales ni JavaScript
+    </p>
+
+    <!-- Cabecera del restaurante -->
+    <header style="background: #2c2c2c; color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="margin: 0; font-size: 22px;">Restaurante El Olivo</h1>
+        <nav>
+            <a href="horario.html"
+               style="color: #ccc; margin-right: 20px; text-decoration: none;">
+                Mi horario
+            </a>
+            <a href="mesas.html"
+               style="color: white; margin-right: 20px; text-decoration: none; font-weight: bold; border-bottom: 2px solid white;">
+                Mesas del día
+            </a>
+            <a href="../cliente/login.html"
+               style="color: #ccc; text-decoration: none;">
+                Cerrar sesión
+            </a>
+        </nav>
+    </header>
+
+    <main style="padding: 24px 32px;">
+
+        <h2 style="margin-bottom: 6px;">Mesas del Día</h2>
+        <p style="color: #555; margin-top: 0; margin-bottom: 20px;">
+            Consulta las reservas asignadas para la fecha seleccionada.
+        </p>
+
+        <!-- Selector de fecha (solo referencia visual, sin botón) -->
+        <div style="margin-bottom: 24px;">
+            <label for="fecha" style="font-size: 14px; color: #333; margin-right: 8px; font-weight: bold;">
+                Fecha:
+            </label>
+            <input
+                type="date"
+                id="fecha"
+                value="2026-04-14"
+                style="padding: 6px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <!-- Tabla de reservas del día -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+            <thead>
+                <tr style="background: #f0f0f0; text-align: left;">
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Hora</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Personas</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Estado</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Nombre cliente</th>
+                    <th style="padding: 10px 14px; border: 1px solid #ccc;">Notas</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!-- Reserva 1: 13:00 confirmada -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">13:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">4</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #1a7f37; background: #d4f0dc; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            confirmada
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">María García</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">Alergia al gluten</td>
+                </tr>
+
+                <!-- Reserva 2: 14:00 pendiente -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">14:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">2</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #9a5e00; background: #fff0c4; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            pendiente
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Carlos López</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">—</td>
+                </tr>
+
+                <!-- Reserva 3: 20:30 confirmada -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">20:30</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">6</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #1a7f37; background: #d4f0dc; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            confirmada
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Ana Martínez</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">Cumpleaños, mesa especial</td>
+                </tr>
+
+                <!-- Reserva 4: 22:00 pendiente -->
+                <tr>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">22:00</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">3</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">
+                        <span style="color: #9a5e00; background: #fff0c4; padding: 3px 10px; border-radius: 12px; font-size: 13px; font-weight: bold;">
+                            pendiente
+                        </span>
+                    </td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd;">Pedro Sánchez</td>
+                    <td style="padding: 10px 14px; border: 1px solid #ddd; color: #666;">—</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <!-- Aviso de solo lectura -->
+        <p style="margin-top: 20px; padding: 10px 16px; background: #f0f4f8; border-left: 4px solid #2c6fad; color: #444; font-size: 14px;">
+            Vista de solo lectura. La asignación de mesas corresponde al jefe de sala.
+        </p>
+
+    </main>
+
+</body>
+</html>
