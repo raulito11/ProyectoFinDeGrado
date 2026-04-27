@@ -36,6 +36,8 @@ INSERT INTO roles (nombre) VALUES
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario  INT           NOT NULL AUTO_INCREMENT,
     nombre      VARCHAR(100)  NOT NULL,
+    apellidos   VARCHAR(150)  NOT NULL,
+    telefono    VARCHAR(20)   NOT NULL,
     email       VARCHAR(150)  NOT NULL,
     password    VARCHAR(255)  NOT NULL COMMENT 'Hash bcrypt',
     id_rol      INT           NOT NULL DEFAULT 1 COMMENT 'Por defecto: cliente',

@@ -27,27 +27,31 @@ USE restaurante_tfg;
 -- Un usuario de prueba por cada rol del sistema
 -- ============================================================
 
-INSERT INTO usuarios (nombre, email, password, id_rol, activo) VALUES
+INSERT INTO usuarios (nombre, apellidos, telefono, email, password, id_rol, activo) VALUES
     -- cliente (id_rol = 1)
-    ('Ana García',
+    ('Ana', 'García López',
+     '612345678',
      'cliente@restaurante.com',
      '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
      1, 1),
 
     -- camarero (id_rol = 2)
-    ('Carlos López',
+    ('Carlos', 'López Martín',
+     '623456789',
      'camarero@restaurante.com',
      '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
      2, 1),
 
     -- jefe_sala (id_rol = 3)
-    ('María Ruiz',
+    ('María', 'Ruiz Sánchez',
+     '634567890',
      'jefedesala@restaurante.com',
      '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
      3, 1),
 
     -- admin (id_rol = 4)
-    ('Pedro Admin',
+    ('Pedro', 'Admin Torres',
+     '645678901',
      'admin@restaurante.com',
      '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
      4, 1);
