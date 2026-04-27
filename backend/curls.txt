@@ -1,0 +1,174 @@
+=============================================================
+  CURLS PARA PROBAR EL BACKEND — ProyectoFinDeGrado
+=============================================================
+
+NOTA: usa la flag -c cookies.txt / -b cookies.txt para
+mantener la sesión entre peticiones (curl guarda la cookie
+de sesión PHP en ese archivo).
+
+NOTA WINDOWS: en CMD las comillas simples no funcionan.
+Usa siempre comillas dobles y escapa las internas con \"
+Ejemplo correcto:  -d "{\"campo\":\"valor\"}"
+
+-------------------------------------------------------------
+AUTH
+-------------------------------------------------------------
+
+# Login correcto
+curl -s -c cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"admin@restaurante.com\",\"password\":\"1234\"}"
+
+# Login con credenciales incorrectas
+curl -s -c cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"noexiste@test.com\",\"password\":\"mal\"}"
+
+# Login sin datos (debe devolver error de validación)
+curl -s -c cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{}"
+
+# Comprobar sesión activa (ejecutar después del login)
+curl -s -b cookies.txt http://localhost/ProyectoFinDeGrado/backend/auth/session_check.php
+
+# Comprobar sesión sin cookie (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/auth/session_check.php
+
+# Logout
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/logout.php
+
+# Comprobar sesión después del logout (debe devolver 401)
+curl -s -b cookies.txt http://localhost/ProyectoFinDeGrado/backend/auth/session_check.php
+
+-------------------------------------------------------------
+RESERVAS — VERIFICAR DISPONIBILIDAD
+(sintaxis Windows CMD: comillas dobles, todo en una línea)
+-------------------------------------------------------------
+
+# Petición correcta — fecha disponible (debería devolver disponible: true)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_disponibilidad.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":4}"
+
+# Error — el restaurante está cerrado ese día (fecha en tabla cierres)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_disponibilidad.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-12-25\",\"hora_inicio\":\"13:00\",\"num_personas\":2}"
+
+# Error — hora fuera del horario de apertura o desactivada
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_disponibilidad.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"11:00\",\"num_personas\":2}"
+
+# Error — aforo insuficiente (num_personas muy alto para forzar el error)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_disponibilidad.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":100}"
+
+# Error — faltan campos obligatorios
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_disponibilidad.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\"}"
+
+# Error — num_personas inválido (0 o negativo)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_disponibilidad.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":0}"
+
+-------------------------------------------------------------
+RESERVAS — CREAR RESERVA
+IMPORTANTE: primero haz login como cliente para tener sesión
+(sintaxis Windows CMD: comillas dobles, todo en una línea)
+-------------------------------------------------------------
+
+# 1. Login como cliente (guarda la cookie de sesión)
+curl -s -c cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"cliente@restaurante.com\",\"password\":\"1234\"}"
+
+# 2. Crear reserva correcta (fecha libre, hora activa, pocas personas)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":4}"
+
+# 3. Error — sin sesión activa (debe devolver 401)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":4}"
+
+# 4. Error — sesión con rol distinto de cliente (login como admin primero)
+curl -s -c cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"admin@restaurante.com\",\"password\":\"1234\"}"
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":4}"
+
+# 5. Error — faltan campos obligatorios
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\"}"
+
+# 6. Error — num_personas fuera de rango (0 o más de 20)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":25}"
+
+# 7. Error — día cerrado (fecha en tabla cierres)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-12-25\",\"hora_inicio\":\"13:00\",\"num_personas\":2}"
+
+# 8. Error — hora fuera del horario de apertura o desactivada
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"11:00\",\"num_personas\":2}"
+
+# 9. Error — aforo insuficiente (fuerza el error con muchas personas)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/crear_reserva.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-10\",\"hora_inicio\":\"13:00\",\"num_personas\":20}"
+
+-------------------------------------------------------------
+RESERVAS — MIS RESERVAS Y CANCELAR (cliente)
+IMPORTANTE: primero haz login como cliente para tener sesión
+(sintaxis Windows CMD: comillas dobles, todo en una línea)
+-------------------------------------------------------------
+
+# 1. Login como cliente (guarda la cookie de sesión)
+curl -s -c cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"cliente@restaurante.com\",\"password\":\"1234\"}"
+
+# 2. Obtener mis reservas (devuelve lista de reservas del usuario en sesión)
+curl -s -b cookies.txt http://localhost/ProyectoFinDeGrado/backend/reservas/obtener_reservas.php
+
+# 3. Error — sin sesión activa (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/reservas/obtener_reservas.php
+
+# 4. Cancelar reserva propia (sustituye N por un id_reserva real)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/cancelar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1}"
+
+# 5. Error — cancelar reserva ajena (debe devolver error de permisos)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/cancelar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":999}"
+
+# 6. Error — cancelar una reserva ya cancelada (debe devolver error de estado)
+curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/cancelar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1}"
+
+# 7. Error — sin sesión activa al cancelar (debe devolver 401)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/cancelar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1}"
+
+# 8. Error — rol distinto de cliente intentando cancelar (login como admin primero)
+curl -s -c cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"admin@restaurante.com\",\"password\":\"1234\"}"
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/cancelar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1}"
+
+-------------------------------------------------------------
+RESERVAS — GESTIÓN ADMIN (listar y modificar)
+IMPORTANTE: primero haz login como admin para tener sesión
+(sintaxis Windows CMD: comillas dobles, todo en una línea)
+-------------------------------------------------------------
+
+# 1. Login como admin (guarda la cookie de sesión)
+curl -s -c cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"admin@restaurante.com\",\"password\":\"1234\"}"
+
+# 2. Listar todas las reservas (sin filtros)
+curl -s -b cookies_admin.txt http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php
+
+# 3. Listar reservas filtradas por fecha
+curl -s -b cookies_admin.txt "http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php?fecha=2026-05-10"
+
+# 4. Listar reservas filtradas por estado
+curl -s -b cookies_admin.txt "http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php?estado=pendiente"
+
+# 5. Listar reservas con ambos filtros
+curl -s -b cookies_admin.txt "http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php?fecha=2026-05-10&estado=pendiente"
+
+# 6. Error — estado inválido en el filtro (debe devolver 400)
+curl -s -b cookies_admin.txt "http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php?estado=invalido"
+
+# 7. Error — listar sin sesión activa (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php
+
+# 8. Error — listar con sesión de cliente (debe devolver 403)
+curl -s -c cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"cliente@restaurante.com\",\"password\":\"1234\"}"
+curl -s -b cookies.txt http://localhost/ProyectoFinDeGrado/backend/reservas/listar_reservas.php
+
+# 9. Confirmar una reserva (sustituye N por un id_reserva real)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/modificar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"estado\":\"confirmada\"}"
+
+# 10. Cancelar una reserva como admin
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/modificar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"estado\":\"cancelada\"}"
+
+# 11. Error — id_reserva que no existe (debe devolver 404)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/modificar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":9999,\"estado\":\"confirmada\"}"
+
+# 12. Error — estado inválido (debe devolver 400)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/modificar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"estado\":\"pendiente\"}"
+
+# 13. Error — modificar sin sesión activa (debe devolver 401)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/modificar_reserva.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"estado\":\"confirmada\"}"
+
+-------------------------------------------------------------
+(añadir más secciones aquí según se vayan creando endpoints)
+-------------------------------------------------------------
