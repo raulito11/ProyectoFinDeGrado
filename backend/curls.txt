@@ -37,7 +37,6 @@ curl -s -b cookies.txt http://localhost/ProyectoFinDeGrado/backend/auth/session_
 
 -------------------------------------------------------------
 RESERVAS — VERIFICAR DISPONIBILIDAD
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
 -------------------------------------------------------------
 
 # Petición correcta — fecha disponible (debería devolver disponible: true)
@@ -61,7 +60,6 @@ curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/verificar_d
 -------------------------------------------------------------
 RESERVAS — CREAR RESERVA
 IMPORTANTE: primero haz login como cliente para tener sesión
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
 -------------------------------------------------------------
 
 # 1. Login como cliente (guarda la cookie de sesión)
@@ -94,8 +92,8 @@ curl -s -b cookies.txt -X POST http://localhost/ProyectoFinDeGrado/backend/reser
 
 -------------------------------------------------------------
 RESERVAS — MIS RESERVAS Y CANCELAR (cliente)
-IMPORTANTE: primero haz login como cliente para tener sesión
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
+IMPORTANTE: primero login como cliente para tener sesión y cookies
+
 -------------------------------------------------------------
 
 # 1. Login como cliente (guarda la cookie de sesión)
@@ -125,8 +123,8 @@ curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend
 
 -------------------------------------------------------------
 RESERVAS — GESTIÓN ADMIN (listar y modificar)
-IMPORTANTE: primero haz login como admin para tener sesión
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
+IMPORTANTE: primero login como admin para tener sesión y cookies 
+
 -------------------------------------------------------------
 
 # 1. Login como admin (guarda la cookie de sesión)
@@ -171,8 +169,7 @@ curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/reservas/modificar_r
 
 -------------------------------------------------------------
 USUARIOS — CRUD (admin)
-IMPORTANTE: primero haz login como admin para tener sesión
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
+IMPORTANTE: primero login como admin para tener sesión
 -------------------------------------------------------------
 
 # 1. Login como admin (guarda la cookie de sesión)
@@ -226,8 +223,7 @@ curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/usuarios/eliminar_us
 
 -------------------------------------------------------------
 CARTA — CATEGORÍAS (admin)
-IMPORTANTE: primero haz login como admin para tener sesión
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
+IMPORTANTE: primero login como admin para tener sesión
 -------------------------------------------------------------
 
 # 1. Login como admin (guarda la cookie de sesión)
@@ -254,8 +250,7 @@ curl -s -b cookies_cliente.txt http://localhost/ProyectoFinDeGrado/backend/carta
 
 -------------------------------------------------------------
 CARTA — PLATOS (admin)
-IMPORTANTE: primero haz login como admin para tener sesión
-(sintaxis Windows CMD: comillas dobles, todo en una línea)
+IMPORTANTE: primero login como admin para tener sesión
 -------------------------------------------------------------
 
 # 1. Listar todos los platos (todas las categorías)
@@ -308,6 +303,171 @@ curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend
 
 # 17. Error — eliminar sin sesión activa (debe devolver 401)
 curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/carta/eliminar_plato.php -H "Content-Type: application/json" -d "{\"id_plato\":1}"
+
+-------------------------------------------------------------
+HORARIOS — GESTIÓN (admin)
+IMPORTANTE: primero login como admin para tener sesión
+-------------------------------------------------------------
+
+# 1. Login como admin (guarda la cookie de sesión)
+curl -s -c cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"admin@restaurante.com\",\"password\":\"1234\"}"
+
+# 2. Obtener todos los horarios (activos e inactivos)
+curl -s -b cookies_admin.txt http://localhost/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php
+
+# 3. Desactivar un horario (id_horario=3, activo=0)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/horarios/modificar_horarios.php -H "Content-Type: application/json" -d "{\"id_horario\":3,\"activo\":0}"
+
+# 4. Activar un horario (id_horario=3, activo=1)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/horarios/modificar_horarios.php -H "Content-Type: application/json" -d "{\"id_horario\":3,\"activo\":1}"
+
+# 5. Error — id_horario que no existe (debe devolver 404)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/horarios/modificar_horarios.php -H "Content-Type: application/json" -d "{\"id_horario\":9999,\"activo\":0}"
+
+# 6. Error — valor de activo inválido (debe devolver 400)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/horarios/modificar_horarios.php -H "Content-Type: application/json" -d "{\"id_horario\":1,\"activo\":5}"
+
+# 7. Error — faltan campos (debe devolver 400)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/horarios/modificar_horarios.php -H "Content-Type: application/json" -d "{\"id_horario\":1}"
+
+# 8. Error — obtener horarios sin sesión (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php
+
+# 9. Error — obtener horarios con sesión de cliente (debe devolver 403)
+curl -s -c cookies_cli.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"cliente@restaurante.com\",\"password\":\"1234\"}"
+curl -s -b cookies_cli.txt http://localhost/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php
+
+-------------------------------------------------------------
+CIERRES — GESTIÓN (admin)
+IMPORTANTE: primero login como admin para tener sesión
+-------------------------------------------------------------
+
+# 1. Listar todos los cierres
+curl -s -b cookies_admin.txt http://localhost/ProyectoFinDeGrado/backend/cierres/listar_cierres.php
+
+# 2. Crear un cierre con motivo
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/crear_cierre.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-01\",\"motivo\":\"Festivo nacional\"}"
+
+# 3. Crear un cierre sin motivo (campo opcional)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/crear_cierre.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-08-15\"}"
+
+# 4. Error — fecha ya existe en la tabla cierres (debe devolver 409)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/crear_cierre.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-05-01\",\"motivo\":\"Duplicado\"}"
+
+# 5. Error — formato de fecha incorrecto (debe devolver 400)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/crear_cierre.php -H "Content-Type: application/json" -d "{\"fecha\":\"01-05-2026\",\"motivo\":\"Mal formato\"}"
+
+# 6. Error — fecha inválida (debe devolver 400)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/crear_cierre.php -H "Content-Type: application/json" -d "{\"fecha\":\"2026-13-45\",\"motivo\":\"Fecha imposible\"}"
+
+# 7. Error — crear cierre sin fecha (debe devolver 400)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/crear_cierre.php -H "Content-Type: application/json" -d "{\"motivo\":\"Sin fecha\"}"
+
+# 8. Eliminar un cierre (sustituye N por un id_cierre real)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/eliminar_cierre.php -H "Content-Type: application/json" -d "{\"id_cierre\":1}"
+
+# 9. Error — id_cierre que no existe (debe devolver 404)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/cierres/eliminar_cierre.php -H "Content-Type: application/json" -d "{\"id_cierre\":9999}"
+
+# 10. Error — listar cierres sin sesión activa (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/cierres/listar_cierres.php
+
+# 11. Error — listar cierres con sesión de cliente (debe devolver 403)
+curl -s -b cookies_cli.txt http://localhost/ProyectoFinDeGrado/backend/cierres/listar_cierres.php
+
+-------------------------------------------------------------
+DASHBOARD — ESTADÍSTICAS (admin)
+IMPORTANTE: primero login como admin para tener sesión
+-------------------------------------------------------------
+
+# 1. Login como admin (guarda la cookie de sesión)
+curl -s -c cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"admin@restaurante.com\",\"password\":\"1234\"}"
+
+# 2. Obtener estadísticas del dashboard (KPIs completos)
+curl -s -b cookies_admin.txt http://localhost/ProyectoFinDeGrado/backend/dashboard/estadisticas.php
+
+# 3. Error — sin sesión activa (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/dashboard/estadisticas.php
+
+# 4. Error — sesión con rol cliente (debe devolver 403)
+curl -s -c cookies_cli.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"cliente@restaurante.com\",\"password\":\"1234\"}"
+curl -s -b cookies_cli.txt http://localhost/ProyectoFinDeGrado/backend/dashboard/estadisticas.php
+
+# 5. Error — método POST en lugar de GET (debe devolver 405)
+curl -s -b cookies_admin.txt -X POST http://localhost/ProyectoFinDeGrado/backend/dashboard/estadisticas.php
+
+-------------------------------------------------------------
+EMPLEADOS — HORARIO SEMANAL (camarero / jefe de sala)
+IMPORTANTE: primero login como camarero o jefe_sala
+-------------------------------------------------------------
+
+# 1. Login como camarero (guarda la cookie de sesión)
+curl -s -c cookies_cam.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"camarero@restaurante.com\",\"password\":\"1234\"}"
+
+# 2. Obtener horario semanal como camarero
+curl -s -b cookies_cam.txt http://localhost/ProyectoFinDeGrado/backend/empleados/obtener_horario_semanal.php
+
+# 3. Login como jefe de sala
+curl -s -c cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/auth/login.php -H "Content-Type: application/json" -d "{\"email\":\"jefe@restaurante.com\",\"password\":\"1234\"}"
+
+# 4. Obtener horario semanal como jefe de sala
+curl -s -b cookies_jefe.txt http://localhost/ProyectoFinDeGrado/backend/empleados/obtener_horario_semanal.php
+
+# 5. Error — sin sesión activa (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/empleados/obtener_horario_semanal.php
+
+# 6. Error — sesión con rol cliente (debe devolver 403)
+curl -s -b cookies_cli.txt http://localhost/ProyectoFinDeGrado/backend/empleados/obtener_horario_semanal.php
+
+-------------------------------------------------------------
+EMPLEADOS — LISTAR ASIGNACIONES (camarero / jefe de sala)
+IMPORTANTE: primero login como camarero o jefe_sala
+-------------------------------------------------------------
+
+# 1. Listar reservas de hoy (sin parámetro fecha)
+curl -s -b cookies_cam.txt http://localhost/ProyectoFinDeGrado/backend/empleados/listar_asignaciones.php
+
+# 2. Listar reservas de una fecha concreta
+curl -s -b cookies_cam.txt "http://localhost/ProyectoFinDeGrado/backend/empleados/listar_asignaciones.php?fecha=2026-05-10"
+
+# 3. Listar asignaciones como jefe de sala
+curl -s -b cookies_jefe.txt "http://localhost/ProyectoFinDeGrado/backend/empleados/listar_asignaciones.php?fecha=2026-05-10"
+
+# 4. Error — sin sesión activa (debe devolver 401)
+curl -s http://localhost/ProyectoFinDeGrado/backend/empleados/listar_asignaciones.php
+
+# 5. Error — sesión con rol admin (debe devolver 403)
+curl -s -b cookies_admin.txt http://localhost/ProyectoFinDeGrado/backend/empleados/listar_asignaciones.php
+
+-------------------------------------------------------------
+EMPLEADOS — ASIGNAR MESA (solo jefe de sala)
+IMPORTANTE: primero login como jefe_sala
+         y ejecutar el ALTER TABLE en phpMyAdmin (alter_numero_mesa.sql)
+-------------------------------------------------------------
+
+# 1. Asignar mesa a una reserva (sustituye 1 por un id_reserva real)
+curl -s -b cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"numero_mesa\":5}"
+
+# 2. Reasignar mesa a otra (cambia el número de mesa de una reserva ya asignada)
+curl -s -b cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"numero_mesa\":8}"
+
+# 3. Error — intentar asignar mesa como camarero (debe devolver 403)
+curl -s -b cookies_cam.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"numero_mesa\":5}"
+
+# 4. Error — reserva que no existe (debe devolver 404)
+curl -s -b cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":9999,\"numero_mesa\":5}"
+
+# 5. Error — reserva cancelada (debe devolver 400)
+curl -s -b cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":2,\"numero_mesa\":5}"
+
+# 6. Error — numero_mesa igual a 0 (debe devolver 400)
+curl -s -b cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"numero_mesa\":0}"
+
+# 7. Error — faltan campos obligatorios (debe devolver 400)
+curl -s -b cookies_jefe.txt -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":1}"
+
+# 8. Error — sin sesión activa (debe devolver 401)
+curl -s -X POST http://localhost/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php -H "Content-Type: application/json" -d "{\"id_reserva\":1,\"numero_mesa\":5}"
 
 -------------------------------------------------------------
 (añadir más secciones aquí según se vayan creando endpoints)
