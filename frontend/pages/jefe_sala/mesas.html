@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesas del dia - El Olivo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* Contenedor del selector de fecha */
+        .filtro-fecha {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: white;
+            padding: 16px 20px;
+            border: 1px solid var(--borde);
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .filtro-fecha label {
+            font-weight: bold;
+            color: #444;
+            white-space: nowrap;
+        }
+
+        .filtro-fecha input[type="date"] {
+            padding: 8px 12px;
+            border: 1px solid var(--borde);
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+
+        .filtro-fecha input[type="date"]:focus {
+            outline: none;
+            border-color: var(--verde);
+        }
+
+        /* Celda de mesa sin asignar */
+        .sin-asignar {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Numero de mesa asignada */
+        .numero-mesa {
+            font-weight: bold;
+            color: #2c6e49;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modal de asignacion de mesa -->
+    <div id="modal-asignar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100;">
+        <div style="background:white; padding:32px; border-radius:8px; max-width:360px; margin:15% auto; text-align:center;">
+            <h3>Asignar mesa</h3>
+            <p id="modal-nombre-cliente"></p>
+            <label for="input-numero-mesa">Numero de mesa:</label>
+            <input type="number" id="input-numero-mesa" min="1" style="margin:12px 0; padding:8px; width:100px; border:1px solid #ccc; border-radius:4px;">
+            <div id="modal-error" class="mensaje-error" style="display:none;"></div>
+            <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
+                <button id="btn-confirmar-mesa" class="btn-primario">Confirmar</button>
+                <button onclick="cerrarModal()" class="btn-secundario">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <span id="nombre-usuario">El Olivo</span>
+        <ul>
+            <li><a href="horario.html">Mi horario</a></li>
+            <li><a href="mesas.html">Mesas del dia</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Mesas del dia</h2>
+
+        <!-- Selector de fecha -->
+        <div class="filtro-fecha">
+            <label for="input-fecha">Fecha:</label>
+            <input type="date" id="input-fecha" onchange="cambiarFecha()">
+        </div>
+
+        <div id="mensaje-error-mesas" class="mensaje-error"></div>
+
+        <table id="tabla-mesas" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Hora</th>
+                    <th>Personas</th>
+                    <th>Estado</th>
+                    <th>Mesa asignada</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-mesas">
+                <!-- Las filas se generan desde el script inline -->
+            </tbody>
+        </table>
+
+        <p id="sin-mesas" style="display: none; color: #666;">No hay reservas para este dia.</p>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/empleados.js"></script>
+
+    <script>
+        // Guarda el id de la reserva sobre la que se esta actuando en el modal
+        var idReservaSeleccionada = null;
+
+        // Verificar sesion al cargar la pagina
+        checkSession().then(function (usuario) {
+            if (!usuario) return;
+
+            // Solo el jefe de sala puede acceder a esta pagina
+            if (usuario.rol !== 'jefe_sala') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
+
+            document.getElementById('nombre-usuario').textContent = 'Hola, ' + usuario.nombre;
+
+            var inputFecha = document.getElementById('input-fecha');
+            inputFecha.value = obtenerFechaHoy();
+
+            cargarPaginaMesas(inputFecha.value);
+        });
+
+        // Carga las asignaciones de la fecha indicada y las muestra
+        function cargarPaginaMesas(fecha) {
+            cargarAsignaciones(fecha).then(function (reservas) {
+                if (reservas === null) {
+                    mostrarMensaje('mensaje-error-mesas', 'No se han podido cargar los datos. Intentalo de nuevo.');
+                    return;
+                }
+                mostrarAsignacionesJefe(reservas);
+            });
+        }
+
+        // Se ejecuta cada vez que el usuario cambia la fecha en el input
+        function cambiarFecha() {
+            var fecha = document.getElementById('input-fecha').value;
+            if (!fecha) return;
+            cargarPaginaMesas(fecha);
+        }
+
+        // Renderiza la tabla con la columna de accion para que el jefe pueda asignar mesas
+        function mostrarAsignacionesJefe(reservas) {
+            var tabla    = document.getElementById('tabla-mesas');
+            var cuerpo   = document.getElementById('cuerpo-mesas');
+            var sinDatos = document.getElementById('sin-mesas');
+
+            cuerpo.innerHTML = '';
+
+            if (!reservas || reservas.length === 0) {
+                tabla.style.display    = 'none';
+                sinDatos.style.display = 'block';
+                return;
+            }
+
+            sinDatos.style.display = 'none';
+
+            reservas.forEach(function (r) {
+                var claseEstado = 'estado-' + r.estado;
+                var horaInicio  = formatearHora(r.hora_inicio);
+                var horaFin     = formatearHora(r.hora_fin);
+                var nombreCompleto = r.nombre + ' ' + r.apellidos;
+
+                // Columna de mesa asignada (solo lectura)
+                var celdaMesa;
+                if (r.numero_mesa !== null && r.numero_mesa !== undefined) {
+                    celdaMesa = '<span class="numero-mesa">' + r.numero_mesa + '</span>';
+                } else {
+                    celdaMesa = '<span class="sin-asignar">Sin asignar</span>';
+                }
+
+                // Columna de accion: sin boton si la reserva esta cancelada
+                var celdaAccion;
+                if (r.estado === 'cancelada') {
+                    celdaAccion = '';
+                } else if (r.numero_mesa !== null && r.numero_mesa !== undefined) {
+                    celdaAccion = '<button class="btn-secundario" onclick="abrirModal(' + r.id_reserva + ', \'' + nombreCompleto.replace(/'/g, "\\'") + '\')">Reasignar</button>';
+                } else {
+                    celdaAccion = '<button class="btn-primario" onclick="abrirModal(' + r.id_reserva + ', \'' + nombreCompleto.replace(/'/g, "\\'") + '\')">Asignar mesa</button>';
+                }
+
+                var fila = document.createElement('tr');
+                fila.innerHTML =
+                    '<td>' + nombreCompleto + '</td>' +
+                    '<td>' + horaInicio + ' - ' + horaFin + '</td>' +
+                    '<td>' + r.num_personas + '</td>' +
+                    '<td><span class="' + claseEstado + '">' + r.estado + '</span></td>' +
+                    '<td>' + celdaMesa + '</td>' +
+                    '<td>' + celdaAccion + '</td>';
+
+                cuerpo.appendChild(fila);
+            });
+
+            tabla.style.display = 'table';
+        }
+
+        // ─────────────────────────────────────────────
+        // MODAL DE ASIGNACION
+        // ─────────────────────────────────────────────
+
+        // Abre el modal y prepara los datos de la reserva seleccionada
+        function abrirModal(idReserva, nombreCliente) {
+            idReservaSeleccionada = idReserva;
+
+            document.getElementById('modal-nombre-cliente').textContent = nombreCliente;
+            document.getElementById('input-numero-mesa').value = '';
+            document.getElementById('modal-error').style.display = 'none';
+            document.getElementById('modal-error').textContent  = '';
+
+            document.getElementById('modal-asignar').style.display = 'block';
+        }
+
+        // Cierra el modal y limpia el estado
+        function cerrarModal() {
+            document.getElementById('modal-asignar').style.display = 'none';
+            idReservaSeleccionada = null;
+        }
+
+        // Confirmar la asignacion de mesa al hacer clic en el boton del modal
+        document.getElementById('btn-confirmar-mesa').addEventListener('click', function () {
+            var inputMesa  = document.getElementById('input-numero-mesa');
+            var numeroMesa = parseInt(inputMesa.value, 10);
+            var divError   = document.getElementById('modal-error');
+
+            if (!numeroMesa || numeroMesa < 1) {
+                divError.textContent   = 'Introduce un numero de mesa valido.';
+                divError.style.display = 'block';
+                return;
+            }
+
+            fetchAPI('/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php', 'POST', {
+                id_reserva:  idReservaSeleccionada,
+                numero_mesa: numeroMesa
+            }).then(function (respuesta) {
+                if (respuesta.success) {
+                    cerrarModal();
+                    var fecha = document.getElementById('input-fecha').value;
+                    cargarPaginaMesas(fecha);
+                } else {
+                    divError.textContent   = respuesta.message || 'No se ha podido asignar la mesa.';
+                    divError.style.display = 'block';
+                }
+            }).catch(function (err) {
+                console.error('Error al asignar la mesa:', err);
+                divError.textContent   = 'Error de conexion. Intentalo de nuevo.';
+                divError.style.display = 'block';
+            });
+        });
+    </script>
+
+</body>
+</html>

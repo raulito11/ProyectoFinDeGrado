@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta - El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span>El Olivo - Admin</span>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="reservas.html">Reservas</a></li>
+            <li><a href="usuarios.html">Usuarios</a></li>
+            <li><a href="carta.html">Carta</a></li>
+            <li><a href="horarios.html">Horarios</a></li>
+            <li><a href="cierres.html">Cierres</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <!-- SECCION CATEGORIAS -->
+        <h2>Categorias</h2>
+
+        <!-- Mensajes categorias -->
+        <div id="mensaje-error-categorias" class="mensaje-error"></div>
+        <div id="mensaje-exito-categorias" class="mensaje-exito"></div>
+
+        <table id="tabla-categorias" style="display: none; margin-bottom: 24px;">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripcion</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-categorias">
+                <!-- Filas generadas desde JS -->
+            </tbody>
+        </table>
+
+        <p id="sin-categorias" style="display: none; color: #666; margin-bottom: 24px;">No hay categorias creadas.</p>
+
+        <!-- Formulario nueva categoria -->
+        <div class="formulario">
+            <h2>Nueva categoria</h2>
+            <div class="campo">
+                <label for="campo-nombre-categoria">Nombre</label>
+                <input type="text" id="campo-nombre-categoria" placeholder="Nombre de la categoria">
+            </div>
+            <div class="campo">
+                <label for="campo-descripcion-categoria">Descripcion</label>
+                <input type="text" id="campo-descripcion-categoria" placeholder="Descripcion opcional">
+            </div>
+            <button class="btn btn-verde" onclick="crearCategoria()">Anadir categoria</button>
+        </div>
+
+        <!-- SECCION PLATOS -->
+        <h2>Platos</h2>
+
+        <!-- Mensajes platos -->
+        <div id="mensaje-error-platos" class="mensaje-error"></div>
+        <div id="mensaje-exito-platos" class="mensaje-exito"></div>
+
+        <table id="tabla-platos" style="display: none; margin-bottom: 24px;">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Categoria</th>
+                    <th>Precio</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-platos">
+                <!-- Filas generadas desde JS -->
+            </tbody>
+        </table>
+
+        <p id="sin-platos" style="display: none; color: #666; margin-bottom: 24px;">No hay platos en la carta.</p>
+
+        <!-- Formulario anadir / editar plato -->
+        <div class="formulario">
+            <!-- Campo oculto para edicion -->
+            <input type="hidden" id="id-plato-editar" value="">
+
+            <h2 id="titulo-formulario-plato">Nuevo plato</h2>
+
+            <div class="campo">
+                <label for="campo-nombre-plato">Nombre</label>
+                <input type="text" id="campo-nombre-plato" placeholder="Nombre del plato">
+            </div>
+            <div class="campo">
+                <label for="campo-descripcion-plato">Descripcion</label>
+                <input type="text" id="campo-descripcion-plato" placeholder="Descripcion del plato">
+            </div>
+            <div class="campo">
+                <label for="campo-precio-plato">Precio (EUR)</label>
+                <input type="number" id="campo-precio-plato" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="campo">
+                <label for="campo-categoria-plato">Categoria</label>
+                <select id="campo-categoria-plato">
+                    <!-- Se carga dinamicamente desde listar_categorias -->
+                </select>
+            </div>
+            <div class="campo">
+                <label for="campo-activo-plato">Estado</label>
+                <select id="campo-activo-plato">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-verde" id="btn-guardar-plato" onclick="guardarPlato()">Anadir plato</button>
+                <button class="btn btn-gris" id="btn-cancelar-plato" style="display: none;" onclick="cancelarEdicionPlato()">Cancelar</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin.js"></script>
+
+    <script>
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            usuarioEnSesion = usuario;
+
+            cargarCategorias();
+            cargarPlatos();
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva reserva - El Olivo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span>El Olivo</span>
+        <ul>
+            <li><a href="dashboard.html">Mis reservas</a></li>
+            <li><a href="nueva_reserva.html">Nueva reserva</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Nueva reserva</h2>
+
+        <!-- PASO 1: Seleccion de fecha, hora y personas -->
+        <div id="paso-1" class="formulario">
+            <h3 style="margin-bottom: 16px; color: #444;">Elige fecha, hora y personas</h3>
+
+            <div class="campo">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha">
+            </div>
+
+            <div class="campo">
+                <label for="hora">Hora</label>
+                <select id="hora" name="hora">
+                    <option value="">-- Selecciona una hora --</option>
+                    <!-- Turno de mediodia: 13:00 a 16:30 -->
+                    <option value="13:00:00">13:00</option>
+                    <option value="13:30:00">13:30</option>
+                    <option value="14:00:00">14:00</option>
+                    <option value="14:30:00">14:30</option>
+                    <option value="15:00:00">15:00</option>
+                    <option value="15:30:00">15:30</option>
+                    <option value="16:00:00">16:00</option>
+                    <option value="16:30:00">16:30</option>
+                    <!-- Turno de noche: 20:00 a 23:30 -->
+                    <option value="20:00:00">20:00</option>
+                    <option value="20:30:00">20:30</option>
+                    <option value="21:00:00">21:00</option>
+                    <option value="21:30:00">21:30</option>
+                    <option value="22:00:00">22:00</option>
+                    <option value="22:30:00">22:30</option>
+                    <option value="23:00:00">23:00</option>
+                    <option value="23:30:00">23:30</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="num-personas">Numero de personas</label>
+                <input type="number" id="num-personas" name="num-personas" min="1" max="20" placeholder="Ej: 2">
+            </div>
+
+            <!-- Mensaje de error o disponibilidad del paso 1 -->
+            <div id="mensaje-paso1-error" class="mensaje-error"></div>
+            <div id="mensaje-paso1-exito" class="mensaje-exito"></div>
+
+            <button class="btn btn-verde" onclick="comprobarDisponibilidad()">Comprobar disponibilidad</button>
+        </div>
+
+        <!-- PASO 2: Confirmacion (oculto hasta que haya disponibilidad) -->
+        <div id="paso-2" class="formulario" style="display: none;">
+            <h3 style="margin-bottom: 16px; color: #444;">Confirma tu reserva</h3>
+
+            <!-- Resumen en modo lectura -->
+            <div style="margin-bottom: 20px; background-color: var(--gris); padding: 16px; border-radius: 6px; border: 1px solid var(--borde);">
+                <p style="margin-bottom: 8px;"><strong>Fecha:</strong> <span id="resumen-fecha"></span></p>
+                <p style="margin-bottom: 8px;"><strong>Hora:</strong> <span id="resumen-hora"></span></p>
+                <p><strong>Personas:</strong> <span id="resumen-personas"></span></p>
+            </div>
+
+            <!-- Mensaje de exito o error del paso 2 -->
+            <div id="mensaje-paso2-error" class="mensaje-error"></div>
+            <div id="mensaje-paso2-exito" class="mensaje-exito"></div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-verde" onclick="confirmarReserva()">Confirmar reserva</button>
+                <button class="btn btn-gris" onclick="volverPaso1()">Volver</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/reservas.js"></script>
+
+    <script>
+        // Inicializar la pagina: verificar sesion y fijar fecha minima a hoy
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            // Mostrar nombre del usuario en la nav
+            var spanNombre = document.querySelector('nav span');
+            spanNombre.textContent = 'Hola, ' + usuario.nombre;
+
+            // Establecer la fecha minima del input como hoy
+            var hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fecha').min = hoy;
+        })();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi horario - El Olivo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* Fila de dia cerrado */
+        .fila-cierre {
+            background-color: #fff3e0 !important;
+        }
+
+        /* Celda de "CERRADO" dentro de una fila de cierre */
+        .celda-cierre {
+            text-align: center;
+            color: #b45309;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Destacar el dia de hoy en la tabla */
+        .fila-hoy td {
+            background-color: #eaf7f0;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <span id="nombre-usuario">El Olivo</span>
+        <ul>
+            <li><a href="horario.html">Mi horario</a></li>
+            <li><a href="mesas.html">Mesas del dia</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Mi horario semanal</h2>
+
+        <!-- Mensaje si no se pueden cargar los datos -->
+        <div id="mensaje-error-horario" class="mensaje-error"></div>
+
+        <!-- Tabla con los 7 dias de la semana -->
+        <table id="tabla-horario">
+            <thead>
+                <tr>
+                    <th>Dia</th>
+                    <th>Fecha</th>
+                    <th>Turno comida</th>
+                    <th>Turno cena</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-horario">
+                <!-- Las filas se generan desde empleados.js -->
+            </tbody>
+        </table>
+
+        <p id="sin-horario" style="display: none; color: #666;">No hay datos de horario disponibles.</p>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/empleados.js"></script>
+
+    <script>
+        // Verificar sesion al cargar la pagina
+        checkSession().then(function (usuario) {
+            // checkSession devuelve null si no hay sesion y ya redirige
+            if (!usuario) return;
+
+            // Solo el camarero puede acceder a esta pagina
+            if (usuario.rol !== 'camarero') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
+
+            // Mostrar el nombre del usuario en la nav
+            document.getElementById('nombre-usuario').textContent = 'Hola, ' + usuario.nombre;
+
+            // Cargar y mostrar el horario semanal
+            cargarHorarioSemanal().then(function (semana) {
+                if (!semana) {
+                    mostrarMensaje('mensaje-error-horario', 'No se ha podido cargar el horario. Intentalo de nuevo.');
+                    return;
+                }
+                mostrarHorarioSemanal(semana);
+                marcarDiaHoy();
+            });
+        });
+
+        // Marca la fila del dia de hoy con un fondo diferente para que destaque
+        function marcarDiaHoy() {
+            var hoy      = obtenerFechaHoy();
+            var filas    = document.querySelectorAll('#cuerpo-horario tr');
+
+            filas.forEach(function (fila) {
+                // La fecha esta en la segunda celda (indice 1)
+                var celdaFecha = fila.cells[1];
+                if (celdaFecha && celdaFecha.textContent.trim() === hoy) {
+                    fila.classList.add('fila-hoy');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

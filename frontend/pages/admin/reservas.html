@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span>El Olivo - Admin</span>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="reservas.html">Reservas</a></li>
+            <li><a href="usuarios.html">Usuarios</a></li>
+            <li><a href="carta.html">Carta</a></li>
+            <li><a href="horarios.html">Horarios</a></li>
+            <li><a href="cierres.html">Cierres</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Gestion de reservas</h2>
+
+        <!-- Filtros -->
+        <div class="formulario" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+            <div class="campo" style="margin-bottom: 0;">
+                <label for="filtro-fecha">Fecha</label>
+                <input type="date" id="filtro-fecha">
+            </div>
+            <div class="campo" style="margin-bottom: 0;">
+                <label for="filtro-estado">Estado</label>
+                <select id="filtro-estado">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+            </div>
+            <button class="btn btn-verde" onclick="filtrarReservas()">Filtrar</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="mensaje-error-reservas" class="mensaje-error"></div>
+        <div id="mensaje-exito-reservas" class="mensaje-exito"></div>
+
+        <!-- Tabla de reservas -->
+        <table id="tabla-reservas" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Personas</th>
+                    <th>Cliente</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-reservas">
+                <!-- Filas generadas desde JS -->
+            </tbody>
+        </table>
+
+        <p id="sin-reservas" style="display: none; color: #666;">No hay reservas con los filtros aplicados.</p>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin.js"></script>
+
+    <script>
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            usuarioEnSesion = usuario;
+
+            cargarReservas('', '');
+        })();
+    </script>
+
+</body>
+</html>

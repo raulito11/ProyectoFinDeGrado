@@ -86,8 +86,8 @@ try {
     $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
-        'success'  => true,
-        'reservas' => $reservas,
+        'success' => true,
+        'data'    => $reservas,
     ]);
 
 } catch (Exception $e) {

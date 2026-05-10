@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 session_start();
 
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // compruebo que haya sesión activa
 if (!isset($_SESSION['id'])) {
@@ -32,4 +32,4 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $cierres = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-echo json_encode(['success' => true, 'cierres' => $cierres]);
+echo json_encode(['success' => true, 'data' => $cierres]);

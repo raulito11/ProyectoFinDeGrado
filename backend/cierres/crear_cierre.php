@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 session_start();
 
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // compruebo que haya sesión activa
 if (!isset($_SESSION['id'])) {
@@ -56,25 +56,50 @@ if (!$fecha_obj || $fecha_obj->format('Y-m-d') !== $fecha) {
 // el motivo es opcional
 $motivo = isset($datos['motivo']) ? trim($datos['motivo']) : null;
 
-// intento insertar el cierre
-// si la fecha ya existe (UNIQUE), PDO lanzará una excepción con código 23000
+// intento insertar el cierre y cancelar las reservas del día en una transacción
 try {
+    $pdo->beginTransaction();
+
     $sql = "INSERT INTO cierres (fecha, motivo) VALUES (:fecha, :motivo)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':fecha'  => $fecha,
-        ':motivo' => $motivo
-    ]);
+    $stmt->execute([':fecha' => $fecha, ':motivo' => $motivo]);
 
     $id_cierre = $pdo->lastInsertId();
 
+    // comprobar si hay reservas activas ese día antes de lanzar el UPDATE
+    $sql_contar = "
+        SELECT COUNT(*) FROM reservas
+        WHERE fecha = :fecha
+          AND estado IN ('pendiente', 'confirmada')
+    ";
+    $stmt_contar = $pdo->prepare($sql_contar);
+    $stmt_contar->execute([':fecha' => $fecha]);
+    $total = (int) $stmt_contar->fetchColumn();
+
+    $reservas_canceladas = 0;
+    if ($total > 0) {
+        $sql_cancelar = "
+            UPDATE reservas
+            SET estado = 'cancelada'
+            WHERE fecha = :fecha
+              AND estado IN ('pendiente', 'confirmada')
+        ";
+        $stmt_cancelar = $pdo->prepare($sql_cancelar);
+        $stmt_cancelar->execute([':fecha' => $fecha]);
+        $reservas_canceladas = $stmt_cancelar->rowCount();
+    }
+
+    $pdo->commit();
+
     echo json_encode([
-        'success'   => true,
-        'message'   => 'Cierre creado',
-        'id_cierre' => (int) $id_cierre
+        'success'             => true,
+        'message'             => 'Cierre creado',
+        'id_cierre'           => (int) $id_cierre,
+        'reservas_canceladas' => $reservas_canceladas
     ]);
 
 } catch (PDOException $e) {
+    $pdo->rollBack();
     // código 23000 = violación de restricción de unicidad (fecha duplicada)
     if ($e->getCode() === '23000') {
         http_response_code(409);

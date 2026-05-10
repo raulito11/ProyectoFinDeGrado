@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span>El Olivo - Admin</span>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="reservas.html">Reservas</a></li>
+            <li><a href="usuarios.html">Usuarios</a></li>
+            <li><a href="carta.html">Carta</a></li>
+            <li><a href="horarios.html">Horarios</a></li>
+            <li><a href="cierres.html">Cierres</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Gestion de usuarios</h2>
+
+        <!-- Mensajes -->
+        <div id="mensaje-error-usuarios" class="mensaje-error"></div>
+        <div id="mensaje-exito-usuarios" class="mensaje-exito"></div>
+
+        <!-- Tabla de usuarios -->
+        <table id="tabla-usuarios" style="display: none; margin-bottom: 30px;">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Telefono</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-usuarios">
+                <!-- Filas generadas desde JS -->
+            </tbody>
+        </table>
+
+        <p id="sin-usuarios" style="display: none; color: #666;">No hay usuarios registrados.</p>
+
+        <!-- Formulario crear / editar usuario -->
+        <div class="formulario">
+            <!-- Campo oculto para saber si estamos editando -->
+            <input type="hidden" id="id-usuario-editar" value="">
+
+            <h2 id="titulo-formulario-usuario">Nuevo usuario</h2>
+
+            <div class="campo">
+                <label for="campo-nombre">Nombre</label>
+                <input type="text" id="campo-nombre" placeholder="Nombre">
+            </div>
+            <div class="campo">
+                <label for="campo-apellidos">Apellidos</label>
+                <input type="text" id="campo-apellidos" placeholder="Apellidos">
+            </div>
+            <div class="campo">
+                <label for="campo-email">Email</label>
+                <input type="email" id="campo-email" placeholder="email@ejemplo.com">
+            </div>
+            <div class="campo">
+                <label for="campo-password">Contrasena <span id="label-password-opcional" style="font-weight: normal; color: #666;">(dejar en blanco para no cambiar)</span></label>
+                <input type="password" id="campo-password" placeholder="Contrasena">
+            </div>
+            <div class="campo">
+                <label for="campo-telefono">Telefono</label>
+                <input type="tel" id="campo-telefono" placeholder="600000000">
+            </div>
+            <div class="campo">
+                <label for="campo-rol">Rol</label>
+                <select id="campo-rol">
+                    <!-- Se carga dinamicamente desde listar_usuarios -->
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-verde" id="btn-guardar-usuario" onclick="guardarUsuario()">Crear usuario</button>
+                <button class="btn btn-gris" id="btn-cancelar-usuario" style="display: none;" onclick="cancelarEdicionUsuario()">Cancelar</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin.js"></script>
+
+    <script>
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            usuarioEnSesion = usuario;
+
+            cargarUsuarios();
+        })();
+    </script>
+
+</body>
+</html>

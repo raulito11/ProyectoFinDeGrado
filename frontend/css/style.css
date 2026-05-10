@@ -1,0 +1,245 @@
+/* style.css - Estilos globales del proyecto de reservas */
+
+/* Variables de color */
+:root {
+    --verde:   #2c6e49;
+    --rojo:    #c0392b;
+    --naranja: #e67e22;
+    --gris:    #f4f6f4;
+    --borde:   #cccccc;
+}
+
+/* Reset basico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    background-color: var(--gris);
+    color: #333;
+}
+
+a {
+    color: var(--verde);
+    text-decoration: none;
+}
+
+/* Barra de navegacion */
+nav {
+    background-color: var(--verde);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav span {
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Contenedor principal de pagina */
+main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* Titulos de seccion */
+h2 {
+    margin-bottom: 16px;
+    color: #222;
+}
+
+/* Formularios */
+.formulario {
+    background-color: white;
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+    margin-bottom: 24px;
+}
+
+.campo {
+    margin-bottom: 14px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 5px;
+    font-size: 0.95rem;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    outline: none;
+    border-color: var(--verde);
+}
+
+/* Botones */
+.btn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn-verde {
+    background-color: var(--verde);
+    color: white;
+}
+
+.btn-verde:hover {
+    background-color: #1f4f34;
+}
+
+.btn-rojo {
+    background-color: var(--rojo);
+    color: white;
+}
+
+.btn-rojo:hover {
+    background-color: #96281b;
+}
+
+.btn-gris {
+    background-color: #999;
+    color: white;
+}
+
+.btn-gris:hover {
+    background-color: #777;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Mensajes de error y exito */
+.mensaje-error {
+    color: var(--rojo);
+    background-color: #fdecea;
+    border: 1px solid var(--rojo);
+    padding: 10px 14px;
+    border-radius: 5px;
+    margin-bottom: 14px;
+    display: none;
+}
+
+.mensaje-exito {
+    color: #1a6b35;
+    background-color: #eaf7f0;
+    border: 1px solid #1a6b35;
+    padding: 10px 14px;
+    border-radius: 5px;
+    margin-bottom: 14px;
+    display: none;
+}
+
+/* Tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--borde);
+}
+
+table thead {
+    background-color: var(--verde);
+    color: white;
+}
+
+table thead th {
+    padding: 12px 14px;
+    text-align: left;
+}
+
+table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--borde);
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table tbody tr:hover {
+    background-color: #f0f5f1;
+}
+
+/* Estados de reserva */
+.estado-confirmada { color: #1a6b35; font-weight: bold; }
+.estado-pendiente  { color: #856404; font-weight: bold; }
+.estado-cancelada  { color: var(--rojo); font-weight: bold; }
+
+/* Pagina de login */
+.login-pagina {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background-color: white;
+    padding: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-card h1 {
+    text-align: center;
+    color: var(--verde);
+    margin-bottom: 6px;
+}
+
+.login-card p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+}
+
+.login-card .btn {
+    width: 100%;
+    padding: 11px;
+    margin-top: 8px;
+}

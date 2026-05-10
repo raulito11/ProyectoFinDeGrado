@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 session_start();
 
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // solo acepto GET
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -130,21 +130,22 @@ try {
         $capacidad_ocupada = (int) $stmt_ocupada->fetchColumn();
 
         $aforo_hoy[] = [
-            'hora'              => $hora,
-            'capacidad_maxima'  => $capacidad_maxima,
-            'capacidad_ocupada' => $capacidad_ocupada,
-            'capacidad_libre'   => $capacidad_maxima - $capacidad_ocupada,
+            'hora_inicio'     => $hora,
+            'capacidad_total' => $capacidad_maxima,
+            'ocupado'         => $capacidad_ocupada,
         ];
     }
 
 
-    // devuelvo todos los KPIs juntos
+    // devuelvo todos los KPIs juntos bajo 'data', igual que el resto de endpoints
     echo json_encode([
-        'success'             => true,
-        'reservas_hoy'        => $reservas_hoy,
-        'reservas_semana'     => $reservas_semana,
-        'reservas_por_estado' => $reservas_por_estado,
-        'aforo_hoy'           => $aforo_hoy,
+        'success' => true,
+        'data'    => [
+            'reservas_hoy'        => $reservas_hoy,
+            'reservas_semana'     => $reservas_semana,
+            'reservas_por_estado' => $reservas_por_estado,
+            'aforo_hoy'           => $aforo_hoy,
+        ],
     ]);
 
 } catch (Exception $e) {

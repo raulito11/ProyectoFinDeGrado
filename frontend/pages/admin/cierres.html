@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cierres - El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span>El Olivo - Admin</span>
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="reservas.html">Reservas</a></li>
+            <li><a href="usuarios.html">Usuarios</a></li>
+            <li><a href="carta.html">Carta</a></li>
+            <li><a href="horarios.html">Horarios</a></li>
+            <li><a href="cierres.html">Cierres</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Dias cerrados</h2>
+
+        <!-- Nota informativa -->
+        <div style="background-color: #fdecea; border: 1px solid #c0392b; border-radius: 6px; padding: 12px 16px; margin-bottom: 24px; color: #7b1a1a;">
+            Los dias marcados como cerrados no permiten la creacion de nuevas reservas.
+        </div>
+
+        <!-- Formulario nuevo cierre -->
+        <div class="formulario" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
+            <div class="campo" style="margin-bottom: 0;">
+                <label for="campo-fecha-cierre">Fecha</label>
+                <input type="date" id="campo-fecha-cierre">
+            </div>
+            <div class="campo" style="margin-bottom: 0; flex: 1; min-width: 180px;">
+                <label for="campo-motivo-cierre">Motivo</label>
+                <input type="text" id="campo-motivo-cierre" placeholder="Ej: Navidad, Reformas...">
+            </div>
+            <button class="btn btn-verde" onclick="crearCierre()">Anadir cierre</button>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="mensaje-error-cierres" class="mensaje-error"></div>
+        <div id="mensaje-exito-cierres" class="mensaje-exito"></div>
+
+        <!-- Tabla de cierres -->
+        <table id="tabla-cierres" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Motivo</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-cierres">
+                <!-- Filas generadas desde JS -->
+            </tbody>
+        </table>
+
+        <p id="sin-cierres" style="display: none; color: #666;">No hay dias cerrados registrados.</p>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin.js"></script>
+
+    <script>
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            usuarioEnSesion = usuario;
+
+            cargarCierres();
+        })();
+    </script>
+
+</body>
+</html>

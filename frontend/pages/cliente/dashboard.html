@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis reservas - El Olivo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span>El Olivo</span>
+        <ul>
+            <li><a href="dashboard.html">Mis reservas</a></li>
+            <li><a href="nueva_reserva.html">Nueva reserva</a></li>
+            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Mis reservas</h2>
+
+        <!-- Mensaje si no hay reservas -->
+        <p id="sin-reservas" style="display: none; color: #666;">No tienes reservas aun.</p>
+
+        <!-- Tabla de reservas (se rellena con JS) -->
+        <table id="tabla-reservas" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora inicio</th>
+                    <th>Hora fin</th>
+                    <th>Personas</th>
+                    <th>Estado</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-tabla">
+                <!-- Las filas se insertan desde reservas.js -->
+            </tbody>
+        </table>
+    </main>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/reservas.js"></script>
+
+    <script>
+        // Inicializar la pagina: verificar sesion y cargar reservas
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            // Mostrar nombre del usuario en la nav
+            var spanNombre = document.querySelector('nav span');
+            spanNombre.textContent = 'Hola, ' + usuario.nombre;
+
+            cargarReservas();
+        })();
+    </script>
+
+</body>
+</html>
