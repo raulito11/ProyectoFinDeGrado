@@ -27,7 +27,7 @@ $id_categoria = isset($_GET['id_categoria']) ? (int)$_GET['id_categoria'] : null
 // hago JOIN con categorias para devolver el nombre de la categoría
 if ($id_categoria !== null) {
     $sql = "SELECT p.id_plato, p.id_categoria, c.nombre AS nombre_categoria,
-                   p.nombre, p.descripcion, p.precio, p.activo
+                   p.nombre, p.descripcion, p.precio, p.activo, p.imagen
             FROM platos p
             JOIN categorias c ON p.id_categoria = c.id_categoria
             WHERE p.id_categoria = :id_categoria
@@ -37,7 +37,7 @@ if ($id_categoria !== null) {
     $stmt->execute([':id_categoria' => $id_categoria]);
 } else {
     $sql = "SELECT p.id_plato, p.id_categoria, c.nombre AS nombre_categoria,
-                   p.nombre, p.descripcion, p.precio, p.activo
+                   p.nombre, p.descripcion, p.precio, p.activo, p.imagen
             FROM platos p
             JOIN categorias c ON p.id_categoria = c.id_categoria
             ORDER BY p.id_categoria ASC, p.id_plato ASC";

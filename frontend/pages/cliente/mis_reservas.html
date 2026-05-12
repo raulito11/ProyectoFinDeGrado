@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Mis reservas - El Olivo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main>
+        <section class="seccion-landing">
+            <h2>Mis reservas</h2>
+
+            <p id="sin-reservas" style="display: none; color: #666;">No tienes reservas aun.</p>
+
+            <table id="tabla-reservas" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora inicio</th>
+                        <th>Hora fin</th>
+                        <th>Personas</th>
+                        <th>Estado</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/reservas.js"></script>
+
+    <script>
+        (async function () {
+            var usuario = await checkSession();
+            if (!usuario) return;
+
+            cargarReservas();
+        })();
+    </script>
+
+</body>
+</html>

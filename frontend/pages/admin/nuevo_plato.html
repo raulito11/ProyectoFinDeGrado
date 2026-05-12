@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plato - El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main>
+
+        <div style="margin-bottom: 20px;">
+            <a href="carta.html" class="btn btn-gris">Volver</a>
+        </div>
+
+        <h2 id="titulo-pagina">Nuevo plato</h2>
+
+        <div id="mensaje-error" class="mensaje-error"></div>
+        <div id="mensaje-exito" class="mensaje-exito"></div>
+
+        <div class="formulario">
+            <div class="campo">
+                <label for="campo-nombre">Nombre</label>
+                <input type="text" id="campo-nombre" placeholder="Nombre del plato">
+            </div>
+            <div class="campo">
+                <label for="campo-descripcion">Descripcion</label>
+                <input type="text" id="campo-descripcion" placeholder="Descripcion del plato">
+            </div>
+            <div class="campo">
+                <label for="campo-precio">Precio (EUR)</label>
+                <input type="number" id="campo-precio" placeholder="0.00" min="0" step="0.01">
+            </div>
+            <div class="campo">
+                <label for="campo-categoria">Categoria</label>
+                <select id="campo-categoria">
+                    <option value="">Cargando categorias...</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="campo-activo">Estado</label>
+                <select id="campo-activo">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="campo-imagen">Imagen del plato (JPG, PNG, WEBP — max 2 MB)</label>
+                <input type="file" id="campo-imagen" accept="image/jpeg,image/png,image/webp,image/gif">
+                <img id="preview-imagen" src="" alt="Vista previa" style="display: none; margin-top: 8px; max-height: 120px; border-radius: 6px; border: 1px solid #ccc;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-verde" id="btn-guardar" onclick="guardarPlato()">Anadir plato</button>
+                <a href="carta.html" class="btn btn-gris">Volver</a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
+
+    <script>
+        var idPlato = null;
+
+        checkSession().then(function (usuario) {
+            if (!usuario) return;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
+
+            idPlato = sessionStorage.getItem('idPlatoEditar');
+            sessionStorage.removeItem('idPlatoEditar');
+
+            cargarCategorias().then(function () {
+                if (idPlato) {
+                    // modo edicion
+                    document.getElementById('titulo-pagina').textContent = 'Editar plato';
+                    document.getElementById('btn-guardar').textContent   = 'Guardar cambios';
+                    cargarPlato(idPlato);
+                }
+            });
+        });
+
+        function cargarCategorias() {
+            return fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_categorias.php')
+                .then(function (respuesta) {
+                    var select = document.getElementById('campo-categoria');
+                    select.innerHTML = '';
+                    if (!respuesta.success) return;
+                    respuesta.data.forEach(function (c) {
+                        var option = document.createElement('option');
+                        option.value       = c.id_categoria;
+                        option.textContent = c.nombre;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function cargarPlato(id) {
+            fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_platos.php')
+                .then(function (respuesta) {
+                    if (!respuesta.success) return;
+
+                    var plato = null;
+                    respuesta.data.forEach(function (p) {
+                        if (p.id_plato == id) plato = p;
+                    });
+
+                    if (!plato) {
+                        window.location.href = 'carta.html';
+                        return;
+                    }
+
+                    document.getElementById('campo-nombre').value      = plato.nombre;
+                    document.getElementById('campo-descripcion').value = plato.descripcion || '';
+                    document.getElementById('campo-precio').value      = plato.precio;
+                    document.getElementById('campo-categoria').value   = plato.id_categoria;
+                    document.getElementById('campo-activo').value      = plato.activo;
+
+                    if (plato.imagen) {
+                        var preview          = document.getElementById('preview-imagen');
+                        preview.src          = '/ProyectoFinDeGrado/frontend/' + plato.imagen;
+                        preview.style.display = 'block';
+                    }
+                });
+        }
+
+        function guardarPlato() {
+            var nombre      = document.getElementById('campo-nombre').value.trim();
+            var descripcion = document.getElementById('campo-descripcion').value.trim();
+            var precio      = document.getElementById('campo-precio').value;
+            var idCategoria = document.getElementById('campo-categoria').value;
+            var activo      = document.getElementById('campo-activo').value;
+            var inputImagen = document.getElementById('campo-imagen');
+
+            if (!nombre || !precio || !idCategoria) {
+                mostrarMensaje('mensaje-error', 'Nombre, precio y categoria son obligatorios.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('nombre',       nombre);
+            formData.append('descripcion',  descripcion);
+            formData.append('precio',       precio);
+            formData.append('id_categoria', idCategoria);
+            formData.append('activo',       activo);
+
+            if (inputImagen.files.length > 0) {
+                formData.append('imagen', inputImagen.files[0]);
+            }
+
+            var url;
+            if (idPlato) {
+                formData.append('id_plato', idPlato);
+                url = '/ProyectoFinDeGrado/backend/carta/modificar_plato.php';
+            } else {
+                url = '/ProyectoFinDeGrado/backend/carta/crear_plato.php';
+            }
+
+            fetch(url, { method: 'POST', credentials: 'include', body: formData })
+                .then(function (r) { return r.json(); })
+                .then(function (respuesta) {
+                    if (!respuesta.success) {
+                        mostrarMensaje('mensaje-error', respuesta.message || 'Error al guardar el plato.');
+                        return;
+                    }
+                    var msg = idPlato ? 'Plato actualizado correctamente.' : 'Plato creado correctamente.';
+                    mostrarMensaje('mensaje-exito', msg + ' Volviendo...');
+                    setTimeout(function () {
+                        window.location.href = 'carta.html';
+                    }, 1500);
+                })
+                .catch(function () {
+                    mostrarMensaje('mensaje-error', 'Error de conexion con el servidor.');
+                });
+        }
+
+        document.getElementById('campo-imagen').addEventListener('change', function () {
+            var preview = document.getElementById('preview-imagen');
+            if (this.files.length > 0) {
+                preview.src          = URL.createObjectURL(this.files[0]);
+                preview.style.display = 'block';
+            } else {
+                preview.src          = '';
+                preview.style.display = 'none';
+            }
+        });
+
+        function mostrarMensaje(idDiv, texto) {
+            var div = document.getElementById(idDiv);
+            div.textContent   = texto;
+            div.style.display = 'block';
+            setTimeout(function () { div.style.display = 'none'; }, 3000);
+        }
+    </script>
+
+</body>
+</html>

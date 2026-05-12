@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva categoria - El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main>
+
+        <div style="margin-bottom: 20px;">
+            <a href="carta.html" class="btn btn-gris">Volver</a>
+        </div>
+
+        <h2>Nueva categoria</h2>
+
+        <div id="mensaje-error" class="mensaje-error"></div>
+        <div id="mensaje-exito" class="mensaje-exito"></div>
+
+        <div class="formulario">
+            <div class="campo">
+                <label for="campo-nombre">Nombre</label>
+                <input type="text" id="campo-nombre" placeholder="Nombre de la categoria">
+            </div>
+            <div class="campo">
+                <label for="campo-descripcion">Descripcion</label>
+                <input type="text" id="campo-descripcion" placeholder="Descripcion opcional">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-verde" onclick="crearCategoria()">Anadir categoria</button>
+                <a href="carta.html" class="btn btn-gris">Volver</a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
+
+    <script>
+        checkSession().then(function (usuario) {
+            if (!usuario) return;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+            }
+        });
+
+        function crearCategoria() {
+            var nombre      = document.getElementById('campo-nombre').value.trim();
+            var descripcion = document.getElementById('campo-descripcion').value.trim();
+
+            if (!nombre) {
+                mostrarMensaje('mensaje-error', 'El nombre de la categoria es obligatorio.');
+                return;
+            }
+
+            fetchAPI('/ProyectoFinDeGrado/backend/carta/crear_categoria.php', 'POST', {
+                nombre:      nombre,
+                descripcion: descripcion
+            }).then(function (respuesta) {
+                if (!respuesta.success) {
+                    mostrarMensaje('mensaje-error', respuesta.message || 'Error al crear la categoria.');
+                    return;
+                }
+                mostrarMensaje('mensaje-exito', 'Categoria creada correctamente. Volviendo...');
+                setTimeout(function () {
+                    window.location.href = 'carta.html';
+                }, 1500);
+            }).catch(function () {
+                mostrarMensaje('mensaje-error', 'Error de conexion con el servidor.');
+            });
+        }
+
+        function mostrarMensaje(idDiv, texto) {
+            var div = document.getElementById(idDiv);
+            div.textContent   = texto;
+            div.style.display = 'block';
+            setTimeout(function () { div.style.display = 'none'; }, 3000);
+        }
+    </script>
+
+</body>
+</html>

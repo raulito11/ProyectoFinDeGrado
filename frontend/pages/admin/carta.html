@@ -8,18 +8,7 @@
 </head>
 <body>
 
-    <nav>
-        <span>El Olivo - Admin</span>
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="reservas.html">Reservas</a></li>
-            <li><a href="usuarios.html">Usuarios</a></li>
-            <li><a href="carta.html">Carta</a></li>
-            <li><a href="horarios.html">Horarios</a></li>
-            <li><a href="cierres.html">Cierres</a></li>
-            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
-        </ul>
-    </nav>
+    <nav id="navbar"></nav>
 
     <main>
 
@@ -45,18 +34,8 @@
 
         <p id="sin-categorias" style="display: none; color: #666; margin-bottom: 24px;">No hay categorias creadas.</p>
 
-        <!-- Formulario nueva categoria -->
-        <div class="formulario">
-            <h2>Nueva categoria</h2>
-            <div class="campo">
-                <label for="campo-nombre-categoria">Nombre</label>
-                <input type="text" id="campo-nombre-categoria" placeholder="Nombre de la categoria">
-            </div>
-            <div class="campo">
-                <label for="campo-descripcion-categoria">Descripcion</label>
-                <input type="text" id="campo-descripcion-categoria" placeholder="Descripcion opcional">
-            </div>
-            <button class="btn btn-verde" onclick="crearCategoria()">Anadir categoria</button>
+        <div style="margin-bottom: 32px;">
+            <a href="nueva_categoria.html" class="btn btn-verde">Anadir categoria</a>
         </div>
 
         <!-- SECCION PLATOS -->
@@ -69,6 +48,7 @@
         <table id="tabla-platos" style="display: none; margin-bottom: 24px;">
             <thead>
                 <tr>
+                    <th>Imagen</th>
                     <th>Nombre</th>
                     <th>Categoria</th>
                     <th>Precio</th>
@@ -83,61 +63,34 @@
 
         <p id="sin-platos" style="display: none; color: #666; margin-bottom: 24px;">No hay platos en la carta.</p>
 
-        <!-- Formulario anadir / editar plato -->
-        <div class="formulario">
-            <!-- Campo oculto para edicion -->
-            <input type="hidden" id="id-plato-editar" value="">
-
-            <h2 id="titulo-formulario-plato">Nuevo plato</h2>
-
-            <div class="campo">
-                <label for="campo-nombre-plato">Nombre</label>
-                <input type="text" id="campo-nombre-plato" placeholder="Nombre del plato">
-            </div>
-            <div class="campo">
-                <label for="campo-descripcion-plato">Descripcion</label>
-                <input type="text" id="campo-descripcion-plato" placeholder="Descripcion del plato">
-            </div>
-            <div class="campo">
-                <label for="campo-precio-plato">Precio (EUR)</label>
-                <input type="number" id="campo-precio-plato" placeholder="0.00" min="0" step="0.01">
-            </div>
-            <div class="campo">
-                <label for="campo-categoria-plato">Categoria</label>
-                <select id="campo-categoria-plato">
-                    <!-- Se carga dinamicamente desde listar_categorias -->
-                </select>
-            </div>
-            <div class="campo">
-                <label for="campo-activo-plato">Estado</label>
-                <select id="campo-activo-plato">
-                    <option value="1">Activo</option>
-                    <option value="0">Inactivo</option>
-                </select>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-verde" id="btn-guardar-plato" onclick="guardarPlato()">Anadir plato</button>
-                <button class="btn btn-gris" id="btn-cancelar-plato" style="display: none;" onclick="cancelarEdicionPlato()">Cancelar</button>
-            </div>
+        <div style="margin-bottom: 32px;">
+            <a href="nuevo_plato.html" class="btn btn-verde">Anadir plato</a>
         </div>
 
     </main>
 
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
     <script src="../../js/admin.js"></script>
 
     <script>
-        (async function () {
-            var usuario = await checkSession();
+        checkSession().then(function (usuario) {
             if (!usuario) return;
 
-            usuarioEnSesion = usuario;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
 
+            usuarioEnSesion = usuario;
             cargarCategorias();
             cargarPlatos();
-        })();
+        });
     </script>
 
 </body>

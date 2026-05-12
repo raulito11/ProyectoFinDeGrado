@@ -149,6 +149,30 @@ h2 {
     cursor: not-allowed;
 }
 
+.btn-primario {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background-color: var(--verde);
+    color: white;
+}
+
+.btn-primario:hover { background-color: #1f4f34; }
+
+.btn-secundario {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background-color: #999;
+    color: white;
+}
+
+.btn-secundario:hover { background-color: #777; }
+
 /* Mensajes de error y exito */
 .mensaje-error {
     color: var(--rojo);
@@ -242,4 +266,195 @@ table tbody tr:hover {
     width: 100%;
     padding: 11px;
     margin-top: 8px;
+}
+
+.login-registro-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Navbar dropdown de usuario */
+.nav-usuario {
+    position: relative;
+    list-style: none;
+}
+
+.nav-nombre {
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.nav-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border: 1px solid var(--borde);
+    border-radius: 5px;
+    min-width: 160px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    z-index: 100;
+}
+
+.nav-usuario:hover .nav-dropdown {
+    display: block;
+}
+
+.nav-dropdown a {
+    display: block;
+    padding: 10px 16px;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.nav-dropdown a:hover {
+    background-color: var(--gris);
+}
+
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #1a4a2e 0%, #2c6e49 60%, #3a8a5f 100%);
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.hero-contenido h1 {
+    color: white;
+    font-size: 2.4rem;
+    margin-bottom: 14px;
+}
+
+.hero-contenido p {
+    color: rgba(255,255,255,0.85);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.btn-hero {
+    background-color: white;
+    color: var(--verde);
+    font-weight: bold;
+    padding: 13px 30px;
+    border-radius: 5px;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-hero:hover {
+    background-color: var(--gris);
+}
+
+/* Secciones landing */
+.seccion-landing {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.seccion-landing h2 {
+    font-size: 1.6rem;
+    color: var(--verde);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--verde);
+    padding-bottom: 8px;
+}
+
+.texto-sobre {
+    color: #555;
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+/* Horarios landing */
+.horarios-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.horario-slot {
+    background-color: white;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: bold;
+    color: var(--verde);
+    font-size: 0.95rem;
+}
+
+/* Platos destacados */
+.platos-grid {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.plato-card {
+    background-color: white;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1;
+    min-width: 240px;
+}
+
+.plato-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.plato-card-sin-imagen {
+    width: 100%;
+    height: 180px;
+    background-color: #e8f0eb;
+}
+
+.plato-card-info {
+    padding: 16px;
+}
+
+.plato-categoria {
+    font-size: 0.78rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.plato-card-info h3 {
+    margin: 6px 0 8px;
+    color: #222;
+    font-size: 1.05rem;
+}
+
+.plato-card-info p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.plato-precio {
+    font-weight: bold;
+    color: var(--verde);
+    font-size: 1rem;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--verde);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 60px;
+    font-size: 0.9rem;
 }

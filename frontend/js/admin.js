@@ -539,15 +539,20 @@ function mostrarTablaPlatos(platos) {
     sinDatos.style.display = 'none';
 
     platos.forEach(function (p) {
+        var miniatura = p.imagen
+            ? '<img src="/ProyectoFinDeGrado/frontend/' + p.imagen + '" alt="' + p.nombre + '" style="height: 48px; width: 64px; object-fit: cover; border-radius: 4px;">'
+            : '<span style="color: #aaa; font-size: 0.85rem;">Sin imagen</span>';
+
         var fila = document.createElement('tr');
         fila.innerHTML =
+            '<td>' + miniatura + '</td>' +
             '<td>' + p.nombre + '</td>' +
             '<td>' + p.nombre_categoria + '</td>' +
             '<td>' + parseFloat(p.precio).toFixed(2) + ' EUR</td>' +
             '<td>' + (p.activo ? 'Si' : 'No') + '</td>' +
             '<td>' +
                 '<button class="btn btn-gris" style="margin-right: 6px;" ' +
-                    'onclick="editarPlato(' + p.id_plato + ')">Editar</button>' +
+                    'onclick="irAEditarPlato(' + p.id_plato + ')">Editar</button>' +
                 '<button class="btn btn-rojo" ' +
                     'onclick="eliminarPlato(' + p.id_plato + ')">Eliminar</button>' +
             '</td>';
@@ -555,6 +560,12 @@ function mostrarTablaPlatos(platos) {
     });
 
     tabla.style.display = 'table';
+}
+
+// Guarda el id en sessionStorage y navega a la pagina de edicion
+function irAEditarPlato(idPlato) {
+    sessionStorage.setItem('idPlatoEditar', idPlato);
+    window.location.href = 'nuevo_plato.html';
 }
 
 // Rellena el formulario con los datos del plato a editar
@@ -577,6 +588,16 @@ function editarPlato(idPlato) {
             document.getElementById('campo-categoria-plato').value      = plato.id_categoria;
             document.getElementById('campo-activo-plato').value         = plato.activo;
 
+            // mostrar la imagen actual si existe
+            var preview = document.getElementById('preview-imagen-plato');
+            if (plato.imagen) {
+                preview.src          = '/ProyectoFinDeGrado/frontend/' + plato.imagen;
+                preview.style.display = 'block';
+            } else {
+                preview.src          = '';
+                preview.style.display = 'none';
+            }
+
             document.getElementById('titulo-formulario-plato').textContent = 'Editar plato';
             document.getElementById('btn-guardar-plato').textContent       = 'Guardar cambios';
             document.getElementById('btn-cancelar-plato').style.display    = 'inline-block';
@@ -592,6 +613,11 @@ function cancelarEdicionPlato() {
     document.getElementById('campo-descripcion-plato').value = '';
     document.getElementById('campo-precio-plato').value      = '';
     document.getElementById('campo-activo-plato').value      = '1';
+    document.getElementById('campo-imagen-plato').value      = '';
+
+    var preview = document.getElementById('preview-imagen-plato');
+    preview.src          = '';
+    preview.style.display = 'none';
 
     document.getElementById('titulo-formulario-plato').textContent = 'Nuevo plato';
     document.getElementById('btn-guardar-plato').textContent       = 'Anadir plato';
@@ -599,6 +625,7 @@ function cancelarEdicionPlato() {
 }
 
 // Crea o edita un plato segun si hay id en el campo oculto
+// Usa FormData (no JSON) porque puede incluir una imagen como fichero
 function guardarPlato() {
     var idPlato     = document.getElementById('id-plato-editar').value;
     var nombre      = document.getElementById('campo-nombre-plato').value.trim();
@@ -606,29 +633,34 @@ function guardarPlato() {
     var precio      = document.getElementById('campo-precio-plato').value;
     var idCategoria = document.getElementById('campo-categoria-plato').value;
     var activo      = document.getElementById('campo-activo-plato').value;
+    var inputImagen = document.getElementById('campo-imagen-plato');
 
     if (!nombre || !precio || !idCategoria) {
         mostrarMensaje('mensaje-error-platos', 'Nombre, precio y categoria son obligatorios.');
         return;
     }
 
-    var datos = {
-        nombre:       nombre,
-        descripcion:  descripcion,
-        precio:       parseFloat(precio),
-        id_categoria: parseInt(idCategoria),
-        activo:       parseInt(activo)
-    };
+    var formData = new FormData();
+    formData.append('nombre',       nombre);
+    formData.append('descripcion',  descripcion);
+    formData.append('precio',       precio);
+    formData.append('id_categoria', idCategoria);
+    formData.append('activo',       activo);
+
+    if (inputImagen.files.length > 0) {
+        formData.append('imagen', inputImagen.files[0]);
+    }
 
     var url;
     if (idPlato) {
-        datos.id_plato = parseInt(idPlato);
+        formData.append('id_plato', idPlato);
         url = '/ProyectoFinDeGrado/backend/carta/modificar_plato.php';
     } else {
         url = '/ProyectoFinDeGrado/backend/carta/crear_plato.php';
     }
 
-    fetchAPI(url, 'POST', datos)
+    fetch(url, { method: 'POST', credentials: 'include', body: formData })
+        .then(function (respuesta) { return respuesta.json(); })
         .then(function (respuesta) {
             if (!respuesta.success) {
                 mostrarMensaje('mensaje-error-platos', respuesta.message || 'Error al guardar el plato.');

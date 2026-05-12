@@ -31,16 +31,8 @@ async function iniciarSesion() {
     });
 
     if (respuesta.success) {
-        // Redirige a la pagina del rol correspondiente
-        if (respuesta.rol === 'cliente') {
-            window.location.href = 'pages/cliente/dashboard.html';
-        } else if (respuesta.rol === 'camarero') {
-            window.location.href = 'pages/camarero/horario.html';
-        } else if (respuesta.rol === 'jefe_sala') {
-            window.location.href = 'pages/jefe_sala/horario.html';
-        } else if (respuesta.rol === 'admin') {
-            window.location.href = 'pages/admin/dashboard.html';
-        }
+        // Siempre redirige a la landing page — el navbar se adapta al rol
+        window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
     } else {
         mensajeError.textContent = respuesta.message;
         mensajeError.style.display = 'block';
@@ -52,7 +44,7 @@ async function checkSession() {
     var respuesta = await fetchAPI('/ProyectoFinDeGrado/backend/auth/session_check.php');
 
     if (!respuesta.success) {
-        window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+        window.location.href = '/ProyectoFinDeGrado/frontend/pages/auth/login.html';
         return null;
     }
 

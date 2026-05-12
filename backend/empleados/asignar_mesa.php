@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 session_start();
 
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // compruebo que haya sesión activa
 if (!isset($_SESSION['id'])) {
@@ -29,18 +29,19 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // recojo los datos del cuerpo de la petición
 $datos = json_decode(file_get_contents('php://input'), true);
 
-// compruebo que lleguen los dos campos necesarios
+// compruebo que lleguen los campos necesarios
 if (empty($datos['id_reserva']) || !isset($datos['numero_mesa'])) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Faltan campos obligatorios: id_reserva y numero_mesa']);
     exit;
 }
 
-$id_reserva  = $datos['id_reserva'];
-$numero_mesa = $datos['numero_mesa'];
+$id_reserva  = (int) $datos['id_reserva'];
+$numero_mesa = (int) $datos['numero_mesa'];
+$id_camarero = isset($datos['id_camarero']) && $datos['id_camarero'] ? (int) $datos['id_camarero'] : null;
 
 // numero_mesa tiene que ser un entero mayor que 0
-if (!is_int($numero_mesa) || $numero_mesa <= 0) {
+if ($numero_mesa <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'El número de mesa debe ser un entero mayor que 0']);
     exit;
@@ -64,13 +65,14 @@ if ($reserva['estado'] === 'cancelada') {
     exit;
 }
 
-// asigno la mesa
+// asigno la mesa y el camarero
 $stmt_update = $pdo->prepare(
-    "UPDATE reservas SET numero_mesa = :numero_mesa WHERE id_reserva = :id_reserva"
+    "UPDATE reservas SET numero_mesa = :numero_mesa, id_camarero = :id_camarero WHERE id_reserva = :id_reserva"
 );
 $stmt_update->execute([
-    ':numero_mesa' => $numero_mesa,
-    ':id_reserva'  => $id_reserva,
+    ':numero_mesa'  => $numero_mesa,
+    ':id_camarero'  => $id_camarero,
+    ':id_reserva'   => $id_reserva,
 ]);
 
-echo json_encode(['success' => true, 'message' => 'Mesa asignada correctamente']);
+echo json_encode(['success' => true, 'message' => 'Mesa y camarero asignados correctamente']);

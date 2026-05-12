@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 session_start();
 
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../config/db.php';
 
 // compruebo que haya sesión activa
 if (!isset($_SESSION['id'])) {
@@ -42,13 +42,16 @@ if (!empty($_GET['fecha'])) {
 }
 
 // obtengo todas las reservas de esa fecha que no estén canceladas
+// incluyo el nombre del camarero asignado si existe
 $stmt = $pdo->prepare(
-    "SELECT id_reserva, nombre, apellidos, hora_inicio, hora_fin,
-            num_personas, estado, numero_mesa
-     FROM reservas
-     WHERE fecha = :fecha
-       AND estado != 'cancelada'
-     ORDER BY hora_inicio ASC"
+    "SELECT r.id_reserva, r.nombre, r.apellidos, r.hora_inicio, r.hora_fin,
+            r.num_personas, r.estado, r.numero_mesa, r.id_camarero,
+            u.nombre AS nombre_camarero, u.apellidos AS apellidos_camarero
+     FROM reservas r
+     LEFT JOIN usuarios u ON r.id_camarero = u.id_usuario
+     WHERE r.fecha = :fecha
+       AND r.estado != 'cancelada'
+     ORDER BY r.hora_inicio ASC"
 );
 $stmt->execute([':fecha' => $fecha]);
 $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);

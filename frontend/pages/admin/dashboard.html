@@ -3,26 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - El Olivo Admin</title>
+    <title>Estadisticas - El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
 
-    <nav>
-        <span>El Olivo - Admin</span>
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="reservas.html">Reservas</a></li>
-            <li><a href="usuarios.html">Usuarios</a></li>
-            <li><a href="carta.html">Carta</a></li>
-            <li><a href="horarios.html">Horarios</a></li>
-            <li><a href="cierres.html">Cierres</a></li>
-            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
-        </ul>
-    </nav>
+    <nav id="navbar"></nav>
 
     <main>
-        <h2>Dashboard</h2>
+        <h2>Estadisticas</h2>
 
         <!-- Tarjetas KPI -->
         <div id="kpi-contenedor" style="display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap;">
@@ -48,19 +37,27 @@
         <p id="sin-aforo" style="display: none; color: #666;">No hay datos de aforo para hoy.</p>
     </main>
 
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
     <script src="../../js/admin.js"></script>
 
     <script>
-        (async function () {
-            var usuario = await checkSession();
+        checkSession().then(function (usuario) {
             if (!usuario) return;
 
-            usuarioEnSesion = usuario;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
 
+            usuarioEnSesion = usuario;
             cargarDashboard();
-        })();
+        });
     </script>
 
 </body>

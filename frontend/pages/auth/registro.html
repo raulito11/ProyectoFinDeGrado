@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - El Olivo</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <div class="login-pagina">
+        <div class="login-card">
+
+            <h1>El Olivo</h1>
+            <p>Crear cuenta nueva</p>
+
+            <div id="mensaje-error" class="mensaje-error"></div>
+            <div id="mensaje-exito" class="mensaje-exito"></div>
+
+            <form id="form-registro">
+                <div class="campo">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                </div>
+
+                <div class="campo">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" required>
+                </div>
+
+                <div class="campo">
+                    <label for="email">Correo electronico</label>
+                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                </div>
+
+                <div class="campo">
+                    <label for="telefono">Telefono</label>
+                    <input type="tel" id="telefono" name="telefono" placeholder="600000000" required>
+                </div>
+
+                <div class="campo">
+                    <label for="password">Contrasena</label>
+                    <input type="password" id="password" name="password" placeholder="Minimo 6 caracteres" required>
+                </div>
+
+                <button type="submit" class="btn btn-verde">Registrarme</button>
+            </form>
+
+            <p class="login-registro-link">
+                ¿Ya tienes cuenta? <a href="login.html">Inicia sesion</a>
+            </p>
+
+            <p class="login-registro-link">
+                <a href="/ProyectoFinDeGrado/frontend/index.html">&larr; Volver al inicio</a>
+            </p>
+
+        </div>
+    </div>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/registro.js"></script>
+
+</body>
+</html>

@@ -8,18 +8,7 @@
 </head>
 <body>
 
-    <nav>
-        <span>El Olivo - Admin</span>
-        <ul>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="reservas.html">Reservas</a></li>
-            <li><a href="usuarios.html">Usuarios</a></li>
-            <li><a href="carta.html">Carta</a></li>
-            <li><a href="horarios.html">Horarios</a></li>
-            <li><a href="cierres.html">Cierres</a></li>
-            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
-        </ul>
-    </nav>
+    <nav id="navbar"></nav>
 
     <main>
         <h2>Gestion de reservas</h2>
@@ -67,19 +56,27 @@
         <p id="sin-reservas" style="display: none; color: #666;">No hay reservas con los filtros aplicados.</p>
     </main>
 
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
     <script src="../../js/admin.js"></script>
 
     <script>
-        (async function () {
-            var usuario = await checkSession();
+        checkSession().then(function (usuario) {
             if (!usuario) return;
 
-            usuarioEnSesion = usuario;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
 
+            usuarioEnSesion = usuario;
             cargarReservas('', '');
-        })();
+        });
     </script>
 
 </body>

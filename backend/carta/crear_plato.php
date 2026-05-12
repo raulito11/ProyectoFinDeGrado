@@ -21,26 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$datos = json_decode(file_get_contents('php://input'), true);
-
-// campos obligatorios
-if (empty($datos['id_categoria']) || empty($datos['nombre']) || !isset($datos['precio'])) {
+// Con FormData los datos llegan en $_POST (no en php://input)
+if (empty($_POST['id_categoria']) || empty($_POST['nombre']) || !isset($_POST['precio'])) {
     echo json_encode(['success' => false, 'message' => 'Faltan campos obligatorios: id_categoria, nombre y precio']);
     exit;
 }
 
-$id_categoria = (int)$datos['id_categoria'];
-$nombre       = trim($datos['nombre']);
-$descripcion  = isset($datos['descripcion']) ? trim($datos['descripcion']) : null;
-$precio       = (float)$datos['precio'];
+$id_categoria = (int)$_POST['id_categoria'];
+$nombre       = trim($_POST['nombre']);
+$descripcion  = isset($_POST['descripcion']) ? trim($_POST['descripcion']) : null;
+$precio       = (float)$_POST['precio'];
 
-// el precio tiene que ser positivo
 if ($precio <= 0) {
     echo json_encode(['success' => false, 'message' => 'El precio debe ser mayor que 0']);
     exit;
 }
 
-// compruebo que la categoría exista en la base de datos
+// comprobar que la categoría exista
 $sqlCat = "SELECT id_categoria FROM categorias WHERE id_categoria = :id_categoria";
 $stmtCat = $pdo->prepare($sqlCat);
 $stmtCat->execute([':id_categoria' => $id_categoria]);
@@ -50,15 +47,49 @@ if (!$stmtCat->fetch()) {
     exit;
 }
 
-$sql = "INSERT INTO platos (id_categoria, nombre, descripcion, precio, activo)
-        VALUES (:id_categoria, :nombre, :descripcion, :precio, 1)";
+// gestión de la imagen subida
+$rutaImagen = null;
+
+if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+    $tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    $tamanoMaximo    = 2 * 1024 * 1024; // 2 MB
+
+    if (!in_array($_FILES['imagen']['type'], $tiposPermitidos)) {
+        echo json_encode(['success' => false, 'message' => 'Solo se permiten imágenes JPG, PNG, WEBP o GIF']);
+        exit;
+    }
+
+    if ($_FILES['imagen']['size'] > $tamanoMaximo) {
+        echo json_encode(['success' => false, 'message' => 'La imagen no puede superar los 2 MB']);
+        exit;
+    }
+
+    $extension      = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
+    $nombreArchivo  = uniqid('plato_') . '.' . $extension;
+    $carpeta        = __DIR__ . '/../../frontend/uploads/platos/';
+
+    if (!is_dir($carpeta)) {
+        mkdir($carpeta, 0755, true);
+    }
+
+    if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $carpeta . $nombreArchivo)) {
+        echo json_encode(['success' => false, 'message' => 'Error al guardar la imagen en el servidor']);
+        exit;
+    }
+
+    $rutaImagen = 'uploads/platos/' . $nombreArchivo;
+}
+
+$sql = "INSERT INTO platos (id_categoria, nombre, descripcion, precio, imagen, activo)
+        VALUES (:id_categoria, :nombre, :descripcion, :precio, :imagen, 1)";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
     ':id_categoria' => $id_categoria,
     ':nombre'       => $nombre,
     ':descripcion'  => $descripcion,
-    ':precio'       => $precio
+    ':precio'       => $precio,
+    ':imagen'       => $rutaImagen
 ]);
 
 $id_nuevo = $pdo->lastInsertId();

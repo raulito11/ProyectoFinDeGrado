@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Mesas del dia - El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        /* Contenedor del selector de fecha */
         .filtro-fecha {
             display: flex;
             align-items: center;
@@ -17,106 +17,74 @@
             border-radius: 8px;
             margin-bottom: 24px;
         }
-
-        .filtro-fecha label {
-            font-weight: bold;
-            color: #444;
-            white-space: nowrap;
-        }
-
-        .filtro-fecha input[type="date"] {
-            padding: 8px 12px;
-            border: 1px solid var(--borde);
-            border-radius: 5px;
-            font-size: 0.95rem;
-        }
-
-        .filtro-fecha input[type="date"]:focus {
-            outline: none;
-            border-color: var(--verde);
-        }
-
-        /* Celda de mesa sin asignar */
-        .sin-asignar {
-            color: #999;
-            font-style: italic;
-        }
-
-        /* Numero de mesa asignada */
-        .numero-mesa {
-            font-weight: bold;
-            color: #2c6e49;
-        }
+        .filtro-fecha label { font-weight: bold; color: #444; white-space: nowrap; }
+        .filtro-fecha input[type="date"] { padding: 8px 12px; border: 1px solid var(--borde); border-radius: 5px; font-size: 0.95rem; }
+        .filtro-fecha input[type="date"]:focus { outline: none; border-color: var(--verde); }
+        .sin-asignar { color: #999; font-style: italic; }
+        .numero-mesa { font-weight: bold; color: #2c6e49; }
+        .mi-mesa { background-color: #eaf7f0; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <span id="nombre-usuario">El Olivo</span>
-        <ul>
-            <li><a href="horario.html">Mi horario</a></li>
-            <li><a href="mesas.html">Mesas del dia</a></li>
-            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
-        </ul>
-    </nav>
+    <nav id="navbar"></nav>
 
     <main>
-        <h2>Mesas del dia</h2>
+        <section class="seccion-landing">
+            <h2>Mesas del dia</h2>
 
-        <!-- Selector de fecha -->
-        <div class="filtro-fecha">
-            <label for="input-fecha">Fecha:</label>
-            <input type="date" id="input-fecha" onchange="cambiarFecha()">
-        </div>
+            <div class="filtro-fecha">
+                <label for="input-fecha">Fecha:</label>
+                <input type="date" id="input-fecha" onchange="cambiarFecha()">
+            </div>
 
-        <!-- Mensajes -->
-        <div id="mensaje-error-mesas" class="mensaje-error"></div>
+            <div id="mensaje-error-mesas" class="mensaje-error"></div>
 
-        <!-- Tabla de reservas del dia con sus mesas asignadas -->
-        <table id="tabla-mesas" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Hora</th>
-                    <th>Personas</th>
-                    <th>Estado</th>
-                    <th>Mesa asignada</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-mesas">
-                <!-- Las filas se generan desde empleados.js -->
-            </tbody>
-        </table>
+            <table id="tabla-mesas" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Hora</th>
+                        <th>Personas</th>
+                        <th>Estado</th>
+                        <th>Mesa</th>
+                        <th>Camarero</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-mesas"></tbody>
+            </table>
 
-        <p id="sin-mesas" style="display: none; color: #666;">No hay reservas para este dia.</p>
+            <p id="sin-mesas" style="display: none; color: #666;">No hay reservas para este dia.</p>
+        </section>
     </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
 
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
     <script src="../../js/empleados.js"></script>
 
     <script>
-        // Verificar sesion al cargar la pagina
+        var idUsuarioActual = null;
+
         checkSession().then(function (usuario) {
             if (!usuario) return;
 
-            // Solo el camarero puede acceder a esta pagina
             if (usuario.rol !== 'camarero') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
 
-            // Mostrar el nombre del usuario en la nav
-            document.getElementById('nombre-usuario').textContent = 'Hola, ' + usuario.nombre;
+            idUsuarioActual = usuario.id;
 
-            // Establecer la fecha de hoy en el input y cargar las asignaciones
             var inputFecha = document.getElementById('input-fecha');
             inputFecha.value = obtenerFechaHoy();
-
             cargarPaginaMesas(inputFecha.value);
         });
 
-        // Carga las asignaciones de la fecha seleccionada y las muestra
         function cargarPaginaMesas(fecha) {
             cargarAsignaciones(fecha).then(function (reservas) {
                 if (reservas === null) {
@@ -127,15 +95,12 @@
             });
         }
 
-        // Se ejecuta cada vez que el usuario cambia la fecha en el input
         function cambiarFecha() {
             var fecha = document.getElementById('input-fecha').value;
             if (!fecha) return;
             cargarPaginaMesas(fecha);
         }
 
-        // Renderiza la tabla con la version de solo lectura para camarero
-        // (sin botones de accion, a diferencia del jefe de sala)
         function mostrarAsignacionesCamarero(reservas) {
             var tabla    = document.getElementById('tabla-mesas');
             var cuerpo   = document.getElementById('cuerpo-mesas');
@@ -156,21 +121,28 @@
                 var horaInicio  = formatearHora(r.hora_inicio);
                 var horaFin     = formatearHora(r.hora_fin);
 
-                // Mesa asignada o mensaje sin asignar
-                var celdaMesa;
-                if (r.numero_mesa !== null && r.numero_mesa !== undefined) {
-                    celdaMesa = '<span class="numero-mesa">' + r.numero_mesa + '</span>';
-                } else {
-                    celdaMesa = '<span class="sin-asignar">Sin asignar</span>';
-                }
+                var celdaMesa = r.numero_mesa
+                    ? '<span class="numero-mesa">' + r.numero_mesa + '</span>'
+                    : '<span class="sin-asignar">Sin asignar</span>';
+
+                var celdaCamarero = r.nombre_camarero
+                    ? r.nombre_camarero + ' ' + r.apellidos_camarero
+                    : '<span class="sin-asignar">Sin asignar</span>';
 
                 var fila = document.createElement('tr');
+
+                // resaltar filas asignadas a este camarero
+                if (r.id_camarero && r.id_camarero == idUsuarioActual) {
+                    fila.classList.add('mi-mesa');
+                }
+
                 fila.innerHTML =
                     '<td>' + r.nombre + ' ' + r.apellidos + '</td>' +
                     '<td>' + horaInicio + ' - ' + horaFin + '</td>' +
                     '<td>' + r.num_personas + '</td>' +
                     '<td><span class="' + claseEstado + '">' + r.estado + '</span></td>' +
-                    '<td>' + celdaMesa + '</td>';
+                    '<td>' + celdaMesa + '</td>' +
+                    '<td>' + celdaCamarero + '</td>';
 
                 cuerpo.appendChild(fila);
             });

@@ -3,38 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesion - El Olivo</title>
+    <title>El Olivo - Restaurante</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="login-pagina">
-        <div class="login-card">
+    <nav id="navbar"></nav>
 
-            <h1>El Olivo</h1>
-            <p>Sistema de reservas</p>
-
-            <div id="mensaje-error" class="mensaje-error"></div>
-
-            <form id="form-login">
-                <div class="campo">
-                    <label for="email">Correo electronico</label>
-                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
-                </div>
-
-                <div class="campo">
-                    <label for="password">Contrasena</label>
-                    <input type="password" id="password" name="password" placeholder="Tu contrasena" required>
-                </div>
-
-                <button type="submit" class="btn btn-verde">Entrar</button>
-            </form>
-
+    <section class="hero">
+        <div class="hero-contenido">
+            <h1>Bienvenido a El Olivo</h1>
+            <p>Cocina mediterranea en el corazon de Madrid</p>
+            <a href="/ProyectoFinDeGrado/frontend/pages/cliente/nueva_reserva.html" class="btn-hero">Reservar mesa</a>
         </div>
-    </div>
+    </section>
+
+    <main>
+
+        <section class="seccion-landing">
+            <h2>Sobre nosotros</h2>
+            <p class="texto-sobre">
+                El Olivo es un restaurante familiar situado en el centro de Madrid, especializado en cocina
+                mediterranea de temporada. Desde 1998 ofrecemos una experiencia gastronomica unica con productos
+                frescos y recetas transmitidas de generacion en generacion. Nuestro equipo cuida cada detalle
+                para que tu visita sea siempre especial.
+            </p>
+        </section>
+
+        <section class="seccion-landing">
+            <h2>Horarios</h2>
+            <div id="lista-horarios" class="horarios-grid">
+                <p>Cargando horarios...</p>
+            </div>
+        </section>
+
+        <section class="seccion-landing">
+            <h2>Platos destacados</h2>
+            <div id="lista-platos" class="platos-grid">
+                <p>Cargando platos...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/landing.js"></script>
 
 </body>
 </html>

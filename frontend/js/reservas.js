@@ -13,7 +13,7 @@ async function cargarReservas() {
         return;
     }
 
-    var reservas = respuesta.data;
+    var reservas = respuesta.reservas;
 
     if (reservas.length === 0) {
         // No hay reservas: mostrar mensaje y ocultar tabla
@@ -191,7 +191,7 @@ async function confirmarReserva() {
 
         // Redirigir al dashboard tras 2 segundos
         setTimeout(function () {
-            window.location.href = 'dashboard.html';
+            window.location.href = 'mis_reservas.html';
         }, 2000);
 
     } else {
