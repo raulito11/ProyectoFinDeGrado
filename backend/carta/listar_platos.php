@@ -31,7 +31,7 @@ if ($id_categoria !== null) {
             FROM platos p
             JOIN categorias c ON p.id_categoria = c.id_categoria
             WHERE p.id_categoria = :id_categoria
-            ORDER BY p.id_categoria ASC, p.id_plato ASC";
+            ORDER BY p.id_plato ASC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id_categoria' => $id_categoria]);
@@ -40,7 +40,7 @@ if ($id_categoria !== null) {
                    p.nombre, p.descripcion, p.precio, p.activo, p.imagen
             FROM platos p
             JOIN categorias c ON p.id_categoria = c.id_categoria
-            ORDER BY p.id_categoria ASC, p.id_plato ASC";
+            ORDER BY p.id_plato ASC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute();

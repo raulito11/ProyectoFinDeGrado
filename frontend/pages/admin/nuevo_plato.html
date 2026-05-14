@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
     <title>Plato - El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
@@ -11,10 +12,6 @@
     <nav id="navbar"></nav>
 
     <main>
-
-        <div style="margin-bottom: 20px;">
-            <a href="carta.html" class="btn btn-gris">Volver</a>
-        </div>
 
         <h2 id="titulo-pagina">Nuevo plato</h2>
 
@@ -126,7 +123,6 @@
                     document.getElementById('campo-precio').value      = plato.precio;
                     document.getElementById('campo-categoria').value   = plato.id_categoria;
                     document.getElementById('campo-activo').value      = plato.activo;
-
                     if (plato.imagen) {
                         var preview          = document.getElementById('preview-imagen');
                         preview.src          = '/ProyectoFinDeGrado/frontend/' + plato.imagen;

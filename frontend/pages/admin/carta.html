@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
     <title>Carta - El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
@@ -25,6 +26,7 @@
                     <th>Nombre</th>
                     <th>Descripcion</th>
                     <th>Activo</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="cuerpo-categorias">
@@ -91,6 +93,47 @@
             cargarCategorias();
             cargarPlatos();
         });
+
+        // Sobreescribir mostrarTablaCategorias para incluir el boton Editar
+        // (la version de admin.js no tiene la columna Acciones)
+        mostrarTablaCategorias = function (categorias) {
+            var tabla    = document.getElementById('tabla-categorias');
+            var cuerpo   = document.getElementById('cuerpo-categorias');
+            var sinDatos = document.getElementById('sin-categorias');
+
+            if (!tabla || !cuerpo) return;
+
+            cuerpo.innerHTML = '';
+
+            if (!categorias || categorias.length === 0) {
+                tabla.style.display    = 'none';
+                sinDatos.style.display = 'block';
+                return;
+            }
+
+            sinDatos.style.display = 'none';
+
+            categorias.forEach(function (c) {
+                var fila = document.createElement('tr');
+                fila.innerHTML =
+                    '<td>' + c.nombre + '</td>' +
+                    '<td>' + (c.descripcion || '-') + '</td>' +
+                    '<td>' + (c.activo ? 'Si' : 'No') + '</td>' +
+                    '<td>' +
+                        '<button class="btn btn-gris" ' +
+                            'onclick="irAEditarCategoria(' + c.id_categoria + ')">Editar</button>' +
+                    '</td>';
+                cuerpo.appendChild(fila);
+            });
+
+            tabla.style.display = 'table';
+        };
+
+        // Guarda el id en sessionStorage y navega a la pagina de edicion
+        function irAEditarCategoria(idCategoria) {
+            sessionStorage.setItem('idCategoriaEditar', idCategoria);
+            window.location.href = 'nueva_categoria.html';
+        }
     </script>
 
 </body>

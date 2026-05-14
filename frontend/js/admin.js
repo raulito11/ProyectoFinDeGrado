@@ -4,92 +4,220 @@
 var usuarioEnSesion = null;
 
 // ─────────────────────────────────────────────
-// DASHBOARD
+// DASHBOARD - ESTADÍSTICAS
 // ─────────────────────────────────────────────
 
-// Carga los KPIs y el aforo del dia
-function cargarDashboard() {
-    fetchAPI('/ProyectoFinDeGrado/backend/dashboard/estadisticas.php')
-        .then(function (respuesta) {
-            if (!respuesta.success) {
-                console.error('Error al cargar dashboard:', respuesta.message);
-                return;
-            }
-            mostrarKPIs(respuesta.data);
-            mostrarAforoDia(respuesta.data.aforo_hoy);
-        })
-        .catch(function (err) {
-            console.error('Error de conexion en dashboard:', err);
+// Estado del dashboard (filtros, paginación, ordenación)
+var dashFiltroDesde  = '';
+var dashFiltroHasta  = '';
+var dashFiltroEstado = '';
+var dashPaginaActual = 1;
+var dashTotalPaginas = 1;
+var dashOrdenCampo   = 'fecha';
+var dashOrdenDir     = 'DESC';
+
+// Punto de entrada: establece fechas por defecto y carga los datos
+function iniciarDashboard() {
+    var hoy      = new Date();
+    var anio     = hoy.getFullYear();
+    var mes      = String(hoy.getMonth() + 1).padStart(2, '0');
+    var ultimoDia = new Date(anio, hoy.getMonth() + 1, 0).getDate();
+
+    dashFiltroDesde = anio + '-' + mes + '-01';
+    dashFiltroHasta = anio + '-' + mes + '-' + String(ultimoDia).padStart(2, '0');
+
+    document.getElementById('filtro-desde').value = dashFiltroDesde;
+    document.getElementById('filtro-hasta').value = dashFiltroHasta;
+
+    // Botones de estado: solo uno activo a la vez
+    document.querySelectorAll('.btn-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.btn-toggle').forEach(function (b) {
+                b.classList.remove('activo');
+            });
+            btn.classList.add('activo');
+            dashFiltroEstado = btn.getAttribute('data-estado');
         });
-}
-
-// Genera las 4 tarjetas de KPI en fila
-function mostrarKPIs(datos) {
-    var contenedor = document.getElementById('kpi-contenedor');
-    if (!contenedor) return;
-
-    var pendientes   = datos.reservas_por_estado.pendiente  || 0;
-    var confirmadas  = datos.reservas_por_estado.confirmada || 0;
-
-    var tarjetas = [
-        { titulo: 'Reservas hoy',     valor: datos.reservas_hoy,    color: '#2c6e49' },
-        { titulo: 'Esta semana',       valor: datos.reservas_semana, color: '#1a5a8a' },
-        { titulo: 'Pendientes',        valor: pendientes,            color: '#e67e22' },
-        { titulo: 'Confirmadas',       valor: confirmadas,           color: '#1a6b35' }
-    ];
-
-    contenedor.innerHTML = '';
-
-    tarjetas.forEach(function (t) {
-        var div = document.createElement('div');
-        div.style.cssText = [
-            'flex: 1',
-            'min-width: 180px',
-            'background-color: white',
-            'border: 1px solid #cccccc',
-            'border-radius: 8px',
-            'padding: 20px 24px',
-            'text-align: center'
-        ].join('; ');
-
-        div.innerHTML =
-            '<p style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">' + t.titulo + '</p>' +
-            '<p style="font-size: 2rem; font-weight: bold; color: ' + t.color + ';">' + t.valor + '</p>';
-
-        contenedor.appendChild(div);
     });
+
+    cargarKPIsDashboard();
+    cargarTablaReservasDashboard(1);
 }
 
-// Rellena la tabla de aforo por horas del dia
-function mostrarAforoDia(aforo) {
-    var tabla   = document.getElementById('tabla-aforo');
-    var cuerpo  = document.getElementById('cuerpo-aforo');
-    var sinDatos = document.getElementById('sin-aforo');
+// Lee los filtros del formulario, valida y recarga todo
+function aplicarFiltrosDashboard() {
+    var desde = document.getElementById('filtro-desde').value;
+    var hasta = document.getElementById('filtro-hasta').value;
 
-    if (!aforo || aforo.length === 0) {
-        if (sinDatos) sinDatos.style.display = 'block';
+    if (!desde || !hasta) {
+        alert('Las dos fechas son obligatorias.');
+        return;
+    }
+    if (desde > hasta) {
+        alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
         return;
     }
 
-    cuerpo.innerHTML = '';
+    dashFiltroDesde  = desde;
+    dashFiltroHasta  = hasta;
+    dashPaginaActual = 1;
 
-    aforo.forEach(function (slot) {
-        var disponible  = slot.capacidad_total - slot.ocupado;
-        var porcentaje  = slot.capacidad_total > 0
-            ? Math.round((slot.ocupado / slot.capacidad_total) * 100)
-            : 0;
+    cargarKPIsDashboard();
+    cargarTablaReservasDashboard(1);
+}
+
+// Llama a kpis.php y actualiza todas las tarjetas KPI
+function cargarKPIsDashboard() {
+    document.getElementById('dash-cargando-kpis').style.display = 'block';
+
+    var params = 'fecha_desde=' + encodeURIComponent(dashFiltroDesde) +
+                 '&fecha_hasta=' + encodeURIComponent(dashFiltroHasta);
+    if (dashFiltroEstado) {
+        params += '&estado=' + encodeURIComponent(dashFiltroEstado);
+    }
+
+    fetchAPI('/ProyectoFinDeGrado/backend/dashboard/kpis.php?' + params)
+        .then(function (res) {
+            document.getElementById('dash-cargando-kpis').style.display = 'none';
+            if (!res.success) {
+                console.error('Error al cargar KPIs:', res.message);
+                return;
+            }
+            rellenarKPIs(res.data);
+        })
+        .catch(function (err) {
+            document.getElementById('dash-cargando-kpis').style.display = 'none';
+            console.error('Error de conexión en KPIs:', err);
+        });
+}
+
+// Escribe los valores recibidos en los elementos de las tarjetas
+function rellenarKPIs(datos) {
+    var r = datos.reservas;
+    var c = datos.clientes;
+    var o = datos.ocupacion;
+
+    document.getElementById('kpi-total').textContent              = r.total;
+    document.getElementById('kpi-confirmadas').textContent        = r.confirmadas;
+    document.getElementById('kpi-pendientes').textContent         = r.pendientes;
+    document.getElementById('kpi-canceladas').textContent         = r.canceladas;
+    document.getElementById('kpi-tasa').textContent               = r.tasa_cancelacion + '%';
+
+    document.getElementById('kpi-clientes-unicos').textContent    = c.unicos;
+    document.getElementById('kpi-clientes-nuevos').textContent    = c.nuevos;
+    document.getElementById('kpi-clientes-recurrentes').textContent = c.recurrentes;
+
+    document.getElementById('kpi-reservas-hoy').textContent       = o.reservas_hoy_activas;
+    document.getElementById('kpi-ratio-ocupacion').textContent    = o.ratio_ocupacion + '%';
+    document.getElementById('kpi-ocupacion-detalle').textContent  = o.cap_ocupada_hoy + ' / ' + o.cap_total_hoy + ' personas';
+}
+
+// Llama a reservas_dashboard.php y renderiza la tabla paginada
+function cargarTablaReservasDashboard(pagina) {
+    document.getElementById('dash-cargando-tabla').style.display  = 'block';
+    document.getElementById('tabla-dash').style.display           = 'none';
+    document.getElementById('dash-sin-resultados').style.display  = 'none';
+    document.getElementById('dash-sin-resultados').textContent    = 'No hay reservas para los filtros seleccionados.';
+    document.getElementById('dash-paginacion').style.display      = 'none';
+
+    dashPaginaActual = pagina;
+
+    var params = 'fecha_desde=' + encodeURIComponent(dashFiltroDesde) +
+                 '&fecha_hasta=' + encodeURIComponent(dashFiltroHasta) +
+                 '&pagina='      + pagina +
+                 '&orden_campo=' + dashOrdenCampo +
+                 '&orden_dir='   + dashOrdenDir;
+    if (dashFiltroEstado) {
+        params += '&estado=' + encodeURIComponent(dashFiltroEstado);
+    }
+
+    fetchAPI('/ProyectoFinDeGrado/backend/dashboard/reservas_dashboard.php?' + params)
+        .then(function (res) {
+            document.getElementById('dash-cargando-tabla').style.display = 'none';
+            if (!res.success) {
+                document.getElementById('dash-sin-resultados').textContent = 'Error al cargar las reservas: ' + (res.message || 'error desconocido');
+                document.getElementById('dash-sin-resultados').style.display = 'block';
+                return;
+            }
+            renderizarTablaDashboard(res.data);
+        })
+        .catch(function (err) {
+            document.getElementById('dash-cargando-tabla').style.display = 'none';
+            document.getElementById('dash-sin-resultados').textContent = 'Error de conexión al cargar las reservas.';
+            document.getElementById('dash-sin-resultados').style.display = 'block';
+            console.error('Error de conexión en tabla:', err);
+        });
+}
+
+// Dibuja filas, paginación e indicadores de orden en la tabla
+function renderizarTablaDashboard(datos) {
+    var cuerpo   = document.getElementById('cuerpo-dash-tabla');
+    var tabla    = document.getElementById('tabla-dash');
+    var sinDatos = document.getElementById('dash-sin-resultados');
+    var pagDiv   = document.getElementById('dash-paginacion');
+    var infoSpan = document.getElementById('dash-tabla-info');
+
+    cuerpo.innerHTML = '';
+    dashTotalPaginas = datos.total_paginas;
+
+    if (!datos.reservas || datos.reservas.length === 0) {
+        sinDatos.style.display = 'block';
+        infoSpan.textContent   = '';
+        return;
+    }
+
+    datos.reservas.forEach(function (r) {
+        var badgeEstado = '<span class="badge badge-' + r.estado + '">' + r.estado + '</span>';
+        var badgeTipo   = r.es_nuevo
+            ? '<span class="badge badge-nuevo">Nuevo</span>'
+            : '<span class="badge badge-recurrente">Recurrente</span>';
 
         var fila = document.createElement('tr');
         fila.innerHTML =
-            '<td>' + slot.hora_inicio + '</td>' +
-            '<td>' + slot.ocupado + ' / ' + slot.capacidad_total + '</td>' +
-            '<td>' + disponible + '</td>' +
-            '<td>' + porcentaje + '%</td>';
-
+            '<td>#' + r.id_reserva + '</td>' +
+            '<td>' + r.nombre + ' ' + r.apellidos + '</td>' +
+            '<td>' + r.fecha + '</td>' +
+            '<td>' + r.hora_inicio + '</td>' +
+            '<td>' + r.num_personas + '</td>' +
+            '<td>' + badgeEstado + '</td>' +
+            '<td>' + badgeTipo + '</td>';
         cuerpo.appendChild(fila);
     });
 
     tabla.style.display = 'table';
+    infoSpan.textContent = datos.total_filas + ' reservas · pág. ' + datos.pagina_actual + ' de ' + datos.total_paginas;
+
+    // Controles de paginación
+    document.getElementById('btn-pag-ant').disabled = datos.pagina_actual <= 1;
+    document.getElementById('btn-pag-sig').disabled = datos.pagina_actual >= datos.total_paginas;
+    document.getElementById('dash-pag-info').textContent = 'Página ' + datos.pagina_actual + ' de ' + datos.total_paginas;
+    pagDiv.style.display = datos.total_paginas > 1 ? 'flex' : 'none';
+
+    // Indicadores visuales de ordenación en las cabeceras
+    document.querySelectorAll('th.ordenable').forEach(function (th) {
+        th.className = 'ordenable';
+        if (th.getAttribute('data-campo') === dashOrdenCampo) {
+            th.classList.add(dashOrdenDir === 'ASC' ? 'orden-asc' : 'orden-desc');
+        }
+    });
+}
+
+// Alterna el sentido si la columna ya está activa, o cambia de columna
+function dashCambiarOrden(campo) {
+    if (dashOrdenCampo === campo) {
+        dashOrdenDir = dashOrdenDir === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+        dashOrdenCampo = campo;
+        dashOrdenDir   = 'ASC';
+    }
+    cargarTablaReservasDashboard(1);
+}
+
+// Avanza o retrocede en la paginación
+function dashCambiarPagina(delta) {
+    var nueva = dashPaginaActual + delta;
+    if (nueva < 1 || nueva > dashTotalPaginas) return;
+    cargarTablaReservasDashboard(nueva);
 }
 
 // ─────────────────────────────────────────────
@@ -566,113 +694,6 @@ function mostrarTablaPlatos(platos) {
 function irAEditarPlato(idPlato) {
     sessionStorage.setItem('idPlatoEditar', idPlato);
     window.location.href = 'nuevo_plato.html';
-}
-
-// Rellena el formulario con los datos del plato a editar
-function editarPlato(idPlato) {
-    fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_platos.php')
-        .then(function (respuesta) {
-            if (!respuesta.success) return;
-
-            var plato = null;
-            respuesta.data.forEach(function (p) {
-                if (p.id_plato === idPlato) plato = p;
-            });
-
-            if (!plato) return;
-
-            document.getElementById('id-plato-editar').value           = plato.id_plato;
-            document.getElementById('campo-nombre-plato').value         = plato.nombre;
-            document.getElementById('campo-descripcion-plato').value    = plato.descripcion || '';
-            document.getElementById('campo-precio-plato').value         = plato.precio;
-            document.getElementById('campo-categoria-plato').value      = plato.id_categoria;
-            document.getElementById('campo-activo-plato').value         = plato.activo;
-
-            // mostrar la imagen actual si existe
-            var preview = document.getElementById('preview-imagen-plato');
-            if (plato.imagen) {
-                preview.src          = '/ProyectoFinDeGrado/frontend/' + plato.imagen;
-                preview.style.display = 'block';
-            } else {
-                preview.src          = '';
-                preview.style.display = 'none';
-            }
-
-            document.getElementById('titulo-formulario-plato').textContent = 'Editar plato';
-            document.getElementById('btn-guardar-plato').textContent       = 'Guardar cambios';
-            document.getElementById('btn-cancelar-plato').style.display    = 'inline-block';
-
-            document.getElementById('campo-nombre-plato').scrollIntoView({ behavior: 'smooth' });
-        });
-}
-
-// Resetea el formulario al estado de creacion
-function cancelarEdicionPlato() {
-    document.getElementById('id-plato-editar').value        = '';
-    document.getElementById('campo-nombre-plato').value      = '';
-    document.getElementById('campo-descripcion-plato').value = '';
-    document.getElementById('campo-precio-plato').value      = '';
-    document.getElementById('campo-activo-plato').value      = '1';
-    document.getElementById('campo-imagen-plato').value      = '';
-
-    var preview = document.getElementById('preview-imagen-plato');
-    preview.src          = '';
-    preview.style.display = 'none';
-
-    document.getElementById('titulo-formulario-plato').textContent = 'Nuevo plato';
-    document.getElementById('btn-guardar-plato').textContent       = 'Anadir plato';
-    document.getElementById('btn-cancelar-plato').style.display    = 'none';
-}
-
-// Crea o edita un plato segun si hay id en el campo oculto
-// Usa FormData (no JSON) porque puede incluir una imagen como fichero
-function guardarPlato() {
-    var idPlato     = document.getElementById('id-plato-editar').value;
-    var nombre      = document.getElementById('campo-nombre-plato').value.trim();
-    var descripcion = document.getElementById('campo-descripcion-plato').value.trim();
-    var precio      = document.getElementById('campo-precio-plato').value;
-    var idCategoria = document.getElementById('campo-categoria-plato').value;
-    var activo      = document.getElementById('campo-activo-plato').value;
-    var inputImagen = document.getElementById('campo-imagen-plato');
-
-    if (!nombre || !precio || !idCategoria) {
-        mostrarMensaje('mensaje-error-platos', 'Nombre, precio y categoria son obligatorios.');
-        return;
-    }
-
-    var formData = new FormData();
-    formData.append('nombre',       nombre);
-    formData.append('descripcion',  descripcion);
-    formData.append('precio',       precio);
-    formData.append('id_categoria', idCategoria);
-    formData.append('activo',       activo);
-
-    if (inputImagen.files.length > 0) {
-        formData.append('imagen', inputImagen.files[0]);
-    }
-
-    var url;
-    if (idPlato) {
-        formData.append('id_plato', idPlato);
-        url = '/ProyectoFinDeGrado/backend/carta/modificar_plato.php';
-    } else {
-        url = '/ProyectoFinDeGrado/backend/carta/crear_plato.php';
-    }
-
-    fetch(url, { method: 'POST', credentials: 'include', body: formData })
-        .then(function (respuesta) { return respuesta.json(); })
-        .then(function (respuesta) {
-            if (!respuesta.success) {
-                mostrarMensaje('mensaje-error-platos', respuesta.message || 'Error al guardar el plato.');
-                return;
-            }
-            mostrarMensaje('mensaje-exito-platos', idPlato ? 'Plato actualizado correctamente.' : 'Plato creado correctamente.');
-            cancelarEdicionPlato();
-            cargarPlatos();
-        })
-        .catch(function (err) {
-            console.error('Error al guardar plato:', err);
-        });
 }
 
 // Elimina un plato tras confirmacion

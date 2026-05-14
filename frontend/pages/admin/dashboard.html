@@ -3,38 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadisticas - El Olivo Admin</title>
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <title>Estadísticas - El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* Estilos exclusivos del dashboard, no afectan a otras páginas */
+
+        .dash-filtros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 28px;
+        }
+
+        .dash-filtros .campo {
+            margin-bottom: 0;
+        }
+
+        .filtro-estado-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-toggle {
+            padding: 8px 14px;
+            border: 2px solid var(--borde);
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+        }
+
+        .btn-toggle.activo {
+            border-color: var(--verde);
+            background-color: var(--verde);
+            color: white;
+        }
+
+        .btn-toggle:hover:not(.activo) {
+            border-color: #999;
+        }
+
+        /* KPI groups */
+        .dash-kpi-grupos {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            margin-bottom: 36px;
+        }
+
+        .dash-kpi-grupo-titulo {
+            font-size: 0.78rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .dash-kpi-fila {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 1px solid var(--borde);
+            border-radius: 8px;
+            padding: 18px 22px;
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .kpi-card-titulo {
+            font-size: 0.82rem;
+            color: #777;
+            margin-bottom: 6px;
+        }
+
+        .kpi-card-valor {
+            font-size: 1.9rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-card-sub {
+            font-size: 0.78rem;
+            color: #aaa;
+        }
+
+        .kpi-verde   { color: var(--verde); }
+        .kpi-rojo    { color: var(--rojo); }
+        .kpi-naranja { color: var(--naranja); }
+        .kpi-azul    { color: #1a5a8a; }
+        .kpi-gris    { color: #444; }
+
+        /* Tabla del dashboard */
+        .dash-tabla-cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dash-tabla-info {
+            font-size: 0.88rem;
+            color: #888;
+        }
+
+        th.ordenable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.ordenable:hover {
+            background-color: #1f5038;
+        }
+
+        th.orden-asc::after  { content: ' ↑'; }
+        th.orden-desc::after { content: ' ↓'; }
+
+        /* Badges de estado y tipo de cliente */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: bold;
+        }
+
+        .badge-confirmada  { background-color: #eaf7f0; color: #1a6b35; }
+        .badge-pendiente   { background-color: #fff8e1; color: #856404; }
+        .badge-cancelada   { background-color: #fdecea; color: var(--rojo); }
+        .badge-nuevo       { background-color: #e8f0fb; color: #1a5a8a; font-size: 0.78rem; padding: 2px 8px; }
+        .badge-recurrente  { background-color: #f4f4f4; color: #555;    font-size: 0.78rem; padding: 2px 8px; }
+
+        /* Paginación */
+        .dash-paginacion {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .dash-paginacion span {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .dash-sin-datos {
+            text-align: center;
+            padding: 32px;
+            color: #888;
+            font-size: 0.95rem;
+            background: white;
+            border: 1px solid var(--borde);
+            border-radius: 8px;
+        }
+
+        .dash-cargando {
+            color: #999;
+            font-size: 0.9rem;
+            padding: 8px 0;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
     <nav id="navbar"></nav>
 
     <main>
-        <h2>Estadisticas</h2>
+        <h2>Estadísticas del restaurante</h2>
 
-        <!-- Tarjetas KPI -->
-        <div id="kpi-contenedor" style="display: flex; gap: 16px; margin-bottom: 30px; flex-wrap: wrap;">
-            <!-- Se generan desde JS -->
+        <!-- FILTROS -->
+        <div class="formulario dash-filtros">
+            <div class="campo">
+                <label for="filtro-desde">Desde</label>
+                <input type="date" id="filtro-desde">
+            </div>
+            <div class="campo">
+                <label for="filtro-hasta">Hasta</label>
+                <input type="date" id="filtro-hasta">
+            </div>
+            <div class="campo">
+                <label>Estado</label>
+                <div class="filtro-estado-btns">
+                    <button class="btn-toggle activo" data-estado="">Todos</button>
+                    <button class="btn-toggle" data-estado="confirmada">Confirmadas</button>
+                    <button class="btn-toggle" data-estado="pendiente">Pendientes</button>
+                    <button class="btn-toggle" data-estado="cancelada">Canceladas</button>
+                </div>
+            </div>
+            <div class="campo">
+                <label>&nbsp;</label>
+                <button class="btn btn-verde" onclick="aplicarFiltrosDashboard()">Aplicar</button>
+            </div>
         </div>
 
-        <!-- Tabla de aforo del dia -->
-        <h2>Aforo del dia</h2>
-        <table id="tabla-aforo" style="display: none;">
+        <!-- KPIs -->
+        <p id="dash-cargando-kpis" class="dash-cargando" style="display: none;">Cargando indicadores...</p>
+
+        <div id="dash-kpi-grupos" class="dash-kpi-grupos">
+
+            <!-- Grupo 1: Reservas del periodo -->
+            <div>
+                <p class="dash-kpi-grupo-titulo">Reservas del periodo</p>
+                <div class="dash-kpi-fila">
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Total</p>
+                        <p class="kpi-card-valor kpi-gris" id="kpi-total">—</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Confirmadas</p>
+                        <p class="kpi-card-valor kpi-verde" id="kpi-confirmadas">—</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Pendientes</p>
+                        <p class="kpi-card-valor kpi-naranja" id="kpi-pendientes">—</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Canceladas</p>
+                        <p class="kpi-card-valor kpi-rojo" id="kpi-canceladas">—</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Tasa de cancelación</p>
+                        <p class="kpi-card-valor kpi-rojo" id="kpi-tasa">—</p>
+                        <p class="kpi-card-sub">canceladas / total</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grupo 2: Clientes del periodo -->
+            <div>
+                <p class="dash-kpi-grupo-titulo">Clientes del periodo</p>
+                <div class="dash-kpi-fila">
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Clientes únicos</p>
+                        <p class="kpi-card-valor kpi-gris" id="kpi-clientes-unicos">—</p>
+                        <p class="kpi-card-sub">por email</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Nuevos</p>
+                        <p class="kpi-card-valor kpi-azul" id="kpi-clientes-nuevos">—</p>
+                        <p class="kpi-card-sub">primera reserva</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Recurrentes</p>
+                        <p class="kpi-card-valor kpi-verde" id="kpi-clientes-recurrentes">—</p>
+                        <p class="kpi-card-sub">ya habían reservado</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grupo 3: Ocupación hoy (no se ve afectada por los filtros de fecha) -->
+            <div>
+                <p class="dash-kpi-grupo-titulo">Ocupación hoy</p>
+                <div class="dash-kpi-fila">
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Reservas activas hoy</p>
+                        <p class="kpi-card-valor kpi-verde" id="kpi-reservas-hoy">—</p>
+                        <p class="kpi-card-sub">pendientes + confirmadas</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-titulo">Ocupación del día</p>
+                        <p class="kpi-card-valor kpi-azul" id="kpi-ratio-ocupacion">—</p>
+                        <p class="kpi-card-sub" id="kpi-ocupacion-detalle">personas ocupadas / total</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLA DE RESERVAS -->
+        <div class="dash-tabla-cabecera">
+            <h2 style="margin-bottom: 0;">Reservas del periodo</h2>
+            <span class="dash-tabla-info" id="dash-tabla-info"></span>
+        </div>
+
+        <p id="dash-cargando-tabla" class="dash-cargando" style="display: none;">Cargando reservas...</p>
+        <p id="dash-sin-resultados" class="dash-sin-datos" style="display: none;">No hay reservas para los filtros seleccionados.</p>
+
+        <table id="tabla-dash" style="display: none;">
             <thead>
                 <tr>
+                    <th>ID</th>
+                    <th class="ordenable" data-campo="nombre" onclick="dashCambiarOrden('nombre')">Cliente</th>
+                    <th class="ordenable" data-campo="fecha" onclick="dashCambiarOrden('fecha')">Fecha</th>
                     <th>Hora</th>
-                    <th>Ocupado</th>
-                    <th>Disponible</th>
-                    <th>% Ocupacion</th>
+                    <th class="ordenable" data-campo="num_personas" onclick="dashCambiarOrden('num_personas')">Personas</th>
+                    <th class="ordenable" data-campo="estado" onclick="dashCambiarOrden('estado')">Estado</th>
+                    <th>Tipo</th>
                 </tr>
             </thead>
-            <tbody id="cuerpo-aforo">
-                <!-- Filas generadas desde JS -->
-            </tbody>
+            <tbody id="cuerpo-dash-tabla"></tbody>
         </table>
 
-        <p id="sin-aforo" style="display: none; color: #666;">No hay datos de aforo para hoy.</p>
+        <div class="dash-paginacion" id="dash-paginacion" style="display: none;">
+            <button class="btn btn-gris" id="btn-pag-ant" onclick="dashCambiarPagina(-1)">&#8592; Anterior</button>
+            <span id="dash-pag-info"></span>
+            <button class="btn btn-gris" id="btn-pag-sig" onclick="dashCambiarPagina(1)">Siguiente &#8594;</button>
+        </div>
+
     </main>
 
     <footer class="footer">
@@ -49,14 +329,12 @@
     <script>
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'admin') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             usuarioEnSesion = usuario;
-            cargarDashboard();
+            iniciarDashboard();
         });
     </script>
 

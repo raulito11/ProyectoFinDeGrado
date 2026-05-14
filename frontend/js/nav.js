@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function construirNavbar() {
-    var nav = document.getElementById('navbar');
+    var nav = document.getElementById('navbar'); 
     if (!nav) return;
 
     var base = '/ProyectoFinDeGrado/frontend/';
@@ -25,11 +25,11 @@ function construirNavbar() {
 }
 
 function navSinSesion(base) {
-    return '<span>El Olivo</span>' +
+    return '<a href="' + base + 'index.html"><img src="' + base + 'favicon.png" alt="El Olivo" style="height: 48px; vertical-align: middle;"></a>' +
         '<ul>' +
         '<li><a href="' + base + 'index.html">Inicio</a></li>' +
-        '<li><a href="#">Carta</a></li>' +
-        '<li><a href="' + base + 'pages/cliente/nueva_reserva.html">Reservar</a></li>' +
+        '<li><a href="' + base + 'pages/carta.html">Carta</a></li>' +
+        '<li><a href="' + base + 'pages/auth/login.html">Reservar</a></li>' +
         '<li><a href="' + base + 'pages/auth/login.html">Iniciar sesion</a></li>' +
         '<li><a href="' + base + 'pages/auth/registro.html">Registrarse</a></li>' +
         '</ul>';
@@ -39,7 +39,7 @@ function navConSesion(base, rol, nombre) {
     var links = '<li><a href="' + base + 'index.html">Inicio</a></li>';
 
     if (rol === 'cliente') {
-        links += '<li><a href="#">Carta</a></li>';
+        links += '<li><a href="' + base + 'pages/carta.html">Carta</a></li>';
         links += '<li><a href="' + base + 'pages/cliente/nueva_reserva.html">Reservar</a></li>';
         links += '<li><a href="' + base + 'pages/cliente/mis_reservas.html">Mis Reservas</a></li>';
     } else if (rol === 'camarero') {
@@ -60,9 +60,10 @@ function navConSesion(base, rol, nombre) {
     links += '<li class="nav-usuario">' +
         '<span class="nav-nombre">' + nombre + ' &#9662;</span>' +
         '<div class="nav-dropdown">' +
+        '<a href="' + base + 'pages/cliente/perfil.html">Mi perfil</a>' +
         '<a href="#" onclick="cerrarSesion(); return false;">Cerrar sesion</a>' +
         '</div>' +
         '</li>';
 
-    return '<span>El Olivo</span><ul>' + links + '</ul>';
+    return '<a href="' + base + 'index.html"><img src="' + base + 'favicon.png" alt="El Olivo" style="height: 48px; vertical-align: middle;"></a><ul>' + links + '</ul>';
 }

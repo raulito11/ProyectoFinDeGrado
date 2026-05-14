@@ -23,9 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 // traigo todas las categorías, activas e inactivas
-$sql = "SELECT id_categoria, nombre, descripcion, activo
+$sql = "SELECT id_categoria, nombre, descripcion, activo, orden
         FROM categorias
-        ORDER BY id_categoria ASC";
+        ORDER BY orden ASC, id_categoria ASC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute();

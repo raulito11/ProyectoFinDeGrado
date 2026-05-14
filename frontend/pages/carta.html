@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <title>Carta - El Olivo</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* ─── Estilos de la carta publica ─── */
+        .carta-seccion {
+            margin-bottom: 40px;
+        }
+
+        .carta-seccion h2 {
+            font-size: 1.5rem;
+            color: #2c6e49;
+            border-bottom: 2px solid #2c6e49;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
+        }
+
+        .carta-seccion p.descripcion-categoria {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 14px;
+            font-style: italic;
+        }
+
+        .lista-platos {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .plato-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .plato-item:last-child {
+            border-bottom: none;
+        }
+
+        .plato-imagen {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .plato-sin-imagen {
+            width: 60px;
+            height: 60px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .plato-info {
+            flex: 1;
+        }
+
+        .plato-nombre {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .plato-descripcion {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .plato-precio {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #2c6e49;
+            white-space: nowrap;
+        }
+
+        .btn-imprimir {
+            margin-bottom: 28px;
+        }
+
+        #sin-platos-carta {
+            color: #666;
+            font-style: italic;
+        }
+
+        /* ─── Estilos para imprimir ─── */
+        @media print {
+            nav,
+            footer,
+            .btn-imprimir {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            main {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .carta-seccion h2 {
+                color: #000;
+                border-bottom-color: #000;
+            }
+
+            .plato-precio {
+                color: #000;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main>
+
+        <h1>Nuestra Carta</h1>
+
+        <button class="btn btn-verde" onclick="descargarPDF()">Descargar carta en PDF</button>
+
+        <div id="mensaje-carga" style="color: #666;">Cargando carta...</div>
+        <div id="sin-platos-carta" style="display: none;">La carta no esta disponible en este momento.</div>
+
+        <div id="contenedor-carta"></div>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/nav.js"></script>
+
+    <script>
+        var datosCarta = [];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarCarta();
+        });
+
+        function cargarCarta() {
+            fetch('/ProyectoFinDeGrado/backend/carta/carta_publica.php', {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (respuesta) {
+                    document.getElementById('mensaje-carga').style.display = 'none';
+
+                    if (!respuesta.success || !respuesta.data || respuesta.data.length === 0) {
+                        document.getElementById('sin-platos-carta').style.display = 'block';
+                        return;
+                    }
+
+                    datosCarta = respuesta.data;
+                    mostrarCarta(datosCarta);
+                })
+                .catch(function () {
+                    document.getElementById('mensaje-carga').style.display   = 'none';
+                    document.getElementById('sin-platos-carta').style.display = 'block';
+                });
+        }
+
+        function mostrarCarta(categorias) {
+            var contenedor = document.getElementById('contenedor-carta');
+            contenedor.innerHTML = '';
+
+            categorias.forEach(function (categoria) {
+                var seccion = document.createElement('section');
+                seccion.classList.add('carta-seccion');
+
+                var htmlSeccion = '<h2>' + categoria.nombre + '</h2>';
+
+                if (categoria.descripcion) {
+                    htmlSeccion += '<p class="descripcion-categoria">' + categoria.descripcion + '</p>';
+                }
+
+                if (!categoria.platos || categoria.platos.length === 0) {
+                    htmlSeccion += '<p style="color: #aaa; font-size: 0.9rem;">Sin platos en esta categoria.</p>';
+                } else {
+                    htmlSeccion += '<ul class="lista-platos">';
+                    categoria.platos.forEach(function (plato) {
+                        var imagenHtml = plato.imagen
+                            ? '<img class="plato-imagen" src="/ProyectoFinDeGrado/frontend/' + plato.imagen + '" alt="' + plato.nombre + '">'
+                            : '<div class="plato-sin-imagen"></div>';
+
+                        var descripcionHtml = plato.descripcion
+                            ? '<p class="plato-descripcion">' + plato.descripcion + '</p>'
+                            : '';
+
+                        htmlSeccion +=
+                            '<li class="plato-item">' +
+                                imagenHtml +
+                                '<div class="plato-info">' +
+                                    '<p class="plato-nombre">' + plato.nombre + '</p>' +
+                                    descripcionHtml +
+                                '</div>' +
+                                '<p class="plato-precio">' + parseFloat(plato.precio).toFixed(2) + ' €</p>' +
+                            '</li>';
+                    });
+                    htmlSeccion += '</ul>';
+                }
+
+                seccion.innerHTML = htmlSeccion;
+                contenedor.appendChild(seccion);
+            });
+        }
+
+        function descargarPDF() {
+            if (datosCarta.length === 0) return;
+
+            var doc = new window.jspdf.jsPDF();
+            var y = 20;
+            var margenIzq  = 20;
+            var margenDer  = 190;
+            var alturaPag  = 280;
+
+            // Titulo
+            doc.setFontSize(22);
+            doc.setFont('helvetica', 'bold');
+            doc.text('El Olivo - Carta', 105, y, { align: 'center' });
+            y += 12;
+
+            doc.setDrawColor(44, 110, 73);
+            doc.setLineWidth(0.5);
+            doc.line(margenIzq, y, margenDer, y);
+            y += 10;
+
+            datosCarta.forEach(function (categoria) {
+                // salto de pagina si no hay espacio
+                if (y > alturaPag - 20) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                // nombre de la categoria
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(44, 110, 73);
+                doc.text(categoria.nombre.toUpperCase(), margenIzq, y);
+                y += 8;
+
+                doc.setTextColor(0, 0, 0);
+
+                if (!categoria.platos || categoria.platos.length === 0) {
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'italic');
+                    doc.text('Sin platos disponibles.', margenIzq + 4, y);
+                    y += 7;
+                } else {
+                    categoria.platos.forEach(function (plato) {
+                        if (y > alturaPag) {
+                            doc.addPage();
+                            y = 20;
+                        }
+
+                        var precio = parseFloat(plato.precio).toFixed(2) + ' EUR';
+
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(plato.nombre, margenIzq + 4, y);
+                        doc.text(precio, margenDer, y, { align: 'right' });
+                        y += 7;
+                    });
+                }
+
+                y += 4;
+            });
+
+            doc.save('carta-el-olivo.pdf');
+        }
+    </script>
+
+</body>
+</html>

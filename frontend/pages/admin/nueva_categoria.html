@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva categoria - El Olivo Admin</title>
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <title>Categoria - El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
@@ -12,11 +13,7 @@
 
     <main>
 
-        <div style="margin-bottom: 20px;">
-            <a href="carta.html" class="btn btn-gris">Volver</a>
-        </div>
-
-        <h2>Nueva categoria</h2>
+        <h2 id="titulo-pagina">Nueva categoria</h2>
 
         <div id="mensaje-error" class="mensaje-error"></div>
         <div id="mensaje-exito" class="mensaje-exito"></div>
@@ -30,8 +27,12 @@
                 <label for="campo-descripcion">Descripcion</label>
                 <input type="text" id="campo-descripcion" placeholder="Descripcion opcional">
             </div>
+            <div class="campo">
+                <label for="campo-orden">Orden en la carta (1, 2, 3...)</label>
+                <input type="number" id="campo-orden" placeholder="0" min="0" value="0">
+            </div>
             <div style="display: flex; gap: 10px;">
-                <button class="btn btn-verde" onclick="crearCategoria()">Anadir categoria</button>
+                <button class="btn btn-verde" id="btn-guardar" onclick="guardarCategoria()">Anadir categoria</button>
                 <a href="carta.html" class="btn btn-gris">Volver</a>
             </div>
         </div>
@@ -47,37 +48,100 @@
     <script src="../../js/nav.js"></script>
 
     <script>
+        // id de la categoria a editar (null si es modo creacion)
+        var idCategoria = null;
+
         checkSession().then(function (usuario) {
             if (!usuario) return;
             if (usuario.rol !== 'admin') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
+
+            // Leer y limpiar el id guardado en sessionStorage
+            idCategoria = sessionStorage.getItem('idCategoriaEditar');
+            sessionStorage.removeItem('idCategoriaEditar');
+
+            if (idCategoria) {
+                // Modo edicion: cambiar textos y cargar datos
+                document.getElementById('titulo-pagina').textContent    = 'Editar categoria';
+                document.getElementById('btn-guardar').textContent      = 'Guardar cambios';
+                cargarCategoria(idCategoria);
             }
         });
 
-        function crearCategoria() {
+        // Carga los datos de la categoria a editar y rellena el formulario
+        function cargarCategoria(id) {
+            fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_categorias.php')
+                .then(function (respuesta) {
+                    if (!respuesta.success) return;
+
+                    var categoria = null;
+                    respuesta.data.forEach(function (c) {
+                        if (c.id_categoria == id) categoria = c;
+                    });
+
+                    if (!categoria) {
+                        window.location.href = 'carta.html';
+                        return;
+                    }
+
+                    document.getElementById('campo-nombre').value      = categoria.nombre;
+                    document.getElementById('campo-descripcion').value = categoria.descripcion || '';
+                    document.getElementById('campo-orden').value       = categoria.orden || 0;
+                });
+        }
+
+        // Crea una categoria nueva o guarda los cambios de una existente
+        function guardarCategoria() {
             var nombre      = document.getElementById('campo-nombre').value.trim();
             var descripcion = document.getElementById('campo-descripcion').value.trim();
+            var orden       = document.getElementById('campo-orden').value;
 
             if (!nombre) {
                 mostrarMensaje('mensaje-error', 'El nombre de la categoria es obligatorio.');
                 return;
             }
 
-            fetchAPI('/ProyectoFinDeGrado/backend/carta/crear_categoria.php', 'POST', {
-                nombre:      nombre,
-                descripcion: descripcion
-            }).then(function (respuesta) {
-                if (!respuesta.success) {
-                    mostrarMensaje('mensaje-error', respuesta.message || 'Error al crear la categoria.');
-                    return;
-                }
-                mostrarMensaje('mensaje-exito', 'Categoria creada correctamente. Volviendo...');
-                setTimeout(function () {
-                    window.location.href = 'carta.html';
-                }, 1500);
-            }).catch(function () {
-                mostrarMensaje('mensaje-error', 'Error de conexion con el servidor.');
-            });
+            if (idCategoria) {
+                // Modo edicion: llamar a modificar_categoria.php
+                fetchAPI('/ProyectoFinDeGrado/backend/carta/modificar_categoria.php', 'POST', {
+                    id_categoria: parseInt(idCategoria),
+                    nombre:       nombre,
+                    descripcion:  descripcion,
+                    orden:        parseInt(orden)
+                }).then(function (respuesta) {
+                    if (!respuesta.success) {
+                        mostrarMensaje('mensaje-error', respuesta.message || 'Error al guardar la categoria.');
+                        return;
+                    }
+                    mostrarMensaje('mensaje-exito', 'Categoria actualizada correctamente. Volviendo...');
+                    setTimeout(function () {
+                        window.location.href = 'carta.html';
+                    }, 1500);
+                }).catch(function () {
+                    mostrarMensaje('mensaje-error', 'Error de conexion con el servidor.');
+                });
+
+            } else {
+                // Modo creacion: llamar a crear_categoria.php
+                fetchAPI('/ProyectoFinDeGrado/backend/carta/crear_categoria.php', 'POST', {
+                    nombre:      nombre,
+                    descripcion: descripcion,
+                    orden:       parseInt(orden)
+                }).then(function (respuesta) {
+                    if (!respuesta.success) {
+                        mostrarMensaje('mensaje-error', respuesta.message || 'Error al crear la categoria.');
+                        return;
+                    }
+                    mostrarMensaje('mensaje-exito', 'Categoria creada correctamente. Volviendo...');
+                    setTimeout(function () {
+                        window.location.href = 'carta.html';
+                    }, 1500);
+                }).catch(function () {
+                    mostrarMensaje('mensaje-error', 'Error de conexion con el servidor.');
+                });
+            }
         }
 
         function mostrarMensaje(idDiv, texto) {

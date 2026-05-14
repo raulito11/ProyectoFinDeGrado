@@ -29,14 +29,16 @@ if (empty($datos['nombre'])) {
     exit;
 }
 
-$nombre = trim($datos['nombre']);
+$nombre      = trim($datos['nombre']);
 $descripcion = isset($datos['descripcion']) ? trim($datos['descripcion']) : null;
+$orden       = isset($datos['orden']) ? (int)$datos['orden'] : 0;
 
-$sql = "INSERT INTO categorias (nombre, descripcion, activo) VALUES (:nombre, :descripcion, 1)";
+$sql = "INSERT INTO categorias (nombre, descripcion, activo, orden) VALUES (:nombre, :descripcion, 1, :orden)";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
     ':nombre'      => $nombre,
-    ':descripcion' => $descripcion
+    ':descripcion' => $descripcion,
+    ':orden'       => $orden
 ]);
 
 $id_nueva = $pdo->lastInsertId();

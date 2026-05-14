@@ -3,7 +3,25 @@
 document.addEventListener('DOMContentLoaded', function () {
     cargarHorarios();
     cargarPlatos();
+    configurarBotonReserva();
 });
+
+function configurarBotonReserva() {
+    var boton = document.getElementById('botonReserva');
+    if (!boton) return;
+
+    boton.addEventListener('click', function (e) {
+        e.preventDefault();
+        fetchAPI('/ProyectoFinDeGrado/backend/auth/session_check.php')
+            .then(function (respuesta) {
+                if (respuesta.success) {
+                    window.location.href = '/ProyectoFinDeGrado/frontend/pages/cliente/nueva_reserva.html';
+                } else {
+                    window.location.href = '/ProyectoFinDeGrado/frontend/pages/auth/login.html';
+                }
+            });
+    });
+}
 
 function cargarHorarios() {
     fetch('/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php')

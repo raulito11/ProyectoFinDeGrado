@@ -32,6 +32,7 @@ try {
                u.id_rol, r.nombre AS nombre_rol
         FROM usuarios u
         JOIN roles r ON u.id_rol = r.id_rol
+        WHERE r.id_rol IN (2,3,4)
         ORDER BY u.id_usuario ASC
     ");
     $stmt->execute();
