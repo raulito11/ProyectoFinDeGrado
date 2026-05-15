@@ -3,25 +3,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     cargarHorarios();
     cargarPlatos();
-    configurarBotonReserva();
 });
-
-function configurarBotonReserva() {
-    var boton = document.getElementById('botonReserva');
-    if (!boton) return;
-
-    boton.addEventListener('click', function (e) {
-        e.preventDefault();
-        fetchAPI('/ProyectoFinDeGrado/backend/auth/session_check.php')
-            .then(function (respuesta) {
-                if (respuesta.success) {
-                    window.location.href = '/ProyectoFinDeGrado/frontend/pages/cliente/nueva_reserva.html';
-                } else {
-                    window.location.href = '/ProyectoFinDeGrado/frontend/pages/auth/login.html';
-                }
-            });
-    });
-}
 
 function cargarHorarios() {
     fetch('/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php')
@@ -33,21 +15,51 @@ function cargarHorarios() {
             var activos = respuesta.horarios.filter(function (h) { return h.activo == 1; });
 
             if (activos.length === 0) {
-                contenedor.innerHTML = '<p>No hay horarios disponibles en este momento.</p>';
+                contenedor.innerHTML = '<p style="color:var(--ink-3);">No hay horarios disponibles en este momento.</p>';
                 return;
             }
 
-            var html = '';
-            activos.forEach(function (h) {
-                var inicio = h.hora_inicio.substring(0, 5);
-                var fin    = h.hora_fin.substring(0, 5);
-                html += '<div class="horario-slot">' + inicio + ' – ' + fin + '</div>';
+            // Separar mediodía y noche
+            var mediodia = activos.filter(function(h) {
+                return parseInt(h.hora_inicio) < 18;
             });
+            var noche = activos.filter(function(h) {
+                return parseInt(h.hora_inicio) >= 18;
+            });
+
+            function bloqueHtml(titulo, rango, lista) {
+                var chips = lista.map(function(h) {
+                    return '<span class="horario-chip">' + h.hora_inicio.substring(0,5) + '</span>';
+                }).join('');
+                return '<div style="flex:1;">' +
+                    '<div class="mono" style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px;">' + titulo + '</div>' +
+                    '<div class="display" style="font-size:28px;margin-bottom:14px;">' + rango + '</div>' +
+                    '<div class="horario-chips">' + chips + '</div>' +
+                    '</div>';
+            }
+
+            var html = '';
+            if (mediodia.length > 0) {
+                var rMed = mediodia[0].hora_inicio.substring(0,5) + ' — ' + mediodia[mediodia.length-1].hora_fin.substring(0,5);
+                html += bloqueHtml('Mediodía', rMed, mediodia);
+            }
+            if (noche.length > 0) {
+                var rNoc = noche[0].hora_inicio.substring(0,5) + ' — ' + noche[noche.length-1].hora_fin.substring(0,5);
+                html += bloqueHtml('Noche', rNoc, noche);
+            }
             contenedor.innerHTML = html;
+
+            // Actualizar horario de hoy en hero
+            var heroHorario = document.getElementById('hero-horario-hoy');
+            if (heroHorario && activos.length > 0) {
+                var primera = activos[0].hora_inicio.substring(0,5);
+                var ultima  = activos[activos.length-1].hora_fin.substring(0,5);
+                heroHorario.textContent = 'Abierto · ' + primera + ' — ' + ultima;
+            }
         })
         .catch(function () {
             var contenedor = document.getElementById('lista-horarios');
-            if (contenedor) contenedor.innerHTML = '<p>No se pudieron cargar los horarios.</p>';
+            if (contenedor) contenedor.innerHTML = '<p style="color:var(--ink-3);">No se pudieron cargar los horarios.</p>';
         });
 }
 
@@ -59,30 +71,33 @@ function cargarPlatos() {
             if (!contenedor || !respuesta.success) return;
 
             if (respuesta.data.length === 0) {
-                contenedor.innerHTML = '<p>No hay platos destacados en este momento.</p>';
+                contenedor.innerHTML = '<p style="color:var(--ink-3);">No hay platos destacados en este momento.</p>';
                 return;
             }
 
             var html = '';
             respuesta.data.forEach(function (plato) {
-                html += '<div class="plato-card">';
+                html += '<article class="card plato-card">';
                 if (plato.imagen) {
                     html += '<img src="' + plato.imagen + '" alt="' + plato.nombre + '">';
                 } else {
-                    html += '<div class="plato-card-sin-imagen"></div>';
+                    html += '<div class="ph-img" style="height:220px;border-radius:0;border-bottom:1px solid var(--line);">sin imagen</div>';
                 }
                 html += '<div class="plato-card-info">';
-                html += '<span class="plato-categoria">' + plato.nombre_categoria + '</span>';
-                html += '<h3>' + plato.nombre + '</h3>';
-                html += '<p>' + plato.descripcion + '</p>';
-                html += '<span class="plato-precio">' + parseFloat(plato.precio).toFixed(2) + ' €</span>';
+                html += '<div class="plato-categoria">' + plato.nombre_categoria + '</div>';
+                html += '<div class="display plato-nombre">' + plato.nombre + '</div>';
+                html += '<p class="plato-descripcion">' + plato.descripcion + '</p>';
+                html += '<div class="row between" style="align-items:center;">';
+                html += '<span class="num plato-precio">' + parseFloat(plato.precio).toFixed(2) + ' €</span>';
+                html += '<span style="font-size:11.5px;color:var(--ink-3);">Disponible hoy</span>';
                 html += '</div>';
                 html += '</div>';
+                html += '</article>';
             });
             contenedor.innerHTML = html;
         })
         .catch(function () {
             var contenedor = document.getElementById('lista-platos');
-            if (contenedor) contenedor.innerHTML = '<p>No se pudieron cargar los platos.</p>';
+            if (contenedor) contenedor.innerHTML = '<p style="color:var(--ink-3);">No se pudieron cargar los platos.</p>';
         });
 }

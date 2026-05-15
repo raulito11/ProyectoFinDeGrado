@@ -1,46 +1,67 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Mi horario - El Olivo</title>
+    <title>Mi horario — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        .fila-cierre { background-color: #fff3e0 !important; }
-        .celda-cierre { text-align: center; color: #b45309; font-weight: bold; letter-spacing: 1px; }
-        .fila-hoy td { background-color: #eaf7f0; }
+        .fila-hoy td      { background-color: color-mix(in oklch, var(--ok) 8%, var(--bg-elev)) !important; }
+        .fila-descanso td { background-color: color-mix(in oklch, var(--ink-3) 10%, var(--bg-elev)) !important; }
+        .celda-descanso   { color:var(--ink-3); font-style:italic; }
+        .leyenda          { display:flex; gap:20px; flex-wrap:wrap; margin-top:14px; font-size:12px; color:var(--ink-2); }
+        .leyenda-item     { display:flex; align-items:center; gap:6px; }
+        .leyenda-color    { width:13px; height:13px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,.08); }
+        .lc-hoy      { background-color: color-mix(in oklch, var(--ok)    8%, var(--bg-elev)); }
+        .lc-descanso { background-color: color-mix(in oklch, var(--ink-3) 10%, var(--bg-elev)); }
     </style>
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <section class="seccion-landing">
-            <h2>Mi horario semanal</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Camarero · El Olivo</div>
+                <h1 class="display">Mi horario semanal</h1>
+            </div>
+        </div>
+    </header>
 
-            <div id="mensaje-error-horario" class="mensaje-error"></div>
+    <main class="page-main">
 
-            <table id="tabla-horario">
+        <!-- Navegador de semana -->
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="cambiarSemanaEmpl(-1)">&#8592; Semana anterior</button>
+            <span id="label-semana" class="mono" style="font-size:14px; font-weight:600;"></span>
+            <button class="btn btn-ghost btn-sm" onclick="cambiarSemanaEmpl(1)">Semana siguiente &#8594;</button>
+        </div>
+
+        <div id="mensaje-error-horario" class="mensaje-error"></div>
+        <p id="sin-horario" style="display:none; color:var(--ink-3); font-size:13px;"></p>
+
+        <div class="card">
+            <table class="tbl">
                 <thead>
                     <tr>
-                        <th>Dia</th>
+                        <th>Día</th>
                         <th>Fecha</th>
-                        <th>Turno comida</th>
-                        <th>Turno cena</th>
+                        <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo-horario"></tbody>
             </table>
+        </div>
 
-            <p id="sin-horario" style="display: none; color: #666;">No hay datos de horario disponibles.</p>
-        </section>
+
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -51,32 +72,13 @@
     <script>
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'camarero') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
 
-            cargarHorarioSemanal().then(function (semana) {
-                if (!semana) {
-                    mostrarMensaje('mensaje-error-horario', 'No se ha podido cargar el horario. Intentalo de nuevo.');
-                    return;
-                }
-                mostrarHorarioSemanal(semana);
-                marcarDiaHoy();
-            });
+            iniciarMiHorario();
         });
-
-        function marcarDiaHoy() {
-            var hoy   = obtenerFechaHoy();
-            var filas = document.querySelectorAll('#cuerpo-horario tr');
-            filas.forEach(function (fila) {
-                var celdaFecha = fila.cells[1];
-                if (celdaFecha && celdaFecha.textContent.trim() === hoy) {
-                    fila.classList.add('fila-hoy');
-                }
-            });
-        }
     </script>
 
 </body>

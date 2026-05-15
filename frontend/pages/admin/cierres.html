@@ -1,60 +1,73 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Cierres - El Olivo Admin</title>
+    <title>Cierres — El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <h2>Dias cerrados</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Administración · Configuración</div>
+                <h1 class="display">Días cerrados</h1>
+                <p class="subtitle">Los días marcados como cerrados no permiten nuevas reservas.</p>
+            </div>
+        </div>
+    </header>
 
-        <!-- Nota informativa -->
-        <div style="background-color: #fdecea; border: 1px solid #c0392b; border-radius: 6px; padding: 12px 16px; margin-bottom: 24px; color: #7b1a1a;">
-            Los dias marcados como cerrados no permiten la creacion de nuevas reservas.
+    <main class="page-main">
+
+        <div class="alert alert-err" style="margin-bottom:22px;">
+            Los días marcados como cerrados no permiten la creación de nuevas reservas.
         </div>
 
         <!-- Formulario nuevo cierre -->
-        <div class="formulario" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
-            <div class="campo" style="margin-bottom: 0;">
-                <label for="campo-fecha-cierre">Fecha</label>
-                <input type="date" id="campo-fecha-cierre">
+        <div class="card card-body" style="margin-bottom:22px;">
+            <div class="eyebrow" style="margin-bottom:16px;">Añadir día cerrado</div>
+            <div class="row gap-3" style="align-items:flex-end; flex-wrap:wrap;">
+                <div class="field">
+                    <label>Fecha</label>
+                    <input type="date" id="campo-fecha-cierre" style="width:180px;">
+                </div>
+                <div class="field" style="flex:1; min-width:180px;">
+                    <label>Motivo</label>
+                    <input type="text" id="campo-motivo-cierre" placeholder="Ej: Navidad, Reformas...">
+                </div>
+                <button class="btn btn-primary" onclick="crearCierre()">Añadir cierre</button>
             </div>
-            <div class="campo" style="margin-bottom: 0; flex: 1; min-width: 180px;">
-                <label for="campo-motivo-cierre">Motivo</label>
-                <input type="text" id="campo-motivo-cierre" placeholder="Ej: Navidad, Reformas...">
-            </div>
-            <button class="btn btn-verde" onclick="crearCierre()">Anadir cierre</button>
         </div>
 
         <!-- Mensajes -->
         <div id="mensaje-error-cierres" class="mensaje-error"></div>
         <div id="mensaje-exito-cierres" class="mensaje-exito"></div>
 
-        <!-- Tabla de cierres -->
-        <table id="tabla-cierres" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Motivo</th>
-                    <th>Accion</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-cierres">
-                <!-- Filas generadas desde JS -->
-            </tbody>
-        </table>
+        <!-- Tabla -->
+        <p id="sin-cierres" style="display:none; color:var(--ink-3); font-size:13px;">No hay días cerrados registrados.</p>
 
-        <p id="sin-cierres" style="display: none; color: #666;">No hay dias cerrados registrados.</p>
+        <div class="card">
+            <table id="tabla-cierres" class="tbl" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th style="text-align:right;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-cierres"></tbody>
+            </table>
+        </div>
+
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -65,12 +78,10 @@
     <script>
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'admin') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             usuarioEnSesion = usuario;
             cargarCierres();
         });

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function construirNavbar() {
-    var nav = document.getElementById('navbar'); 
+    var nav = document.getElementById('navbar');
     if (!nav) return;
 
     var base = '/ProyectoFinDeGrado/frontend/';
@@ -24,14 +24,27 @@ function construirNavbar() {
         });
 }
 
+function brandHTML(base) {
+    return '<a href="' + base + 'index.html" class="brand">' +
+        '<div class="brand-mark">O</div>' +
+        '<span>El Olivo</span>' +
+        '</a>';
+}
+
+function initiales(nombre) {
+    var partes = (nombre || '?').trim().split(' ');
+    if (partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+    return partes[0][0].toUpperCase();
+}
+
 function navSinSesion(base) {
-    return '<a href="' + base + 'index.html"><img src="' + base + 'favicon.png" alt="El Olivo" style="height: 48px; vertical-align: middle;"></a>' +
+    return brandHTML(base) +
         '<ul>' +
         '<li><a href="' + base + 'index.html">Inicio</a></li>' +
         '<li><a href="' + base + 'pages/carta.html">Carta</a></li>' +
         '<li><a href="' + base + 'pages/auth/login.html">Reservar</a></li>' +
-        '<li><a href="' + base + 'pages/auth/login.html">Iniciar sesion</a></li>' +
-        '<li><a href="' + base + 'pages/auth/registro.html">Registrarse</a></li>' +
+        '<li><a href="' + base + 'pages/auth/login.html">Iniciar sesión</a></li>' +
+        '<li><a href="' + base + 'pages/auth/registro.html"><button class="btn btn-olive btn-sm">Registrarse</button></a></li>' +
         '</ul>';
 }
 
@@ -41,7 +54,7 @@ function navConSesion(base, rol, nombre) {
     if (rol === 'cliente') {
         links += '<li><a href="' + base + 'pages/carta.html">Carta</a></li>';
         links += '<li><a href="' + base + 'pages/cliente/nueva_reserva.html">Reservar</a></li>';
-        links += '<li><a href="' + base + 'pages/cliente/mis_reservas.html">Mis Reservas</a></li>';
+        links += '<li><a href="' + base + 'pages/cliente/mis_reservas.html">Mis reservas</a></li>';
     } else if (rol === 'camarero') {
         links += '<li><a href="' + base + 'pages/camarero/horario.html">Horario</a></li>';
         links += '<li><a href="' + base + 'pages/camarero/mesas.html">Mesas</a></li>';
@@ -52,18 +65,25 @@ function navConSesion(base, rol, nombre) {
         links += '<li><a href="' + base + 'pages/admin/usuarios.html">Usuarios</a></li>';
         links += '<li><a href="' + base + 'pages/admin/reservas.html">Reservas</a></li>';
         links += '<li><a href="' + base + 'pages/admin/horarios.html">Horarios</a></li>';
-        links += '<li><a href="' + base + 'pages/admin/dashboard.html">Estadisticas</a></li>';
+        links += '<li><a href="' + base + 'pages/admin/dashboard.html">Estadísticas</a></li>';
         links += '<li><a href="' + base + 'pages/admin/cierres.html">Cierres</a></li>';
         links += '<li><a href="' + base + 'pages/admin/carta.html">Carta</a></li>';
+        links += '<li><a href="' + base + 'pages/admin/clientes.html">Clientes</a></li>';
     }
 
-    links += '<li class="nav-usuario">' +
-        '<span class="nav-nombre">' + nombre + ' &#9662;</span>' +
-        '<div class="nav-dropdown">' +
-        '<a href="' + base + 'pages/cliente/perfil.html">Mi perfil</a>' +
-        '<a href="#" onclick="cerrarSesion(); return false;">Cerrar sesion</a>' +
-        '</div>' +
+    links +=
+        '<li class="nav-usuario">' +
+            '<div class="user-pill">' +
+                nombre +
+                '<div class="avatar">' + initiales(nombre) + '</div>' +
+            '</div>' +
+            '<div class="nav-dropdown">' +
+                '<div class="nav-dropdown-inner">' +
+                    '<a href="' + base + 'pages/cliente/perfil.html">Mi perfil</a>' +
+                    '<a href="#" onclick="cerrarSesion(); return false;">Cerrar sesión</a>' +
+                '</div>' +
+            '</div>' +
         '</li>';
 
-    return '<a href="' + base + 'index.html"><img src="' + base + 'favicon.png" alt="El Olivo" style="height: 48px; vertical-align: middle;"></a><ul>' + links + '</ul>';
+    return brandHTML(base) + '<ul>' + links + '</ul>';
 }

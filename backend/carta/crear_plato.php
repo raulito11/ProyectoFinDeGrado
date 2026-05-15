@@ -31,6 +31,7 @@ $id_categoria = (int)$_POST['id_categoria'];
 $nombre       = trim($_POST['nombre']);
 $descripcion  = isset($_POST['descripcion']) ? trim($_POST['descripcion']) : null;
 $precio       = (float)$_POST['precio'];
+$destacado    = isset($_POST['destacado']) ? (int)$_POST['destacado'] : 0;
 
 if ($precio <= 0) {
     echo json_encode(['success' => false, 'message' => 'El precio debe ser mayor que 0']);
@@ -80,8 +81,18 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
     $rutaImagen = 'uploads/platos/' . $nombreArchivo;
 }
 
-$sql = "INSERT INTO platos (id_categoria, nombre, descripcion, precio, imagen, activo)
-        VALUES (:id_categoria, :nombre, :descripcion, :precio, :imagen, 1)";
+// si se quiere destacar, comprobar que no haya ya 3
+if ($destacado === 1) {
+    $stmtDest = $pdo->prepare("SELECT COUNT(*) FROM platos WHERE destacado = 1");
+    $stmtDest->execute();
+    if ((int)$stmtDest->fetchColumn() >= 3) {
+        echo json_encode(['success' => false, 'message' => 'Ya hay 3 platos destacados. Quita uno antes de añadir otro']);
+        exit;
+    }
+}
+
+$sql = "INSERT INTO platos (id_categoria, nombre, descripcion, precio, imagen, activo, destacado)
+        VALUES (:id_categoria, :nombre, :descripcion, :precio, :imagen, 1, :destacado)";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -89,7 +100,8 @@ $stmt->execute([
     ':nombre'       => $nombre,
     ':descripcion'  => $descripcion,
     ':precio'       => $precio,
-    ':imagen'       => $rutaImagen
+    ':imagen'       => $rutaImagen,
+    ':destacado'    => $destacado
 ]);
 
 $id_nuevo = $pdo->lastInsertId();

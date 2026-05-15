@@ -1,78 +1,92 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Carta - El Olivo Admin</title>
+    <title>Carta — El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Administración · Carta</div>
+                <h1 class="display">Gestión de la carta</h1>
+                <p class="subtitle">Administra categorías y platos del menú.</p>
+            </div>
+            <div class="page-actions">
+                <a href="nueva_categoria.html" class="btn btn-secondary btn-sm">+ Categoría</a>
+                <a href="nuevo_plato.html" class="btn btn-primary btn-sm">+ Plato</a>
+            </div>
+        </div>
+    </header>
 
-        <!-- SECCION CATEGORIAS -->
-        <h2>Categorias</h2>
+    <main class="page-main">
 
-        <!-- Mensajes categorias -->
-        <div id="mensaje-error-categorias" class="mensaje-error"></div>
-        <div id="mensaje-exito-categorias" class="mensaje-exito"></div>
+        <!-- CATEGORÍAS -->
+        <div style="margin-bottom:36px;">
+            <div class="row between" style="align-items:baseline; margin-bottom:14px;">
+                <div class="display" style="font-size:22px;">Categorías</div>
+                <a href="nueva_categoria.html" class="btn btn-secondary btn-sm">+ Añadir categoría</a>
+            </div>
 
-        <table id="tabla-categorias" style="display: none; margin-bottom: 24px;">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Activo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-categorias">
-                <!-- Filas generadas desde JS -->
-            </tbody>
-        </table>
+            <div id="mensaje-error-categorias" class="mensaje-error"></div>
+            <div id="mensaje-exito-categorias" class="mensaje-exito"></div>
 
-        <p id="sin-categorias" style="display: none; color: #666; margin-bottom: 24px;">No hay categorias creadas.</p>
+            <p id="sin-categorias" style="display:none; color:var(--ink-3); font-size:13px; margin-bottom:14px;">No hay categorías creadas.</p>
 
-        <div style="margin-bottom: 32px;">
-            <a href="nueva_categoria.html" class="btn btn-verde">Anadir categoria</a>
+            <div class="card">
+                <table id="tabla-categorias" class="tbl" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th style="text-align:right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-categorias"></tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- SECCION PLATOS -->
-        <h2>Platos</h2>
+        <!-- PLATOS -->
+        <div>
+            <div class="row between" style="align-items:baseline; margin-bottom:14px;">
+                <div class="display" style="font-size:22px;">Platos</div>
+                <a href="nuevo_plato.html" class="btn btn-secondary btn-sm">+ Añadir plato</a>
+            </div>
 
-        <!-- Mensajes platos -->
-        <div id="mensaje-error-platos" class="mensaje-error"></div>
-        <div id="mensaje-exito-platos" class="mensaje-exito"></div>
+            <div id="mensaje-error-platos" class="mensaje-error"></div>
+            <div id="mensaje-exito-platos" class="mensaje-exito"></div>
 
-        <table id="tabla-platos" style="display: none; margin-bottom: 24px;">
-            <thead>
-                <tr>
-                    <th>Imagen</th>
-                    <th>Nombre</th>
-                    <th>Categoria</th>
-                    <th>Precio</th>
-                    <th>Activo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-platos">
-                <!-- Filas generadas desde JS -->
-            </tbody>
-        </table>
+            <p id="sin-platos" style="display:none; color:var(--ink-3); font-size:13px; margin-bottom:14px;">No hay platos en la carta.</p>
 
-        <p id="sin-platos" style="display: none; color: #666; margin-bottom: 24px;">No hay platos en la carta.</p>
-
-        <div style="margin-bottom: 32px;">
-            <a href="nuevo_plato.html" class="btn btn-verde">Anadir plato</a>
+            <div class="card">
+                <table id="tabla-platos" class="tbl" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Destacado</th>
+                            <th style="text-align:right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-platos"></tbody>
+                </table>
+            </div>
         </div>
 
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -83,53 +97,40 @@
     <script>
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'admin') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             usuarioEnSesion = usuario;
             cargarCategorias();
             cargarPlatos();
         });
 
-        // Sobreescribir mostrarTablaCategorias para incluir el boton Editar
-        // (la version de admin.js no tiene la columna Acciones)
         mostrarTablaCategorias = function (categorias) {
             var tabla    = document.getElementById('tabla-categorias');
             var cuerpo   = document.getElementById('cuerpo-categorias');
             var sinDatos = document.getElementById('sin-categorias');
-
             if (!tabla || !cuerpo) return;
-
             cuerpo.innerHTML = '';
-
             if (!categorias || categorias.length === 0) {
                 tabla.style.display    = 'none';
                 sinDatos.style.display = 'block';
                 return;
             }
-
             sinDatos.style.display = 'none';
-
             categorias.forEach(function (c) {
                 var fila = document.createElement('tr');
                 fila.innerHTML =
-                    '<td>' + c.nombre + '</td>' +
-                    '<td>' + (c.descripcion || '-') + '</td>' +
-                    '<td>' + (c.activo ? 'Si' : 'No') + '</td>' +
-                    '<td>' +
-                        '<button class="btn btn-gris" ' +
-                            'onclick="irAEditarCategoria(' + c.id_categoria + ')">Editar</button>' +
+                    '<td style="font-weight:500;">' + c.nombre + '</td>' +
+                    '<td style="color:var(--ink-3);">' + (c.descripcion || '—') + '</td>' +
+                    '<td style="text-align:right;">' +
+                        '<button class="btn btn-ghost btn-sm" onclick="irAEditarCategoria(' + c.id_categoria + ')">Editar</button>' +
                     '</td>';
                 cuerpo.appendChild(fila);
             });
-
             tabla.style.display = 'table';
         };
 
-        // Guarda el id en sessionStorage y navega a la pagina de edicion
         function irAEditarCategoria(idCategoria) {
             sessionStorage.setItem('idCategoriaEditar', idCategoria);
             window.location.href = 'nueva_categoria.html';

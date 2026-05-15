@@ -16,39 +16,54 @@ async function cargarReservas() {
     var reservas = respuesta.reservas;
 
     if (reservas.length === 0) {
-        // No hay reservas: mostrar mensaje y ocultar tabla
         document.getElementById('sin-reservas').style.display = 'block';
         document.getElementById('tabla-reservas').style.display = 'none';
         return;
     }
 
-    // Hay reservas: mostrar tabla y ocultarel mensaje
     document.getElementById('sin-reservas').style.display = 'none';
     document.getElementById('tabla-reservas').style.display = 'table';
 
+    // Mini-KPIs (solo si el contenedor existe)
+    var kpisDiv = document.getElementById('kpis-reservas');
+    if (kpisDiv) {
+        var confirmadas = reservas.filter(function(r){ return r.estado === 'confirmada'; }).length;
+        var pendientes  = reservas.filter(function(r){ return r.estado === 'pendiente';  }).length;
+        var proximas    = reservas.filter(function(r){ return r.estado !== 'cancelada' && r.fecha >= new Date().toISOString().split('T')[0]; }).length;
+        kpisDiv.innerHTML =
+            '<div class="kpi-card card"><div class="eyebrow">Próximas</div><div class="kpi-value" style="color:var(--olivo);">' + proximas + '</div></div>' +
+            '<div class="kpi-card card"><div class="eyebrow">Confirmadas</div><div class="kpi-value" style="color:var(--ok);">' + confirmadas + '</div></div>' +
+            '<div class="kpi-card card"><div class="eyebrow">Pendientes</div><div class="kpi-value" style="color:oklch(0.45 0.10 70);">' + pendientes + '</div></div>' +
+            '<div class="kpi-card card"><div class="eyebrow">Total</div><div class="kpi-value">' + reservas.length + '</div></div>';
+    }
+
+    var mapaEstado = { confirmada: 'badge-ok', pendiente: 'badge-warn', cancelada: 'badge-err' };
     var cuerpo = document.getElementById('cuerpo-tabla');
     cuerpo.innerHTML = '';
 
     reservas.forEach(function (reserva) {
         var fila = document.createElement('tr');
+        var clsBadge = mapaEstado[reserva.estado] || 'badge-mute';
+        var badge = '<span class="badge ' + clsBadge + '"><span class="dot"></span>' + reserva.estado + '</span>';
 
-        // Determinar la clase CSS segun el estado de la reserva
-        var claseEstado = 'estado-' + reserva.estado;
-
-        // El boton de cancelar se deshabilita si la reserva ya esta cancelada
-        var btnDeshabilitado = (reserva.estado === 'cancelada') ? 'disabled' : '';
+        var accion = reserva.estado !== 'cancelada'
+            ? '<div class="row gap-2" style="justify-content:flex-end;">' +
+              '<button class="btn btn-ghost btn-sm">Detalles</button>' +
+              '<button class="btn btn-danger btn-sm" onclick="cancelarReserva(' + reserva.id_reserva + ')">Cancelar</button>' +
+              '</div>'
+            : '<span class="cell-mute" style="font-size:12px;">—</span>';
 
         fila.innerHTML =
-            '<td>' + formatearFecha(reserva.fecha) + '</td>' +
-            '<td>' + formatearHora(reserva.hora_inicio) + '</td>' +
-            '<td>' + formatearHora(reserva.hora_fin) + '</td>' +
-            '<td>' + reserva.num_personas + '</td>' +
-            '<td><span class="' + claseEstado + '">' + reserva.estado + '</span></td>' +
             '<td>' +
-                '<button class="btn btn-rojo" ' + btnDeshabilitado + ' onclick="cancelarReserva(' + reserva.id_reserva + ')">' +
-                    'Cancelar' +
-                '</button>' +
-            '</td>';
+                '<div style="font-weight:600;">#' + reserva.id_reserva + '</div>' +
+            '</td>' +
+            '<td>' +
+                '<div style="font-weight:500;">' + formatearFecha(reserva.fecha) + '</div>' +
+            '</td>' +
+            '<td class="num">' + formatearHora(reserva.hora_inicio) + ' — ' + formatearHora(reserva.hora_fin) + '</td>' +
+            '<td class="num">' + reserva.num_personas + '</td>' +
+            '<td>' + badge + '</td>' +
+            '<td style="text-align:right;">' + accion + '</td>';
 
         cuerpo.appendChild(fila);
     });
@@ -186,7 +201,7 @@ async function confirmarReserva() {
         mensajeExito.style.display = 'block';
 
         // Deshabilitar el boton para evitar doble envio
-        var btnConfirmar = document.querySelector('#paso-2 .btn-verde');
+        var btnConfirmar = document.querySelector('#paso-2 .btn-primary');
         if (btnConfirmar) btnConfirmar.disabled = true;
 
         // Redirigir al dashboard tras 2 segundos
@@ -205,4 +220,119 @@ function volverPaso1() {
     document.getElementById('paso-2').style.display = 'none';
     document.getElementById('mensaje-paso2-error').style.display = 'none';
     document.getElementById('mensaje-paso2-exito').style.display = 'none';
+}
+
+
+// ─────────────────────────────────────────────
+// CALENDARIO: variables globales del mes visible
+// ─────────────────────────────────────────────
+
+var _calAnio   = new Date().getFullYear();
+var _calMes    = new Date().getMonth() + 1; // 1-12
+var _calCierres = []; // fechas cerradas del mes en formato "YYYY-MM-DD"
+
+var _NOMBRES_MESES = [
+    'enero','febrero','marzo','abril','mayo','junio',
+    'julio','agosto','septiembre','octubre','noviembre','diciembre'
+];
+
+// Inicializa el calendario: conecta botones y carga el mes actual
+function inicializarCalendario() {
+    document.getElementById('btn-mes-anterior').onclick = function () {
+        _calMes--;
+        if (_calMes < 1) { _calMes = 12; _calAnio--; }
+        _cargarYRenderizarMes();
+    };
+    document.getElementById('btn-mes-siguiente').onclick = function () {
+        _calMes++;
+        if (_calMes > 12) { _calMes = 1; _calAnio++; }
+        _cargarYRenderizarMes();
+    };
+    _cargarYRenderizarMes();
+}
+
+// Descarga las fechas cerradas del mes y luego renderiza el calendario
+function _cargarYRenderizarMes() {
+    var url = '/ProyectoFinDeGrado/backend/reservas/obtener_cierres_mes.php'
+            + '?anio=' + _calAnio + '&mes=' + _calMes;
+
+    fetchAPI(url, 'GET').then(function (resp) {
+        _calCierres = (resp.success && Array.isArray(resp.cierres)) ? resp.cierres : [];
+        _renderizarCalendario();
+    }).catch(function () {
+        _calCierres = [];
+        _renderizarCalendario();
+    });
+}
+
+// Pinta el grid del calendario para el mes y año actuales
+function _renderizarCalendario() {
+    var anio = _calAnio;
+    var mes  = _calMes;
+
+    var hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    document.getElementById('calendario-titulo').textContent =
+        _NOMBRES_MESES[mes - 1] + ' ' + anio;
+
+    var grid = document.getElementById('calendario-grid');
+    grid.innerHTML = '';
+
+    // Día de la semana del primer día (0=Dom … 6=Sáb) → ajustamos a lunes=0
+    var primerDia = new Date(anio, mes - 1, 1).getDay();
+    var offset = (primerDia === 0) ? 6 : primerDia - 1;
+
+    // Celdas vacías para alinear con el día de inicio
+    for (var i = 0; i < offset; i++) {
+        var vacio = document.createElement('div');
+        grid.appendChild(vacio);
+    }
+
+    var diasEnMes        = new Date(anio, mes, 0).getDate();
+    var fechaSeleccionada = document.getElementById('fecha').value;
+
+    for (var d = 1; d <= diasEnMes; d++) {
+        var fechaStr = anio + '-'
+                     + String(mes).padStart(2, '0') + '-'
+                     + String(d).padStart(2, '0');
+
+        var fechaDia    = new Date(anio, mes - 1, d);
+        var esPasado    = fechaDia < hoy;
+        var esCerrado   = _calCierres.indexOf(fechaStr) !== -1;
+        var esSeleccionado = fechaStr === fechaSeleccionada;
+
+        var celda = document.createElement('div');
+        celda.className = 'cal-dia';
+        celda.textContent = d;
+
+        if (esSeleccionado && !esPasado && !esCerrado) {
+            celda.classList.add('cal-dia-seleccionado');
+        } else if (esCerrado) {
+            celda.classList.add('cal-dia-cerrado');
+            celda.title = 'Día cerrado';
+        } else if (esPasado) {
+            celda.classList.add('cal-dia-pasado');
+        } else {
+            // Día disponible: registrar clic
+            (function (f) {
+                celda.onclick = function () { _seleccionarFecha(f); };
+            })(fechaStr);
+        }
+
+        grid.appendChild(celda);
+    }
+}
+
+// Guarda la fecha elegida en el input oculto y actualiza el texto de confirmación
+function _seleccionarFecha(fechaStr) {
+    document.getElementById('fecha').value = fechaStr;
+
+    var texto = document.getElementById('fecha-seleccionada-texto');
+    if (texto) {
+        texto.textContent = 'Fecha seleccionada: ' + formatearFecha(fechaStr);
+    }
+
+    // Repintar para mostrar el nuevo día destacado
+    _renderizarCalendario();
 }

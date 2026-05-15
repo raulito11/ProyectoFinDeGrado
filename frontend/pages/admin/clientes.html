@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <title>Clientes — El Olivo Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav id="navbar" class="nav"></nav>
+
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Administración · Clientes</div>
+                <h1 class="display">Listado de clientes</h1>
+                <p class="subtitle">Consulta todos los clientes registrados en el sistema.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main">
+
+        <!-- Mensajes -->
+        <div id="mensaje-error-clientes" class="mensaje-error"></div>
+        <div id="mensaje-exito-clientes" class="mensaje-exito"></div>
+
+        <!-- Filtro por rango de fechas -->
+        <div class="card card-body" style="margin-bottom:24px;">
+            <div class="eyebrow" style="margin-bottom:16px;">Filtrar por fecha de registro</div>
+            <div class="row gap-3" style="align-items:flex-end;">
+                <div class="field" style="flex:1;">
+                    <label>Fecha desde</label>
+                    <input type="date" id="filtro-clientes-desde">
+                </div>
+                <div class="field" style="flex:1;">
+                    <label>Fecha hasta</label>
+                    <input type="date" id="filtro-clientes-hasta">
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="cargarClientes()">Filtrar</button>
+                    <button class="btn btn-ghost" onclick="limpiarFiltroClientes()" style="margin-left:8px;">Limpiar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total de resultados -->
+        <p id="total-clientes" style="margin-bottom:12px; color:var(--ink-3); font-size:13px;"></p>
+
+        <!-- Tabla -->
+        <div class="card">
+            <p id="sin-clientes" style="display:none; padding:28px; color:var(--ink-3); font-size:13px;">No hay clientes registrados.</p>
+            <table id="tabla-clientes" class="tbl" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Correo electrónico</th>
+                        <th>Teléfono</th>
+                        <th>Fecha de registro</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-clientes"></tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
+    </footer>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
+    <script src="../../js/admin.js"></script>
+
+    <script>
+        checkSession().then(function (usuario) {
+            if (!usuario) return;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
+            usuarioEnSesion = usuario;
+            cargarClientes();
+        });
+    </script>
+
+</body>
+</html>

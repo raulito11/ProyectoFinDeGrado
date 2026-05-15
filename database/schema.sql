@@ -161,7 +161,27 @@ CREATE TABLE IF NOT EXISTS bloques_reserva (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- 8. CATEGORIAS
+-- 8. HORARIOS_TRABAJADORES
+-- Jornada semanal de cada empleado (40 h/semana, 5 días trabajo, 2 descanso)
+-- Los días se almacenan como JSON en texto: ["Lunes","Martes",...]
+-- ============================================================
+CREATE TABLE IF NOT EXISTS horarios_trabajadores (
+    id_horario_trabajador  INT          NOT NULL AUTO_INCREMENT,
+    id_usuario             INT          NOT NULL COMMENT 'FK al trabajador (camarero o jefe_sala)',
+    semana_inicio          DATE         NOT NULL COMMENT 'Lunes de la semana (YYYY-MM-DD)',
+    dias_trabajo           TEXT         NOT NULL COMMENT 'JSON: 5 días laborables',
+    dias_descanso          TEXT         NOT NULL COMMENT 'JSON: 2 días de descanso',
+    horas_por_dia          TINYINT      NOT NULL DEFAULT 8 COMMENT 'Fijo: 8 h/día → 40 h/semana',
+
+    PRIMARY KEY (id_horario_trabajador),
+    UNIQUE KEY uq_trabajador_semana (id_usuario, semana_inicio),
+    CONSTRAINT fk_htrab_usuario
+        FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 9. CATEGORIAS
 -- Agrupaciones del menu: entrantes, carnes, postres, etc.
 -- ============================================================
 CREATE TABLE IF NOT EXISTS categorias (
@@ -175,7 +195,7 @@ CREATE TABLE IF NOT EXISTS categorias (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- 9. PLATOS
+-- 10. PLATOS
 -- Cada plato pertenece a una categoria del menu
 -- ============================================================
 CREATE TABLE IF NOT EXISTS platos (

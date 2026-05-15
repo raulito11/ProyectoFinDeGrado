@@ -1,87 +1,280 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Nueva reserva - El Olivo</title>
+    <title>Nueva reserva — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* ── Calendario personalizado ── */
+        .calendario-wrapper {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--bg-elev);
+            padding: 14px;
+        }
+        .calendario-cabecera {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .calendario-titulo {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+            color: var(--ink);
+        }
+        .calendario-dias-semana {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 4px;
+        }
+        .calendario-dias-semana span {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ink-3);
+            padding: 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .calendario-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+        .cal-dia {
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1;
+        }
+        /* Día disponible */
+        .cal-dia:not(.cal-dia-cerrado):not(.cal-dia-pasado):not(.cal-dia-seleccionado) {
+            cursor: pointer;
+        }
+        .cal-dia:not(.cal-dia-cerrado):not(.cal-dia-pasado):not(.cal-dia-seleccionado):hover {
+            background: var(--line);
+        }
+        /* Día seleccionado */
+        .cal-dia-seleccionado {
+            background: var(--ink);
+            color: var(--bg);
+            font-weight: 700;
+        }
+        /* Día cerrado */
+        .cal-dia-cerrado {
+            color: var(--ink-3);
+            text-decoration: line-through;
+            cursor: not-allowed;
+            background: oklch(0.94 0 0 / 0.5);
+        }
+        /* Día pasado */
+        .cal-dia-pasado {
+            color: var(--ink-3);
+            cursor: not-allowed;
+            opacity: 0.4;
+        }
+        /* Texto con la fecha elegida */
+        .fecha-seleccionada-texto {
+            font-size: 13px;
+            color: var(--ink-2);
+            margin-top: 8px;
+            min-height: 18px;
+        }
+
+        /* Indicador de pasos */
+        .pasos {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 32px;
+        }
+        .paso-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-3);
+        }
+        .paso-item.activo { color: var(--ink); }
+        .paso-item.completado { color: var(--ok); }
+        .paso-circulo {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 2px solid var(--line-2);
+            display: grid;
+            place-items: center;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--bg-elev);
+            flex-shrink: 0;
+        }
+        .paso-item.activo .paso-circulo {
+            border-color: var(--ink);
+            background: var(--ink);
+            color: var(--bg);
+        }
+        .paso-item.completado .paso-circulo {
+            border-color: var(--ok);
+            background: var(--ok);
+            color: var(--bg);
+        }
+        .paso-linea {
+            flex: 1;
+            height: 1px;
+            background: var(--line);
+            margin: 0 12px;
+            min-width: 40px;
+        }
+    </style>
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <section class="seccion-landing">
-            <h2>Nueva reserva</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Tu cuenta · El Olivo</div>
+                <h1 class="display">Nueva reserva</h1>
+                <p class="subtitle">La reserva tiene una duración de 2 horas.</p>
+            </div>
+        </div>
+    </header>
 
-            <!-- PASO 1: Seleccion de fecha, hora y personas -->
-            <div id="paso-1" class="formulario">
-                <h3 style="margin-bottom: 16px; color: #444;">Elige fecha, hora y personas</h3>
+    <main class="page-main" style="max-width:620px;">
 
-                <div class="campo">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" name="fecha">
+        <!-- Indicador de pasos -->
+        <div class="pasos">
+            <div class="paso-item activo" id="indicador-paso-1">
+                <div class="paso-circulo">1</div>
+                <span>Disponibilidad</span>
+            </div>
+            <div class="paso-linea"></div>
+            <div class="paso-item" id="indicador-paso-2">
+                <div class="paso-circulo">2</div>
+                <span>Confirmación</span>
+            </div>
+        </div>
+
+        <!-- PASO 1: Selección fecha/hora/personas -->
+        <div id="paso-1" class="card" style="padding:28px;">
+
+            <div class="col gap-4">
+                <div class="field">
+                    <label>Fecha</label>
+                    <!-- Input oculto: guarda la fecha elegida en formato YYYY-MM-DD -->
+                    <input type="hidden" id="fecha" name="fecha">
+                    <!-- Calendario personalizado -->
+                    <div class="calendario-wrapper">
+                        <div class="calendario-cabecera">
+                            <button type="button" class="btn btn-ghost btn-sm" id="btn-mes-anterior">&#8592;</button>
+                            <span class="calendario-titulo" id="calendario-titulo"></span>
+                            <button type="button" class="btn btn-ghost btn-sm" id="btn-mes-siguiente">&#8594;</button>
+                        </div>
+                        <div class="calendario-dias-semana">
+                            <span>Lu</span><span>Ma</span><span>Mi</span>
+                            <span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span>
+                        </div>
+                        <div class="calendario-grid" id="calendario-grid"></div>
+                    </div>
+                    <div class="fecha-seleccionada-texto" id="fecha-seleccionada-texto"></div>
                 </div>
 
-                <div class="campo">
-                    <label for="hora">Hora</label>
+                <div class="field">
+                    <label>Hora de inicio</label>
                     <select id="hora" name="hora">
-                        <option value="">-- Selecciona una hora --</option>
-                        <option value="13:00:00">13:00</option>
-                        <option value="13:30:00">13:30</option>
-                        <option value="14:00:00">14:00</option>
-                        <option value="14:30:00">14:30</option>
-                        <option value="15:00:00">15:00</option>
-                        <option value="15:30:00">15:30</option>
-                        <option value="16:00:00">16:00</option>
-                        <option value="16:30:00">16:30</option>
-                        <option value="20:00:00">20:00</option>
-                        <option value="20:30:00">20:30</option>
-                        <option value="21:00:00">21:00</option>
-                        <option value="21:30:00">21:30</option>
-                        <option value="22:00:00">22:00</option>
-                        <option value="22:30:00">22:30</option>
-                        <option value="23:00:00">23:00</option>
-                        <option value="23:30:00">23:30</option>
+                        <option value="">— Selecciona una hora —</option>
+                        <optgroup label="Mediodía">
+                            <option value="13:00:00">13:00</option>
+                            <option value="13:30:00">13:30</option>
+                            <option value="14:00:00">14:00</option>
+                            <option value="14:30:00">14:30</option>
+                            <option value="15:00:00">15:00</option>
+                            <option value="15:30:00">15:30</option>
+                            <option value="16:00:00">16:00</option>
+                            <option value="16:30:00">16:30</option>
+                        </optgroup>
+                        <optgroup label="Noche">
+                            <option value="20:00:00">20:00</option>
+                            <option value="20:30:00">20:30</option>
+                            <option value="21:00:00">21:00</option>
+                            <option value="21:30:00">21:30</option>
+                            <option value="22:00:00">22:00</option>
+                            <option value="22:30:00">22:30</option>
+                            <option value="23:00:00">23:00</option>
+                            <option value="23:30:00">23:30</option>
+                        </optgroup>
                     </select>
                 </div>
 
-                <div class="campo">
-                    <label for="num-personas">Numero de personas</label>
+                <div class="field">
+                    <label>Número de personas</label>
                     <input type="number" id="num-personas" name="num-personas" min="1" max="20" placeholder="Ej: 2">
                 </div>
 
                 <div id="mensaje-paso1-error" class="mensaje-error"></div>
                 <div id="mensaje-paso1-exito" class="mensaje-exito"></div>
 
-                <button class="btn btn-verde" onclick="comprobarDisponibilidad()">Comprobar disponibilidad</button>
+                <button id="btn-comprobar" class="btn btn-primary btn-lg" style="width:100%; justify-content:center;" onclick="comprobarDisponibilidad()">
+                    Comprobar disponibilidad
+                </button>
+            </div>
+        </div>
+
+        <!-- PASO 2: Resumen y confirmación -->
+        <div id="paso-2" style="display:none;">
+
+            <!-- Resumen de la reserva -->
+            <div class="card" style="padding:24px; margin-bottom:16px;">
+                <div class="eyebrow" style="margin-bottom:16px;">Resumen de tu reserva</div>
+                <div class="col gap-3">
+                    <div class="row between" style="align-items:center; padding:10px 0; border-bottom:1px solid var(--line);">
+                        <span class="label" style="color:var(--ink-3);">Fecha</span>
+                        <strong id="resumen-fecha" style="font-size:14px; color:var(--ink);"></strong>
+                    </div>
+                    <div class="row between" style="align-items:center; padding:10px 0; border-bottom:1px solid var(--line);">
+                        <span class="label" style="color:var(--ink-3);">Hora</span>
+                        <strong id="resumen-hora" class="num" style="font-size:14px; color:var(--ink);"></strong>
+                    </div>
+                    <div class="row between" style="align-items:center; padding:10px 0; border-bottom:1px solid var(--line);">
+                        <span class="label" style="color:var(--ink-3);">Duración</span>
+                        <span style="font-size:13px; color:var(--ink-2);">2 horas</span>
+                    </div>
+                    <div class="row between" style="align-items:center; padding:10px 0;">
+                        <span class="label" style="color:var(--ink-3);">Personas</span>
+                        <strong id="resumen-personas" class="num" style="font-size:14px; color:var(--ink);"></strong>
+                    </div>
+                </div>
             </div>
 
-            <!-- PASO 2: Confirmacion -->
-            <div id="paso-2" class="formulario" style="display: none;">
-                <h3 style="margin-bottom: 16px; color: #444;">Confirma tu reserva</h3>
+            <div id="mensaje-paso2-error" class="mensaje-error"></div>
+            <div id="mensaje-paso2-exito" class="mensaje-exito"></div>
 
-                <div style="margin-bottom: 20px; background-color: var(--gris); padding: 16px; border-radius: 6px; border: 1px solid var(--borde);">
-                    <p style="margin-bottom: 8px;"><strong>Fecha:</strong> <span id="resumen-fecha"></span></p>
-                    <p style="margin-bottom: 8px;"><strong>Hora:</strong> <span id="resumen-hora"></span></p>
-                    <p><strong>Personas:</strong> <span id="resumen-personas"></span></p>
-                </div>
-
-                <div id="mensaje-paso2-error" class="mensaje-error"></div>
-                <div id="mensaje-paso2-exito" class="mensaje-exito"></div>
-
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-verde" onclick="confirmarReserva()">Confirmar reserva</button>
-                    <button class="btn btn-gris" onclick="volverPaso1()">Volver</button>
-                </div>
+            <div class="row gap-3">
+                <button id="btn-confirmar" class="btn btn-primary btn-lg" style="flex:1; justify-content:center;" onclick="confirmarReserva()">
+                    Confirmar reserva
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="volverPaso1()">
+                    ← Volver
+                </button>
             </div>
-        </section>
+        </div>
+
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -93,10 +286,48 @@
         (async function () {
             var usuario = await checkSession();
             if (!usuario) return;
-
-            var hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('fecha').min = hoy;
+            // Inicializar el calendario personalizado
+            inicializarCalendario();
         })();
+
+        // Sobrescribir volverPaso1 para actualizar el indicador
+        var _volverOriginal = volverPaso1;
+        volverPaso1 = function () {
+            document.getElementById('paso-1').style.display = 'block';
+            document.getElementById('paso-2').style.display = 'none';
+            document.getElementById('indicador-paso-1').classList.remove('completado');
+            document.getElementById('indicador-paso-1').classList.add('activo');
+            document.getElementById('indicador-paso-2').classList.remove('activo');
+            document.getElementById('mensaje-paso2-error').style.display = 'none';
+            document.getElementById('mensaje-paso2-exito').style.display = 'none';
+        };
+
+        // Interceptar la muestra del paso 2 para ocultar paso 1 y actualizar indicador
+        var _comprobarOriginal = comprobarDisponibilidad;
+        comprobarDisponibilidad = function () {
+            var btn = document.getElementById('btn-comprobar');
+            btn.disabled = true;
+            btn.textContent = 'Comprobando...';
+
+            // Ejecutar la función original (async) y gestionar el resultado
+            var resultado = _comprobarOriginal();
+            if (resultado && resultado.then) {
+                resultado.finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'Comprobar disponibilidad';
+                    // Si paso-2 es visible, actualizar indicadores y ocultar paso-1
+                    if (document.getElementById('paso-2').style.display !== 'none') {
+                        document.getElementById('paso-1').style.display = 'none';
+                        document.getElementById('indicador-paso-1').classList.remove('activo');
+                        document.getElementById('indicador-paso-1').classList.add('completado');
+                        document.getElementById('indicador-paso-2').classList.add('activo');
+                    }
+                });
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Comprobar disponibilidad';
+            }
+        };
     </script>
 
 </body>

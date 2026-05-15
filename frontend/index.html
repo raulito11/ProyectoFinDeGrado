@@ -1,60 +1,137 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>El Olivo - Restaurante</title>
+    <title>El Olivo — Restaurante</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
+    <!-- HERO -->
     <section class="hero">
-        <div class="hero-contenido">
-            <h1>Bienvenido a El Olivo</h1>
-            <p>Cocina mediterranea en el corazon de Madrid</p>
-            <a id="botonReserva" href="#" class="btn-hero">Reservar mesa</a>
+        <div class="hero-inner" style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="hero-eyebrow">Madrid · Desde 1998</div>
+                <h1>
+                    Cocina mediterránea<br>
+                    <span>al pie del olivo.</span>
+                </h1>
+                <p>Recetas familiares, producto de temporada y una mesa puesta cada día en el corazón de Madrid.</p>
+                <div class="row gap-3">
+                    <a id="botonReserva" href="#" class="btn btn-lg" style="background:#fff; color:var(--ink);">Reservar mesa</a>
+                    <a href="pages/carta.html" class="btn btn-lg" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,.5);">Ver carta →</a>
+                </div>
+            </div>
+            <div class="hero-date">
+                <div class="mono" style="font-size:10px; letter-spacing:.18em; text-transform:uppercase; opacity:.8;">Hoy</div>
+                <div class="display italic" style="font-size:28px; margin-top:6px;" id="hero-fecha"></div>
+                <div id="hero-horario-hoy" style="margin-top:10px; font-size:13px; opacity:.9;"></div>
+            </div>
+        </div>
+        <div class="hero-bottom">
+            <div class="mono">↓ Sobre nosotros</div>
+            <div class="mono">27 AÑOS · 3 GENERACIONES</div>
         </div>
     </section>
 
-    <main>
-
-        <section class="seccion-landing">
-            <h2>Sobre nosotros</h2>
-            <p class="texto-sobre">
-                El Olivo es un restaurante familiar situado en el centro de Madrid, especializado en cocina
-                mediterranea de temporada. Desde 1998 ofrecemos una experiencia gastronomica unica con productos
-                frescos y recetas transmitidas de generacion en generacion. Nuestro equipo cuida cada detalle
-                para que tu visita sea siempre especial.
-            </p>
-        </section>
-
-        <section class="seccion-landing">
-            <h2>Horarios</h2>
-            <div id="lista-horarios" class="horarios-grid">
-                <p>Cargando horarios...</p>
+    <!-- SOBRE NOSOTROS -->
+    <section class="seccion-landing">
+        <div class="row gap-8" style="align-items:flex-start;">
+            <div style="flex:0 0 200px;">
+                <div class="eyebrow">01 / Sobre nosotros</div>
             </div>
-        </section>
-
-        <section class="seccion-landing">
-            <h2>Platos destacados</h2>
-            <div id="lista-platos" class="platos-grid">
-                <p>Cargando platos...</p>
+            <div style="flex:1; max-width:720px;">
+                <h2 class="display" style="font-size:clamp(28px,4vw,46px); line-height:1.05; margin-bottom:22px;">
+                    Una mesa familiar en el centro de Madrid, con la misma receta desde 1998.
+                </h2>
+                <p style="color:var(--ink-2); font-size:16px; line-height:1.7; margin-bottom:14px;">
+                    El Olivo nació como un proyecto pequeño y terco: cocinar lo que comeríamos en casa, sin atajos. Tres
+                    generaciones después seguimos comprando en el mismo mercado y firmando cada plato a mano.
+                </p>
+                <p style="color:var(--ink-2); font-size:16px; line-height:1.7;">
+                    La carta cambia con la temporada. Los olivos del patio, no.
+                </p>
             </div>
-        </section>
+        </div>
+    </section>
 
-    </main>
+    <div class="rule" style="max-width:1280px; margin:0 auto; width:calc(100% - 72px);"></div>
+
+    <!-- HORARIOS -->
+    <section class="seccion-landing-sm">
+        <div class="row gap-8" style="align-items:flex-start;">
+            <div style="flex:0 0 200px;">
+                <div class="eyebrow">02 / Horarios</div>
+            </div>
+            <div style="flex:1;">
+                <h2 class="display" style="font-size:32px; margin-bottom:24px;">Turnos de reserva</h2>
+                <div id="lista-horarios" class="row gap-8" style="align-items:flex-start; flex-wrap:wrap;">
+                    <p style="color:var(--ink-3);">Cargando horarios...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="rule" style="max-width:1280px; margin:0 auto; width:calc(100% - 72px);"></div>
+
+    <!-- PLATOS DESTACADOS -->
+    <section class="seccion-landing" style="padding-bottom:100px;">
+        <div class="row between" style="align-items:baseline; margin-bottom:36px;">
+            <div>
+                <div class="eyebrow" style="margin-bottom:8px;">03 / Carta · Destacados de temporada</div>
+                <h2 class="display" style="font-size:clamp(28px,3.5vw,42px);">De la huerta, del mar, del horno.</h2>
+            </div>
+            <a href="pages/carta.html" class="mono link" style="font-size:12px; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap;">Ver carta completa →</a>
+        </div>
+        <div id="lista-platos" class="platos-grid">
+            <p style="color:var(--ink-3);">Cargando platos...</p>
+        </div>
+    </section>
+
+    <!-- CTA FRANJA -->
+    <section class="cta-strip">
+        <div class="cta-strip-inner">
+            <h2>¿Una sobremesa larga o una cena tranquila? Reserva en 30 segundos.</h2>
+            <a id="botonReserva2" href="#" class="btn btn-lg">Reservar mesa →</a>
+        </div>
+    </section>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo &middot; Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/nav.js"></script>
     <script src="js/landing.js"></script>
+    <script>
+        // Fecha de hoy en hero
+        var dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+        var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        var hoy = new Date();
+        document.getElementById('hero-fecha').textContent = dias[hoy.getDay()] + ', ' + hoy.getDate() + ' ' + meses[hoy.getMonth()];
+
+        // Enlace de reserva según sesión
+        document.addEventListener('DOMContentLoaded', function () {
+            var btns = [document.getElementById('botonReserva'), document.getElementById('botonReserva2')];
+            fetch('/ProyectoFinDeGrado/backend/auth/session_check.php')
+                .then(function(r){ return r.json(); })
+                .then(function(d){
+                    var href = d.success
+                        ? '/ProyectoFinDeGrado/frontend/pages/cliente/nueva_reserva.html'
+                        : '/ProyectoFinDeGrado/frontend/pages/auth/login.html';
+                    btns.forEach(function(b){ if(b) b.href = href; });
+                })
+                .catch(function(){
+                    btns.forEach(function(b){ if(b) b.href = '/ProyectoFinDeGrado/frontend/pages/auth/login.html'; });
+                });
+        });
+    </script>
 
 </body>
 </html>

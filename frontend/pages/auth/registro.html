@@ -1,61 +1,86 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Registro - El Olivo</title>
+    <title>Registro — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
-<body>
+<body style="display:block; background:var(--bg);">
 
-    <div class="login-pagina">
-        <div class="login-card">
+    <div class="auth-page">
 
-            <h1>El Olivo</h1>
-            <p>Crear cuenta nueva</p>
-
-            <div id="mensaje-error" class="mensaje-error"></div>
-            <div id="mensaje-exito" class="mensaje-exito"></div>
-
-            <form id="form-registro">
-                <div class="campo">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+        <!-- Lado foto -->
+        <div class="auth-foto">
+            <div class="row gap-3" style="align-items:center;">
+                <div class="brand-mark" style="background:#fff; color:var(--olivo);">O</div>
+                <span class="auth-foto brand-nombre">El Olivo</span>
+            </div>
+            <div>
+                <p class="display" style="font-size:28px; line-height:1.2; max-width:380px;">
+                    Crea tu cuenta para reservar en segundos y guardar el historial de tus visitas.
+                </p>
+                <div class="col gap-2" style="margin-top:24px; font-size:13px; color:rgba(255,255,255,.85);">
+                    <div class="row gap-2" style="align-items:center;">
+                        <span style="width:4px;height:4px;border-radius:99px;background:currentColor;flex-shrink:0;"></span>
+                        Reserva en 30 segundos
+                    </div>
+                    <div class="row gap-2" style="align-items:center;">
+                        <span style="width:4px;height:4px;border-radius:99px;background:currentColor;flex-shrink:0;"></span>
+                        Cancela o modifica cuando quieras
+                    </div>
+                    <div class="row gap-2" style="align-items:center;">
+                        <span style="width:4px;height:4px;border-radius:99px;background:currentColor;flex-shrink:0;"></span>
+                        Sin coste · sin tarjeta
+                    </div>
                 </div>
-
-                <div class="campo">
-                    <label for="apellidos">Apellidos</label>
-                    <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" required>
-                </div>
-
-                <div class="campo">
-                    <label for="email">Correo electronico</label>
-                    <input type="email" id="email" name="email" placeholder="tu@email.com" required>
-                </div>
-
-                <div class="campo">
-                    <label for="telefono">Telefono</label>
-                    <input type="tel" id="telefono" name="telefono" placeholder="600000000" required>
-                </div>
-
-                <div class="campo">
-                    <label for="password">Contrasena</label>
-                    <input type="password" id="password" name="password" placeholder="Minimo 6 caracteres" required>
-                </div>
-
-                <button type="submit" class="btn btn-verde">Registrarme</button>
-            </form>
-
-            <p class="login-registro-link">
-                ¿Ya tienes cuenta? <a href="login.html">Inicia sesion</a>
-            </p>
-
-            <p class="login-registro-link">
-                <a href="/ProyectoFinDeGrado/frontend/index.html">&larr; Volver al inicio</a>
-            </p>
-
+            </div>
         </div>
+
+        <!-- Lado formulario -->
+        <div class="auth-form-side">
+            <div class="auth-top-links">
+                <a href="/ProyectoFinDeGrado/frontend/index.html">← VOLVER AL INICIO</a>
+                <a href="login.html">¿YA TIENES CUENTA? <span class="link" style="color:var(--ink);">INICIAR SESIÓN</span></a>
+            </div>
+
+            <div class="auth-form-inner" style="max-width:460px;">
+                <div class="eyebrow" style="margin-bottom:12px;">Crear cuenta</div>
+                <h1>Reserva tu primera mesa.</h1>
+                <p class="subtitle">Necesitamos lo justo para confirmar tu reserva por teléfono o email.</p>
+
+                <div id="mensaje-error" class="mensaje-error"></div>
+                <div id="mensaje-exito" class="mensaje-exito"></div>
+
+                <form id="form-registro" class="col gap-4">
+                    <div class="row gap-3">
+                        <div class="field" style="flex:1;">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                        </div>
+                        <div class="field" style="flex:1;">
+                            <label for="apellidos">Apellidos</label>
+                            <input type="text" id="apellidos" name="apellidos" placeholder="Tus apellidos" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="600 00 00 00" required>
+                    </div>
+                    <div class="field">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="justify-content:center; margin-top:8px;">Crear cuenta</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <script src="../../js/utils.js"></script>

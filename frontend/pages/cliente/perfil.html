@@ -4,73 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Mi perfil - El Olivo</title>
+    <title>Mi perfil — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <section class="seccion-landing">
-            <h2>Mi perfil</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Tu cuenta · El Olivo</div>
+                <h1 class="display">Mi perfil</h1>
+                <p class="subtitle">Actualiza tus datos de contacto o cambia tu contraseña.</p>
+            </div>
+        </div>
+    </header>
 
-            <a href="/ProyectoFinDeGrado/frontend/index.html" class="btn btn-gris" style="display: inline-block; margin-bottom: 20px;">&larr; Volver al inicio</a>
+    <main class="page-main" style="max-width:680px;">
 
-            <div id="cargando" class="formulario">
-                <p>Cargando datos...</p>
+        <div id="cargando" class="card card-body">
+            <p style="color:var(--ink-3); font-size:13px;">Cargando datos...</p>
+        </div>
+
+        <form id="form-perfil" style="display:none;" onsubmit="guardarPerfil(event)">
+
+            <!-- Avatar + nombre -->
+            <div class="card card-body row gap-4" style="align-items:center; margin-bottom:16px;">
+                <div class="perfil-avatar-circle" id="perfil-avatar">?</div>
+                <div>
+                    <div class="display" style="font-size:22px;" id="perfil-nombre-display">—</div>
+                    <div style="font-size:13px; color:var(--ink-3);" id="perfil-email-display">—</div>
+                </div>
             </div>
 
-            <form id="form-perfil" class="formulario" style="display: none;" onsubmit="guardarPerfil(event)">
-
-                <div class="campo">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" name="nombre" required>
+            <!-- Datos personales -->
+            <div class="card card-body col gap-4" style="margin-bottom:16px;">
+                <div class="eyebrow" style="margin-bottom:4px;">Datos personales</div>
+                <div class="row gap-3">
+                    <div class="field" style="flex:1;">
+                        <label>Nombre</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="field" style="flex:1;">
+                        <label>Apellidos</label>
+                        <input type="text" id="apellidos" name="apellidos" required>
+                    </div>
                 </div>
-
-                <div class="campo">
-                    <label for="apellidos">Apellidos</label>
-                    <input type="text" id="apellidos" name="apellidos" required>
-                </div>
-
-                <div class="campo">
+                <div class="field">
                     <label>Email</label>
-                    <p id="email-texto" style="padding: 9px 12px; background-color: var(--gris); border: 1px solid var(--borde); border-radius: 5px; font-size: 0.95rem; color: #666;"></p>
+                    <div id="email-texto" class="input" style="display:flex;align-items:center; background:var(--bg-sunk); color:var(--ink-3); cursor:not-allowed;"></div>
                 </div>
-
-                <div class="campo">
-                    <label for="telefono">Teléfono</label>
+                <div class="field">
+                    <label>Teléfono</label>
                     <input type="tel" id="telefono" name="telefono" required>
                 </div>
+            </div>
 
-                <hr style="margin: 24px 0; border: none; border-top: 1px solid var(--borde);">
-                <p style="font-size: 0.9rem; color: #666; margin-bottom: 16px;">Deja los campos de contraseña en blanco si no quieres cambiarla.</p>
-
-                <div class="campo">
-                    <label for="password-actual">Contraseña actual</label>
+            <!-- Contraseña -->
+            <div class="card card-body col gap-4" style="margin-bottom:16px;">
+                <div class="eyebrow" style="margin-bottom:4px;">Cambiar contraseña</div>
+                <p style="font-size:12px; color:var(--ink-3);">Deja los campos en blanco si no quieres cambiarla.</p>
+                <div class="field">
+                    <label>Contraseña actual</label>
                     <input type="password" id="password-actual" name="password_actual" placeholder="Solo si quieres cambiarla">
                 </div>
-
-                <div class="campo">
-                    <label for="password-nueva">Nueva contraseña</label>
+                <div class="field">
+                    <label>Nueva contraseña</label>
                     <input type="password" id="password-nueva" name="password_nueva" placeholder="Mínimo 6 caracteres">
                 </div>
-
-                <div class="campo">
-                    <label for="password-confirmar">Confirmar nueva contraseña</label>
+                <div class="field">
+                    <label>Confirmar nueva contraseña</label>
                     <input type="password" id="password-confirmar" name="password_confirmar" placeholder="Repite la nueva contraseña">
                 </div>
+            </div>
 
-                <div id="mensaje-error" class="mensaje-error"></div>
-                <div id="mensaje-exito" class="mensaje-exito"></div>
+            <div id="mensaje-error" class="mensaje-error"></div>
+            <div id="mensaje-exito" class="mensaje-exito"></div>
 
-                <button type="submit" id="btn-guardar" class="btn btn-verde">Guardar cambios</button>
-            </form>
-        </section>
+            <button type="submit" id="btn-guardar" class="btn btn-primary">Guardar cambios</button>
+        </form>
+
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -83,12 +102,11 @@
             if (!usuario) return;
 
             var respuesta = await fetchAPI('/ProyectoFinDeGrado/backend/usuarios/obtener_perfil.php');
-
             document.getElementById('cargando').style.display = 'none';
 
             if (!respuesta.success) {
                 document.getElementById('cargando').style.display = 'block';
-                document.getElementById('cargando').innerHTML = '<p style="color: var(--rojo);">No se pudieron cargar los datos del perfil.</p>';
+                document.getElementById('cargando').innerHTML = '<p style="color:var(--err);">No se pudieron cargar los datos del perfil.</p>';
                 return;
             }
 
@@ -97,6 +115,14 @@
             document.getElementById('apellidos').value = datos.apellidos;
             document.getElementById('email-texto').textContent = datos.email;
             document.getElementById('telefono').value  = datos.telefono;
+
+            var nombreCompleto = datos.nombre + ' ' + datos.apellidos;
+            document.getElementById('perfil-nombre-display').textContent = nombreCompleto;
+            document.getElementById('perfil-email-display').textContent  = datos.email;
+
+            var partes = nombreCompleto.trim().split(' ');
+            var ini = partes.length >= 2 ? (partes[0][0] + partes[1][0]).toUpperCase() : partes[0][0].toUpperCase();
+            document.getElementById('perfil-avatar').textContent = ini;
 
             document.getElementById('form-perfil').style.display = 'block';
         })();
@@ -121,13 +147,11 @@
                 mensajeError.style.display = 'block';
                 return;
             }
-
             if (passNueva && passNueva.length < 6) {
                 mensajeError.textContent   = 'La nueva contraseña debe tener al menos 6 caracteres.';
                 mensajeError.style.display = 'block';
                 return;
             }
-
             if (passNueva && passNueva !== passConfirmar) {
                 mensajeError.textContent   = 'Las contraseñas nuevas no coinciden.';
                 mensajeError.style.display = 'block';

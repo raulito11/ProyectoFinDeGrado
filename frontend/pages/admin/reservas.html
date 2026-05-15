@@ -1,64 +1,77 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Reservas - El Olivo Admin</title>
+    <title>Reservas — El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <h2>Gestion de reservas</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Administración · Reservas</div>
+                <h1 class="display">Gestión de reservas</h1>
+                <p class="subtitle">Consulta, confirma o cancela reservas. Filtra por fecha y estado.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main">
 
         <!-- Filtros -->
-        <div class="formulario" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
-            <div class="campo" style="margin-bottom: 0;">
-                <label for="filtro-fecha">Fecha</label>
-                <input type="date" id="filtro-fecha">
+        <div class="card card-body" style="margin-bottom:22px;">
+            <div class="row gap-3" style="align-items:flex-end; flex-wrap:wrap;">
+                <div class="field">
+                    <label>Fecha</label>
+                    <input type="date" id="filtro-fecha" style="width:180px;">
+                </div>
+                <div class="field">
+                    <label>Estado</label>
+                    <select id="filtro-estado" style="width:160px;">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="filtrarReservas()">Filtrar</button>
             </div>
-            <div class="campo" style="margin-bottom: 0;">
-                <label for="filtro-estado">Estado</label>
-                <select id="filtro-estado">
-                    <option value="">Todos</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="confirmada">Confirmada</option>
-                    <option value="cancelada">Cancelada</option>
-                </select>
-            </div>
-            <button class="btn btn-verde" onclick="filtrarReservas()">Filtrar</button>
         </div>
 
         <!-- Mensajes -->
         <div id="mensaje-error-reservas" class="mensaje-error"></div>
         <div id="mensaje-exito-reservas" class="mensaje-exito"></div>
 
-        <!-- Tabla de reservas -->
-        <table id="tabla-reservas" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Personas</th>
-                    <th>Cliente</th>
-                    <th>Email</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-reservas">
-                <!-- Filas generadas desde JS -->
-            </tbody>
-        </table>
+        <!-- Tabla -->
+        <p id="sin-reservas" style="display:none; padding:28px; text-align:center; color:var(--ink-3); font-size:13px;">No hay reservas con los filtros aplicados.</p>
 
-        <p id="sin-reservas" style="display: none; color: #666;">No hay reservas con los filtros aplicados.</p>
+        <div class="card">
+            <table id="tabla-reservas" class="tbl" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Personas</th>
+                        <th>Cliente</th>
+                        <th>Email</th>
+                        <th>Estado</th>
+                        <th style="text-align:right;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-reservas"></tbody>
+            </table>
+        </div>
+
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -69,12 +82,10 @@
     <script>
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'admin') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             usuarioEnSesion = usuario;
             cargarReservas('', '');
         });

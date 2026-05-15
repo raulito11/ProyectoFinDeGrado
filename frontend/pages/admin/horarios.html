@@ -1,47 +1,61 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Horarios - El Olivo Admin</title>
+    <title>Horarios de trabajadores — El Olivo Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .celda-dia          { text-align:center; padding:6px 4px !important; transition:background-color .15s; }
+        .dia-trabajo        { background-color: color-mix(in oklch, var(--ok) 18%, var(--bg-elev)) !important; }
+        .dia-libre          { background-color: color-mix(in oklch, var(--ink-3) 14%, var(--bg-elev)) !important; }
+        .celda-dia select   { border:none; background:transparent; font-size:12px; font-weight:600;
+                              cursor:pointer; width:100%; text-align:center; }
+        #tabla-htrab th     { white-space:nowrap; }
+        #tabla-htrab th small { font-weight:400; font-size:10px; display:block; }
+    </style>
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <h2>Gestion de horarios</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Administración · Personal</div>
+                <h1 class="display">Horarios de trabajadores</h1>
+                <p class="subtitle">Asigna manualmente los días de trabajo y descanso de cada empleado para la semana seleccionada.</p>
+            </div>
+        </div>
+    </header>
 
-        <!-- Aviso importante -->
-        <div style="background-color: #fff8e1; border: 1px solid #e67e22; border-radius: 6px; padding: 12px 16px; margin-bottom: 24px; color: #7d4e00;">
-            Atencion: Modificar los horarios activos puede afectar a la creacion de nuevas reservas.
+    <main class="page-main">
+
+        <!-- Navegador de semana -->
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="cambiarSemanaHtrab(-1)">&#8592; Semana anterior</button>
+            <span id="htrab-semana-label" class="mono" style="font-size:14px; font-weight:600;"></span>
+            <button class="btn btn-ghost btn-sm" onclick="cambiarSemanaHtrab(1)">Semana siguiente &#8594;</button>
+            <button class="btn btn-olive btn-sm" style="margin-left:auto;" onclick="guardarSemanaHtrab()">Guardar semana</button>
         </div>
 
-        <!-- Mensajes -->
-        <div id="mensaje-error-horarios" class="mensaje-error"></div>
-        <div id="mensaje-exito-horarios" class="mensaje-exito"></div>
+        <div id="mensaje-error-htrab" class="mensaje-error"></div>
+        <div id="mensaje-exito-htrab" class="mensaje-exito"></div>
 
-        <!-- Tabla de horarios -->
-        <table id="tabla-horarios" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Hora</th>
-                    <th>Estado</th>
-                    <th>Accion</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-horarios">
-                <!-- Filas generadas desde JS -->
-            </tbody>
-        </table>
+        <div class="card">
+            <p id="sin-htrab" style="display:none; color:var(--ink-3); font-size:13px;">No hay trabajadores registrados.</p>
+            <table id="tabla-htrab" class="tbl" style="display:none;">
+                <thead id="cabecera-htrab"></thead>
+                <tbody id="cuerpo-htrab"></tbody>
+            </table>
+        </div>
 
-        <p id="sin-horarios" style="display: none; color: #666;">No hay horarios configurados.</p>
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -52,14 +66,12 @@
     <script>
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'admin') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             usuarioEnSesion = usuario;
-            cargarHorarios();
+            iniciarSeccionHtrab();
         });
     </script>
 

@@ -30,7 +30,7 @@ function verificar_disponibilidad_interna($pdo, $fecha, $hora_inicio, $capacidad
     $cierre = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($cierre['total'] > 0) {
-        return ['disponible' => false, 'motivo' => 'El restaurante está cerrado ese día'];
+        return ['disponible' => false, 'motivo' => 'Este día no está disponible para reservas'];
     }
 
     // --- 2. ¿Existe la hora y está activa? ---

@@ -1,47 +1,43 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Mesas del dia - El Olivo</title>
+    <title>Mesas del día — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        .filtro-fecha {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background-color: white;
-            padding: 16px 20px;
-            border: 1px solid var(--borde);
-            border-radius: 8px;
-            margin-bottom: 24px;
-        }
-        .filtro-fecha label { font-weight: bold; color: #444; white-space: nowrap; }
-        .filtro-fecha input[type="date"] { padding: 8px 12px; border: 1px solid var(--borde); border-radius: 5px; font-size: 0.95rem; }
-        .filtro-fecha input[type="date"]:focus { outline: none; border-color: var(--verde); }
-        .sin-asignar { color: #999; font-style: italic; }
-        .numero-mesa { font-weight: bold; color: #2c6e49; }
-        .mi-mesa { background-color: #eaf7f0; }
+        .sin-asignar  { color:var(--ink-3); font-style:italic; }
+        .numero-mesa  { font-family:var(--mono); font-weight:600; color:var(--olivo); }
+        .mi-mesa td   { background-color: color-mix(in oklch, var(--olivo) 6%, var(--bg-elev)) !important; }
     </style>
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <section class="seccion-landing">
-            <h2>Mesas del dia</h2>
-
-            <div class="filtro-fecha">
-                <label for="input-fecha">Fecha:</label>
-                <input type="date" id="input-fecha" onchange="cambiarFecha()">
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Camarero · El Olivo</div>
+                <h1 class="display">Mesas del día</h1>
             </div>
+        </div>
+    </header>
 
-            <div id="mensaje-error-mesas" class="mensaje-error"></div>
+    <main class="page-main">
 
-            <table id="tabla-mesas" style="display: none;">
+        <div class="card card-body row gap-3" style="align-items:center; margin-bottom:22px; width:fit-content;">
+            <label class="label" style="white-space:nowrap;">Fecha:</label>
+            <input type="date" id="input-fecha" onchange="cambiarFecha()" style="width:180px;">
+        </div>
+
+        <div id="mensaje-error-mesas" class="mensaje-error"></div>
+        <p id="sin-mesas" style="display:none; color:var(--ink-3); font-size:13px;">No hay reservas para este día.</p>
+
+        <div class="card">
+            <table id="tabla-mesas" class="tbl" style="display:none;">
                 <thead>
                     <tr>
                         <th>Cliente</th>
@@ -54,13 +50,13 @@
                 </thead>
                 <tbody id="cuerpo-mesas"></tbody>
             </table>
+        </div>
 
-            <p id="sin-mesas" style="display: none; color: #666;">No hay reservas para este dia.</p>
-        </section>
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -73,14 +69,11 @@
 
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'camarero') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             idUsuarioActual = usuario.id;
-
             var inputFecha = document.getElementById('input-fecha');
             inputFecha.value = obtenerFechaHoy();
             cargarPaginaMesas(inputFecha.value);
@@ -89,7 +82,7 @@
         function cargarPaginaMesas(fecha) {
             cargarAsignaciones(fecha).then(function (reservas) {
                 if (reservas === null) {
-                    mostrarMensaje('mensaje-error-mesas', 'No se han podido cargar los datos. Intentalo de nuevo.');
+                    mostrarMensaje('mensaje-error-mesas', 'No se han podido cargar los datos. Inténtalo de nuevo.');
                     return;
                 }
                 mostrarAsignacionesCamarero(reservas);
@@ -106,49 +99,41 @@
             var tabla    = document.getElementById('tabla-mesas');
             var cuerpo   = document.getElementById('cuerpo-mesas');
             var sinDatos = document.getElementById('sin-mesas');
-
             cuerpo.innerHTML = '';
-
             if (!reservas || reservas.length === 0) {
                 tabla.style.display    = 'none';
                 sinDatos.style.display = 'block';
                 return;
             }
-
             sinDatos.style.display = 'none';
-
             reservas.forEach(function (r) {
-                var claseEstado = 'estado-' + r.estado;
+                var estadoBadge = estadoABadge(r.estado);
                 var horaInicio  = formatearHora(r.hora_inicio);
                 var horaFin     = formatearHora(r.hora_fin);
-
-                var celdaMesa = r.numero_mesa
+                var celdaMesa   = r.numero_mesa
                     ? '<span class="numero-mesa">' + r.numero_mesa + '</span>'
                     : '<span class="sin-asignar">Sin asignar</span>';
-
                 var celdaCamarero = r.nombre_camarero
                     ? r.nombre_camarero + ' ' + r.apellidos_camarero
                     : '<span class="sin-asignar">Sin asignar</span>';
-
                 var fila = document.createElement('tr');
-
-                // resaltar filas asignadas a este camarero
-                if (r.id_camarero && r.id_camarero == idUsuarioActual) {
-                    fila.classList.add('mi-mesa');
-                }
-
+                if (r.id_camarero && r.id_camarero == idUsuarioActual) fila.classList.add('mi-mesa');
                 fila.innerHTML =
-                    '<td>' + r.nombre + ' ' + r.apellidos + '</td>' +
-                    '<td>' + horaInicio + ' - ' + horaFin + '</td>' +
-                    '<td>' + r.num_personas + '</td>' +
-                    '<td><span class="' + claseEstado + '">' + r.estado + '</span></td>' +
+                    '<td style="font-weight:500;">' + r.nombre + ' ' + r.apellidos + '</td>' +
+                    '<td class="num">' + horaInicio + ' — ' + horaFin + '</td>' +
+                    '<td class="num">' + r.num_personas + '</td>' +
+                    '<td>' + estadoBadge + '</td>' +
                     '<td>' + celdaMesa + '</td>' +
                     '<td>' + celdaCamarero + '</td>';
-
                 cuerpo.appendChild(fila);
             });
-
             tabla.style.display = 'table';
+        }
+
+        function estadoABadge(estado) {
+            var mapa = { confirmada: 'badge-ok', pendiente: 'badge-warn', cancelada: 'badge-err' };
+            var cls = mapa[estado] || 'badge-mute';
+            return '<span class="badge ' + cls + '"><span class="dot"></span>' + estado + '</span>';
         }
     </script>
 

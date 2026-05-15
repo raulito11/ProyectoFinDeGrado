@@ -166,11 +166,13 @@ function renderizarTablaDashboard(datos) {
         return;
     }
 
+    var mapaEstado = { confirmada: 'badge-ok', pendiente: 'badge-warn', cancelada: 'badge-err' };
     datos.reservas.forEach(function (r) {
-        var badgeEstado = '<span class="badge badge-' + r.estado + '">' + r.estado + '</span>';
+        var clsEstado   = mapaEstado[r.estado] || 'badge-mute';
+        var badgeEstado = '<span class="badge ' + clsEstado + '"><span class="dot"></span>' + r.estado + '</span>';
         var badgeTipo   = r.es_nuevo
-            ? '<span class="badge badge-nuevo">Nuevo</span>'
-            : '<span class="badge badge-recurrente">Recurrente</span>';
+            ? '<span class="badge badge-clay">Nuevo</span>'
+            : '<span class="badge badge-mute">Recurrente</span>';
 
         var fila = document.createElement('tr');
         fila.innerHTML =
@@ -273,28 +275,32 @@ function mostrarTablaReservas(reservas) {
         var claseEstado = 'estado-' + r.estado;
         var hora = r.hora_inicio ? r.hora_inicio.substring(0, 5) : '';
 
-        // Construir los botones de accion segun el estado actual
-        var botones = '';
+        var mapaEst = { confirmada: 'badge-ok', pendiente: 'badge-warn', cancelada: 'badge-err' };
+        var clsBadge = mapaEst[r.estado] || 'badge-mute';
+        var badgeReserva = '<span class="badge ' + clsBadge + '"><span class="dot"></span>' + r.estado + '</span>';
+
+        var botones = '<div class="row gap-1" style="justify-content:flex-end;">';
         if (r.estado === 'pendiente') {
             botones +=
-                '<button class="btn btn-verde" style="margin-right: 6px;" ' +
+                '<button class="btn btn-olive btn-sm" ' +
                 'onclick="cambiarEstadoReserva(' + r.id_reserva + ', \'confirmada\')">Confirmar</button>';
         }
         if (r.estado === 'pendiente' || r.estado === 'confirmada') {
             botones +=
-                '<button class="btn btn-rojo" ' +
+                '<button class="btn btn-danger btn-sm" ' +
                 'onclick="cambiarEstadoReserva(' + r.id_reserva + ', \'cancelada\')">Cancelar</button>';
         }
+        botones += '</div>';
 
         var fila = document.createElement('tr');
         fila.innerHTML =
             '<td>' + r.fecha + '</td>' +
-            '<td>' + hora + '</td>' +
-            '<td>' + r.num_personas + '</td>' +
-            '<td>' + r.nombre_cliente + '</td>' +
-            '<td>' + r.email_cliente + '</td>' +
-            '<td><span class="' + claseEstado + '">' + r.estado + '</span></td>' +
-            '<td>' + botones + '</td>';
+            '<td class="num">' + hora + '</td>' +
+            '<td class="num">' + r.num_personas + '</td>' +
+            '<td style="font-weight:500;">' + r.nombre_cliente + '</td>' +
+            '<td style="color:var(--ink-3);">' + r.email_cliente + '</td>' +
+            '<td>' + badgeReserva + '</td>' +
+            '<td style="text-align:right;">' + botones + '</td>';
 
         cuerpo.appendChild(fila);
     });
@@ -396,16 +402,18 @@ function mostrarTablaUsuarios(usuarios) {
 
         var fila = document.createElement('tr');
         fila.innerHTML =
-            '<td>' + u.nombre + '</td>' +
+            '<td style="font-weight:500;">' + u.nombre + '</td>' +
             '<td>' + u.apellidos + '</td>' +
-            '<td>' + u.email + '</td>' +
-            '<td>' + (u.telefono || '-') + '</td>' +
-            '<td>' + u.nombre_rol + '</td>' +
-            '<td>' +
-                '<button class="btn btn-gris" style="margin-right: 6px;" ' +
+            '<td style="color:var(--ink-3);">' + u.email + '</td>' +
+            '<td class="num">' + (u.telefono || '—') + '</td>' +
+            '<td><span class="badge badge-mute">' + u.nombre_rol + '</span></td>' +
+            '<td style="text-align:right;">' +
+                '<div class="row gap-1" style="justify-content:flex-end;">' +
+                '<button class="btn btn-secondary btn-sm" ' +
                     'onclick="editarUsuario(' + u.id_usuario + ')">Editar</button>' +
-                '<button class="btn btn-rojo" ' + attrEliminar + ' ' +
+                '<button class="btn btn-danger btn-sm" ' + attrEliminar + ' ' +
                     'onclick="eliminarUsuario(' + u.id_usuario + ')">Eliminar</button>' +
+                '</div>' +
             '</td>';
 
         cuerpo.appendChild(fila);
@@ -668,21 +676,25 @@ function mostrarTablaPlatos(platos) {
 
     platos.forEach(function (p) {
         var miniatura = p.imagen
-            ? '<img src="/ProyectoFinDeGrado/frontend/' + p.imagen + '" alt="' + p.nombre + '" style="height: 48px; width: 64px; object-fit: cover; border-radius: 4px;">'
-            : '<span style="color: #aaa; font-size: 0.85rem;">Sin imagen</span>';
+            ? '<img src="/ProyectoFinDeGrado/frontend/' + p.imagen + '" alt="' + p.nombre + '" style="height:48px;width:64px;object-fit:cover;border-radius:var(--r-md);">'
+            : '<div class="ph-img" style="width:64px;height:48px;font-size:8px;">img</div>';
 
         var fila = document.createElement('tr');
         fila.innerHTML =
             '<td>' + miniatura + '</td>' +
-            '<td>' + p.nombre + '</td>' +
-            '<td>' + p.nombre_categoria + '</td>' +
-            '<td>' + parseFloat(p.precio).toFixed(2) + ' EUR</td>' +
-            '<td>' + (p.activo ? 'Si' : 'No') + '</td>' +
-            '<td>' +
-                '<button class="btn btn-gris" style="margin-right: 6px;" ' +
+            '<td style="font-weight:500;">' + p.nombre + '</td>' +
+            '<td><span class="mono" style="font-size:11px;color:var(--terracota);">' + p.nombre_categoria + '</span></td>' +
+            '<td class="num" style="font-weight:600;">' + parseFloat(p.precio).toFixed(2) + ' €</td>' +
+            '<td>' + (p.destacado == 1
+                ? '<span class="badge badge-clay">Destacado</span>'
+                : '<span class="badge badge-mute">No</span>') + '</td>' +
+            '<td style="text-align:right;">' +
+                '<div class="row gap-1" style="justify-content:flex-end;">' +
+                '<button class="btn btn-secondary btn-sm" ' +
                     'onclick="irAEditarPlato(' + p.id_plato + ')">Editar</button>' +
-                '<button class="btn btn-rojo" ' +
+                '<button class="btn btn-danger btn-sm" ' +
                     'onclick="eliminarPlato(' + p.id_plato + ')">Eliminar</button>' +
+                '</div>' +
             '</td>';
         cuerpo.appendChild(fila);
     });
@@ -713,83 +725,6 @@ function eliminarPlato(idPlato) {
         })
         .catch(function (err) {
             console.error('Error al eliminar plato:', err);
-        });
-}
-
-// ─────────────────────────────────────────────
-// HORARIOS
-// ─────────────────────────────────────────────
-
-// Carga los slots de horario y rellena la tabla
-function cargarHorarios() {
-    fetchAPI('/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php')
-        .then(function (respuesta) {
-            if (!respuesta.success) {
-                mostrarMensaje('mensaje-error-horarios', respuesta.message || 'Error al cargar los horarios.');
-                return;
-            }
-            mostrarTablaHorarios(respuesta.data);
-        })
-        .catch(function (err) {
-            console.error('Error de conexion al cargar horarios:', err);
-        });
-}
-
-// Dibuja la tabla de horarios con el boton de activar/desactivar
-function mostrarTablaHorarios(horarios) {
-    var tabla    = document.getElementById('tabla-horarios');
-    var cuerpo   = document.getElementById('cuerpo-horarios');
-    var sinDatos = document.getElementById('sin-horarios');
-
-    cuerpo.innerHTML = '';
-
-    if (!horarios || horarios.length === 0) {
-        tabla.style.display    = 'none';
-        sinDatos.style.display = 'block';
-        return;
-    }
-
-    sinDatos.style.display = 'none';
-
-    horarios.forEach(function (h) {
-        var estadoTexto  = h.activo ? 'Activo'      : 'Inactivo';
-        var btnTexto     = h.activo ? 'Desactivar'  : 'Activar';
-        var btnClase     = h.activo ? 'btn-rojo'     : 'btn-verde';
-
-        var fila = document.createElement('tr');
-        fila.innerHTML =
-            '<td>' + h.hora_inicio + '</td>' +
-            '<td>' + estadoTexto + '</td>' +
-            '<td>' +
-                '<button class="btn ' + btnClase + '" ' +
-                    'onclick="toggleHorario(' + h.id_horario + ', ' + h.activo + ')">' +
-                    btnTexto +
-                '</button>' +
-            '</td>';
-        cuerpo.appendChild(fila);
-    });
-
-    tabla.style.display = 'table';
-}
-
-// Cambia el estado activo/inactivo de un slot de horario
-function toggleHorario(idHorario, activoActual) {
-    var nuevoActivo = activoActual ? 0 : 1;
-
-    fetchAPI('/ProyectoFinDeGrado/backend/horarios/modificar_horarios.php', 'POST', {
-        id_horario: idHorario,
-        activo:     nuevoActivo
-    })
-        .then(function (respuesta) {
-            if (!respuesta.success) {
-                mostrarMensaje('mensaje-error-horarios', respuesta.message || 'Error al modificar el horario.');
-                return;
-            }
-            mostrarMensaje('mensaje-exito-horarios', 'Horario actualizado correctamente.');
-            cargarHorarios();
-        })
-        .catch(function (err) {
-            console.error('Error al modificar horario:', err);
         });
 }
 
@@ -831,10 +766,10 @@ function mostrarTablaCierres(cierres) {
     cierres.forEach(function (c) {
         var fila = document.createElement('tr');
         fila.innerHTML =
-            '<td>' + c.fecha + '</td>' +
-            '<td>' + (c.motivo || '-') + '</td>' +
-            '<td>' +
-                '<button class="btn btn-rojo" ' +
+            '<td class="num" style="font-weight:600;">' + c.fecha + '</td>' +
+            '<td style="color:var(--ink-2);">' + (c.motivo || '—') + '</td>' +
+            '<td style="text-align:right;">' +
+                '<button class="btn btn-danger btn-sm" ' +
                     'onclick="eliminarCierre(' + c.id_cierre + ')">Eliminar</button>' +
             '</td>';
         cuerpo.appendChild(fila);
@@ -894,6 +829,261 @@ function eliminarCierre(idCierre) {
         .catch(function (err) {
             console.error('Error al eliminar cierre:', err);
         });
+}
+
+// ─────────────────────────────────────────────
+// HORARIOS DE TRABAJADORES
+// ─────────────────────────────────────────────
+
+var htrabSemanaActual = '';
+
+function calcularLunesDeSemana(fecha) {
+    var d = fecha ? new Date(fecha + 'T00:00:00') : new Date();
+    var diaSemana = d.getDay();
+    var diff = diaSemana === 0 ? -6 : 1 - diaSemana;
+    d.setDate(d.getDate() + diff);
+    var anio = d.getFullYear();
+    var mes  = String(d.getMonth() + 1).padStart(2, '0');
+    var dia  = String(d.getDate()).padStart(2, '0');
+    return anio + '-' + mes + '-' + dia;
+}
+
+function formatearFechaCorta(fechaStr) {
+    var p = fechaStr.split('-');
+    return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function sumarDiasFecha(fechaStr, dias) {
+    var d = new Date(fechaStr + 'T00:00:00');
+    d.setDate(d.getDate() + dias);
+    var anio = d.getFullYear();
+    var mes  = String(d.getMonth() + 1).padStart(2, '0');
+    var dia  = String(d.getDate()).padStart(2, '0');
+    return anio + '-' + mes + '-' + dia;
+}
+
+function iniciarSeccionHtrab() {
+    htrabSemanaActual = calcularLunesDeSemana();
+    actualizarLabelSemanaHtrab();
+    cargarHorariosTrabajoSemana();
+}
+
+function cambiarSemanaHtrab(direccion) {
+    htrabSemanaActual = sumarDiasFecha(htrabSemanaActual, direccion * 7);
+    actualizarLabelSemanaHtrab();
+    cargarHorariosTrabajoSemana();
+}
+
+function actualizarLabelSemanaHtrab() {
+    var lunes   = htrabSemanaActual;
+    var domingo = sumarDiasFecha(lunes, 6);
+    var label   = document.getElementById('htrab-semana-label');
+    if (!label) return;
+
+    var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+                 'septiembre','octubre','noviembre','diciembre'];
+    var pL  = lunes.split('-');
+    var pD  = domingo.split('-');
+    var texto;
+    if (pL[1] === pD[1] && pL[0] === pD[0]) {
+        texto = 'Semana del ' + parseInt(pL[2]) + ' al ' + parseInt(pD[2]) +
+                ' de ' + meses[parseInt(pD[1]) - 1] + ' de ' + pD[0];
+    } else {
+        texto = 'Semana del ' + parseInt(pL[2]) + ' de ' + meses[parseInt(pL[1]) - 1] +
+                ' al '  + parseInt(pD[2]) + ' de ' + meses[parseInt(pD[1]) - 1] + ' de ' + pD[0];
+    }
+    label.textContent = texto;
+}
+
+function cargarHorariosTrabajoSemana() {
+    var url = '/ProyectoFinDeGrado/backend/empleados/obtener_horario_semana_admin.php?semana_inicio=' + htrabSemanaActual;
+    fetchAPI(url)
+        .then(function (respuesta) {
+            if (!respuesta.success) {
+                mostrarMensaje('mensaje-error-htrab', respuesta.message || 'Error al cargar los horarios.');
+                return;
+            }
+            mostrarTablaHtrab(respuesta.data);
+        })
+        .catch(function (err) {
+            console.error('Error al cargar horarios:', err);
+        });
+}
+
+// Cambia el color de la celda según el valor del select
+function colorarCeldaSelect(select) {
+    var celda = select.parentElement;
+    celda.className = select.value === 'trabajo' ? 'celda-dia dia-trabajo' : 'celda-dia dia-libre';
+}
+
+// Dibuja la tabla con todos los empleados y un select por cada día
+function mostrarTablaHtrab(empleados) {
+    var tabla    = document.getElementById('tabla-htrab');
+    var cabecera = document.getElementById('cabecera-htrab');
+    var cuerpo   = document.getElementById('cuerpo-htrab');
+    var sinDatos = document.getElementById('sin-htrab');
+
+    if (!cuerpo) return;
+    cuerpo.innerHTML = '';
+
+    if (!empleados || empleados.length === 0) {
+        if (tabla)    tabla.style.display    = 'none';
+        if (sinDatos) sinDatos.style.display = 'block';
+        return;
+    }
+
+    if (sinDatos) sinDatos.style.display = 'none';
+
+    // Cabecera dinámica con letra del día y fecha corta
+    var letrasDia = ['L','M','X','J','V','S','D'];
+    var cabHtml   = '<tr><th>Empleado</th>';
+    if (empleados[0] && empleados[0].dias) {
+        empleados[0].dias.forEach(function (dia, i) {
+            var p  = dia.fecha.split('-');
+            cabHtml += '<th>' + letrasDia[i] + '<small>' + parseInt(p[2]) + '/' + parseInt(p[1]) + '</small></th>';
+        });
+    }
+    cabHtml += '</tr>';
+    if (cabecera) cabecera.innerHTML = cabHtml;
+
+    // Filas de empleados
+    empleados.forEach(function (emp) {
+        var fila    = document.createElement('tr');
+        var badgeRol = emp.rol === 'jefe_sala'
+            ? '<span class="badge badge-ok"><span class="dot"></span>Jefe de sala</span>'
+            : '<span class="badge badge-mute">Camarero</span>';
+
+        var celdas = '<td><strong>' + emp.nombre + ' ' + emp.apellidos + '</strong><br>' + badgeRol + '</td>';
+
+        emp.dias.forEach(function (dia) {
+            var clase = dia.estado === 'trabajo' ? 'celda-dia dia-trabajo' : 'celda-dia dia-libre';
+            celdas += '<td class="' + clase + '">';
+            celdas += '<select data-empleado="' + emp.id_usuario + '" data-fecha="' + dia.fecha + '" onchange="colorarCeldaSelect(this)">';
+            celdas += '<option value="trabajo"' + (dia.estado === 'trabajo' ? ' selected' : '') + '>Trabajo</option>';
+            celdas += '<option value="libre"'   + (dia.estado === 'libre'   ? ' selected' : '') + '>Libre</option>';
+            celdas += '</select></td>';
+        });
+
+        fila.innerHTML = celdas;
+        cuerpo.appendChild(fila);
+    });
+
+    if (tabla) tabla.style.display = 'table';
+}
+
+// Recoge todos los selects y envía el horario completo al backend
+function guardarSemanaHtrab() {
+    var selects  = document.querySelectorAll('#cuerpo-htrab select');
+    var horarios = [];
+
+    selects.forEach(function (sel) {
+        horarios.push({
+            empleado_id: parseInt(sel.dataset.empleado),
+            fecha:       sel.dataset.fecha,
+            estado:      sel.value,
+        });
+    });
+
+    if (horarios.length === 0) {
+        mostrarMensaje('mensaje-error-htrab', 'No hay datos para guardar.');
+        return;
+    }
+
+    fetchAPI('/ProyectoFinDeGrado/backend/empleados/guardar_horario_semana.php', 'POST', { horarios: horarios })
+        .then(function (respuesta) {
+            if (!respuesta.success) {
+                mostrarMensaje('mensaje-error-htrab', respuesta.message || 'Error al guardar el horario.');
+                return;
+            }
+            mostrarMensaje('mensaje-exito-htrab', 'Horario guardado correctamente.');
+        })
+        .catch(function (err) {
+            console.error('Error al guardar el horario:', err);
+        });
+}
+
+// ─────────────────────────────────────────────
+// CLIENTES
+// ─────────────────────────────────────────────
+
+// Carga la lista de clientes, aplicando el filtro de fechas si está relleno
+function cargarClientes() {
+    var desde = document.getElementById('filtro-clientes-desde')
+        ? document.getElementById('filtro-clientes-desde').value
+        : '';
+    var hasta = document.getElementById('filtro-clientes-hasta')
+        ? document.getElementById('filtro-clientes-hasta').value
+        : '';
+
+    var url = '/ProyectoFinDeGrado/backend/clientes/listar_clientes.php';
+    if (desde && hasta) {
+        url += '?desde=' + encodeURIComponent(desde) + '&hasta=' + encodeURIComponent(hasta);
+    }
+
+    fetch(url)
+        .then(function (res) { return res.json(); })
+        .then(function (respuesta) {
+            if (!respuesta.success) {
+                mostrarMensaje('mensaje-error-clientes', respuesta.message || 'Error al cargar los clientes.');
+                return;
+            }
+            mostrarTablaClientes(respuesta.data);
+        })
+        .catch(function () {
+            mostrarMensaje('mensaje-error-clientes', 'No se pudo conectar con el servidor.');
+        });
+}
+
+// Renderiza la tabla de clientes y actualiza el contador
+function mostrarTablaClientes(clientes) {
+    var tabla   = document.getElementById('tabla-clientes');
+    var cuerpo  = document.getElementById('cuerpo-clientes');
+    var sinMsg  = document.getElementById('sin-clientes');
+    var totalEl = document.getElementById('total-clientes');
+
+    if (!tabla || !cuerpo) return;
+
+    cuerpo.innerHTML = '';
+
+    if (clientes.length === 0) {
+        tabla.style.display  = 'none';
+        sinMsg.style.display = 'block';
+        if (totalEl) totalEl.textContent = 'Mostrando 0 clientes';
+        return;
+    }
+
+    sinMsg.style.display = 'none';
+    tabla.style.display  = 'table';
+
+    if (totalEl) {
+        totalEl.textContent = 'Mostrando ' + clientes.length + ' cliente' + (clientes.length === 1 ? '' : 's');
+    }
+
+    clientes.forEach(function (cliente) {
+        var fecha = cliente.created_at
+            ? new Date(cliente.created_at).toLocaleDateString('es-ES', {
+                day: '2-digit', month: '2-digit', year: 'numeric'
+              })
+            : '—';
+
+        var fila = '<tr>' +
+            '<td>' + (cliente.nombre    || '—') + '</td>' +
+            '<td>' + (cliente.apellidos || '—') + '</td>' +
+            '<td>' + (cliente.email     || '—') + '</td>' +
+            '<td>' + (cliente.telefono  || '—') + '</td>' +
+            '<td>' + fecha + '</td>' +
+            '</tr>';
+        cuerpo.innerHTML += fila;
+    });
+}
+
+// Limpia el filtro de fechas y recarga todos los clientes
+function limpiarFiltroClientes() {
+    var inputDesde = document.getElementById('filtro-clientes-desde');
+    var inputHasta = document.getElementById('filtro-clientes-hasta');
+    if (inputDesde) inputDesde.value = '';
+    if (inputHasta) inputHasta.value = '';
+    cargarClientes();
 }
 
 // ─────────────────────────────────────────────

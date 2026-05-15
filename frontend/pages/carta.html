@@ -4,141 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Carta - El Olivo</title>
+    <title>Carta — El Olivo</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        /* ─── Estilos de la carta publica ─── */
-        .carta-seccion {
-            margin-bottom: 40px;
-        }
-
-        .carta-seccion h2 {
-            font-size: 1.5rem;
-            color: #2c6e49;
-            border-bottom: 2px solid #2c6e49;
-            padding-bottom: 6px;
-            margin-bottom: 16px;
-        }
-
-        .carta-seccion p.descripcion-categoria {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 14px;
-            font-style: italic;
-        }
-
-        .lista-platos {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .plato-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .plato-item:last-child {
-            border-bottom: none;
-        }
-
-        .plato-imagen {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-
-        .plato-sin-imagen {
-            width: 60px;
-            height: 60px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-
-        .plato-info {
-            flex: 1;
-        }
-
-        .plato-nombre {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 2px;
-        }
-
-        .plato-descripcion {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .plato-precio {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #2c6e49;
-            white-space: nowrap;
-        }
-
-        .btn-imprimir {
-            margin-bottom: 28px;
-        }
-
-        #sin-platos-carta {
-            color: #666;
-            font-style: italic;
-        }
-
-        /* ─── Estilos para imprimir ─── */
         @media print {
-            nav,
-            footer,
-            .btn-imprimir {
-                display: none !important;
-            }
-
-            body {
-                background: white;
-            }
-
-            main {
-                padding: 0;
-                max-width: 100%;
-            }
-
-            .carta-seccion h2 {
-                color: #000;
-                border-bottom-color: #000;
-            }
-
-            .plato-precio {
-                color: #000;
-            }
+            .nav, .footer, .btn-imprimir { display:none !important; }
+            body { background:white; }
+            main.page-main { padding:0; max-width:100%; }
         }
     </style>
 </head>
 <body>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
+    <main class="page-main">
 
-        <h1>Nuestra Carta</h1>
+        <div style="text-align:center; margin-bottom:48px;">
+            <div class="eyebrow" style="margin-bottom:10px;">Carta de temporada · 2025</div>
+            <h1 class="display italic" style="font-size:clamp(40px,6vw,64px); line-height:1;">Nuestra carta.</h1>
+            <p style="color:var(--ink-2); max-width:540px; margin:14px auto 0; font-size:15px; line-height:1.6;">
+                Los platos cambian cada estación. Todos los precios incluyen IVA.
+                Si tienes alergias, dínoslo: lo ajustamos.
+            </p>
+            <div class="row gap-3 center btn-imprimir" style="margin-top:22px; justify-content:center;">
+                <button class="btn btn-secondary btn-sm" onclick="descargarPDF()">↓ Descargar PDF</button>
+                <button class="btn btn-ghost btn-sm" onclick="window.print()">Imprimir</button>
+            </div>
+        </div>
 
-        <button class="btn btn-verde" onclick="descargarPDF()">Descargar carta en PDF</button>
+        <p id="mensaje-carga" style="color:var(--ink-3); text-align:center;">Cargando carta...</p>
+        <p id="sin-platos-carta" style="display:none; color:var(--ink-3); text-align:center; font-style:italic;">La carta no está disponible en este momento.</p>
 
-        <div id="mensaje-carga" style="color: #666;">Cargando carta...</div>
-        <div id="sin-platos-carta" style="display: none;">La carta no esta disponible en este momento.</div>
+        <div id="contenedor-carta" class="col gap-8"></div>
 
-        <div id="contenedor-carta"></div>
+        <!-- CTA final -->
+        <div style="margin-top:64px; padding:28px; border-top:1px solid var(--ink); display:flex; justify-content:space-between; align-items:center;">
+            <div class="display italic" style="font-size:22px;">¿Te ha gustado lo que has visto?</div>
+            <a href="/ProyectoFinDeGrado/frontend/pages/auth/login.html" class="btn btn-olive btn-lg">Reservar mesa →</a>
+        </div>
 
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -153,19 +63,14 @@
         });
 
         function cargarCarta() {
-            fetch('/ProyectoFinDeGrado/backend/carta/carta_publica.php', {
-                method: 'GET',
-                credentials: 'include'
-            })
+            fetch('/ProyectoFinDeGrado/backend/carta/carta_publica.php', { method: 'GET', credentials: 'include' })
                 .then(function (res) { return res.json(); })
                 .then(function (respuesta) {
                     document.getElementById('mensaje-carga').style.display = 'none';
-
                     if (!respuesta.success || !respuesta.data || respuesta.data.length === 0) {
                         document.getElementById('sin-platos-carta').style.display = 'block';
                         return;
                     }
-
                     datosCarta = respuesta.data;
                     mostrarCarta(datosCarta);
                 })
@@ -178,41 +83,47 @@
         function mostrarCarta(categorias) {
             var contenedor = document.getElementById('contenedor-carta');
             contenedor.innerHTML = '';
+            var total = categorias.length;
 
-            categorias.forEach(function (categoria) {
+            categorias.forEach(function (categoria, idx) {
                 var seccion = document.createElement('section');
-                seccion.classList.add('carta-seccion');
 
-                var htmlSeccion = '<h2>' + categoria.nombre + '</h2>';
+                var htmlSeccion =
+                    '<div class="carta-categoria-head">' +
+                        '<h2 class="display" style="font-size:34px;">' + categoria.nombre + '</h2>' +
+                        '<span class="mono" style="font-size:11px; color:var(--ink-3); letter-spacing:.12em;">' +
+                            String(idx + 1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0') +
+                        '</span>' +
+                    '</div>';
 
                 if (categoria.descripcion) {
-                    htmlSeccion += '<p class="descripcion-categoria">' + categoria.descripcion + '</p>';
+                    htmlSeccion += '<p style="color:var(--ink-3); font-style:italic; margin-bottom:14px;">' + categoria.descripcion + '</p>';
                 }
 
                 if (!categoria.platos || categoria.platos.length === 0) {
-                    htmlSeccion += '<p style="color: #aaa; font-size: 0.9rem;">Sin platos en esta categoria.</p>';
+                    htmlSeccion += '<p class="card card-body" style="color:var(--ink-3); font-size:13px;">Sin platos en esta categoría.</p>';
                 } else {
-                    htmlSeccion += '<ul class="lista-platos">';
+                    htmlSeccion += '<div class="card divide-y">';
                     categoria.platos.forEach(function (plato) {
                         var imagenHtml = plato.imagen
-                            ? '<img class="plato-imagen" src="/ProyectoFinDeGrado/frontend/' + plato.imagen + '" alt="' + plato.nombre + '">'
-                            : '<div class="plato-sin-imagen"></div>';
-
-                        var descripcionHtml = plato.descripcion
-                            ? '<p class="plato-descripcion">' + plato.descripcion + '</p>'
+                            ? '<img src="/ProyectoFinDeGrado/frontend/' + plato.imagen + '" alt="' + plato.nombre + '" style="width:72px;height:72px;object-fit:cover;border-radius:var(--r-md);flex-shrink:0;">'
+                            : '<div class="ph-img" style="width:72px;height:72px;flex-shrink:0;">plato</div>';
+                        var descHtml = plato.descripcion
+                            ? '<p style="color:var(--ink-2);font-size:13.5px;margin-top:4px;">' + plato.descripcion + '</p>'
                             : '';
-
                         htmlSeccion +=
-                            '<li class="plato-item">' +
+                            '<div class="carta-item">' +
                                 imagenHtml +
-                                '<div class="plato-info">' +
-                                    '<p class="plato-nombre">' + plato.nombre + '</p>' +
-                                    descripcionHtml +
+                                '<div class="carta-item-body grow">' +
+                                    '<div class="row between" style="align-items:baseline;">' +
+                                        '<div class="display carta-item-body" style="font-size:20px;">' + plato.nombre + '</div>' +
+                                        '<div class="num carta-item-price">' + parseFloat(plato.precio).toFixed(2) + ' €</div>' +
+                                    '</div>' +
+                                    descHtml +
                                 '</div>' +
-                                '<p class="plato-precio">' + parseFloat(plato.precio).toFixed(2) + ' €</p>' +
-                            '</li>';
+                            '</div>';
                     });
-                    htmlSeccion += '</ul>';
+                    htmlSeccion += '</div>';
                 }
 
                 seccion.innerHTML = htmlSeccion;
@@ -223,62 +134,206 @@
         function descargarPDF() {
             if (datosCarta.length === 0) return;
 
-            var doc = new window.jspdf.jsPDF();
-            var y = 20;
-            var margenIzq  = 20;
-            var margenDer  = 190;
-            var alturaPag  = 280;
+            var doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+            var W = 210, H = 297, M = 18;
 
-            // Titulo
-            doc.setFontSize(22);
-            doc.setFont('helvetica', 'bold');
-            doc.text('El Olivo - Carta', 105, y, { align: 'center' });
-            y += 12;
+            // Paleta — traducción de las variables OKLCH del proyecto a RGB
+            var OLIVO     = [61,  100, 40];
+            var TERRACOTA = [192, 100, 58];
+            var INK       = [45,  40,  30];
+            var INK2      = [80,  75,  60];
+            var INK3      = [135, 128, 108];
+            var BG        = [247, 244, 237];
+            var BG_ELEV   = [239, 236, 228];
+            var LINEA     = [222, 218, 205];
+            var BLANCO    = [255, 255, 255];
 
-            doc.setDrawColor(44, 110, 73);
-            doc.setLineWidth(0.5);
-            doc.line(margenIzq, y, margenDer, y);
-            y += 10;
+            function fc(c) { doc.setFillColor(c[0], c[1], c[2]); }
+            function dc(c) { doc.setDrawColor(c[0], c[1], c[2]); }
+            function tc(c) { doc.setTextColor(c[0], c[1], c[2]); }
 
-            datosCarta.forEach(function (categoria) {
-                // salto de pagina si no hay espacio
-                if (y > alturaPag - 20) {
-                    doc.addPage();
-                    y = 20;
+            function fondoPagina() {
+                fc(BG); doc.rect(0, 0, W, H, 'F');
+            }
+
+            function headerBanda(titulo) {
+                fc(OLIVO); doc.rect(0, 0, W, 11, 'F');
+                tc(BLANCO);
+                doc.setFont('times', 'italic'); doc.setFontSize(10);
+                doc.text('El Olivo', M, 7.5);
+                doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+                doc.text(titulo || 'CARTA DE TEMPORADA', W - M, 7.5, { align: 'right' });
+            }
+
+            function footerBanda(pag) {
+                dc(LINEA); doc.setLineWidth(0.25); doc.line(M, H - 12, W - M, H - 12);
+                tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+                doc.text('El Olivo · Cocina mediterránea · Madrid', M, H - 7);
+                doc.text('Precios con IVA incluido', W / 2, H - 7, { align: 'center' });
+                if (pag) {
+                    tc(OLIVO); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
+                    doc.text(String(pag), W - M, H - 7, { align: 'right' });
+                }
+            }
+
+            // ── PORTADA ──────────────────────────────────────────────────
+
+            fondoPagina();
+
+            // Franja superior olivo + línea terracota
+            fc(OLIVO); doc.rect(0, 0, W, 56, 'F');
+            fc(TERRACOTA); doc.rect(0, 55, W, 1.8, 'F');
+
+            // Nombre restaurante
+            tc(BLANCO);
+            doc.setFont('times', 'italic'); doc.setFontSize(52);
+            doc.text('El Olivo', W / 2, 37, { align: 'center' });
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+            doc.text('C  O  C  I  N  A   M  E  D  I  T  E  R  R  Á  N  E  A   ·   M  A  D  R  I  D', W / 2, 48, { align: 'center' });
+
+            // Título "Carta"
+            tc(INK);
+            doc.setFont('times', 'italic'); doc.setFontSize(34);
+            doc.text('Carta', W / 2, 79, { align: 'center' });
+
+            // Líneas ornamentales flanqueantes
+            dc(OLIVO); doc.setLineWidth(0.4);
+            doc.line(M + 8, 83, W / 2 - 24, 83);
+            doc.line(W / 2 + 24, 83, W - M - 8, 83);
+
+            // Temporada
+            tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+            doc.text('T E M P O R A D A   ·   2 0 2 5', W / 2, 91, { align: 'center' });
+
+            // Descripción intro
+            tc(INK2); doc.setFont('times', 'italic'); doc.setFontSize(11.5);
+            var intro = 'Elaborada con los mejores productos frescos de temporada,\nreflejando la esencia de la cocina mediterránea.';
+            doc.text(doc.splitTextToSize(intro, 130), W / 2, 113, { align: 'center', lineHeightFactor: 1.75 });
+
+            // Divisor
+            dc(LINEA); doc.setLineWidth(0.3);
+            doc.line(M + 18, 130, W - M - 18, 130);
+
+            // Índice de categorías
+            tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+            doc.text('Í  N  D  I  C  E', W / 2, 138, { align: 'center' });
+
+            var yIdx = 147;
+            datosCarta.forEach(function(cat, i) {
+                if (yIdx > H - 38) return;
+                tc(OLIVO); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+                doc.text(String(i + 1).padStart(2, '0'), M + 10, yIdx, { align: 'right' });
+                tc(INK); doc.setFont('times', 'italic'); doc.setFontSize(12.5);
+                doc.text(cat.nombre, M + 14, yIdx);
+                if (cat.platos && cat.platos.length > 0) {
+                    tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+                    doc.text(cat.platos.length + ' platos', W - M, yIdx, { align: 'right' });
+                }
+                dc(LINEA); doc.setLineWidth(0.15);
+                doc.line(M, yIdx + 2, W - M, yIdx + 2);
+                yIdx += 9.5;
+            });
+
+            // Nota alérgenos
+            var yNota = Math.max(yIdx + 8, H - 40);
+            fc(BG_ELEV); doc.roundedRect(M, yNota, W - M * 2, 16, 2, 2, 'F');
+            tc(INK2); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+            doc.text('Si tiene alguna alergia o intolerancia alimentaria, consulte con nuestro equipo.', W / 2, yNota + 6, { align: 'center' });
+            doc.text('Estaremos encantados de adaptarnos a sus necesidades.', W / 2, yNota + 12, { align: 'center' });
+
+            footerBanda(1);
+
+            // ── PÁGINAS DE CATEGORÍAS ─────────────────────────────────────
+
+            var nPag = 2;
+
+            datosCarta.forEach(function(categoria, catIdx) {
+                doc.addPage();
+                fondoPagina();
+                headerBanda();
+
+                var y = 23;
+
+                // Nombre de la categoría
+                tc(INK); doc.setFont('times', 'italic'); doc.setFontSize(30);
+                doc.text(categoria.nombre, M, y);
+
+                // Subrayado: terracota bajo el nombre, línea fina el resto
+                var tW = doc.getTextWidth(categoria.nombre);
+                fc(TERRACOTA); doc.rect(M, y + 2.5, Math.min(tW, W - M * 2), 1, 'F');
+                if (tW + 3 < W - M * 2) {
+                    fc(LINEA); doc.rect(M + tW + 3, y + 2.8, W - M * 2 - tW - 3, 0.35, 'F');
                 }
 
-                // nombre de la categoria
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(44, 110, 73);
-                doc.text(categoria.nombre.toUpperCase(), margenIzq, y);
-                y += 8;
+                y += 11;
 
-                doc.setTextColor(0, 0, 0);
+                // Descripción de la categoría
+                if (categoria.descripcion) {
+                    tc(INK3); doc.setFont('times', 'italic'); doc.setFontSize(10);
+                    var dCat = doc.splitTextToSize(categoria.descripcion, W - M * 2);
+                    doc.text(dCat, M, y);
+                    y += dCat.length * 5 + 4;
+                }
+                y += 3;
 
+                // Lista de platos
                 if (!categoria.platos || categoria.platos.length === 0) {
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'italic');
-                    doc.text('Sin platos disponibles.', margenIzq + 4, y);
-                    y += 7;
+                    tc(INK3); doc.setFont('times', 'italic'); doc.setFontSize(10);
+                    doc.text('Sin platos disponibles.', M, y);
                 } else {
-                    categoria.platos.forEach(function (plato) {
-                        if (y > alturaPag) {
-                            doc.addPage();
+                    // Separador inicial (tope superior de la primera fila)
+                    dc(LINEA); doc.setLineWidth(0.15);
+                    doc.line(M, y, W - M, y);
+                    var prevSepY = y;
+                    y += 5;
+
+                    categoria.platos.forEach(function(plato, pIdx) {
+                        var tieneDesc = !!plato.descripcion;
+                        var dP = tieneDesc ? doc.splitTextToSize(plato.descripcion, W - M * 2 - 35) : [];
+                        var contentAdvance = tieneDesc ? dP.length * 4.5 + 7 : 7;
+                        var thisSepY = y + contentAdvance + 1;
+
+                        if (thisSepY > H - 18) {
+                            footerBanda(nPag); nPag++;
+                            doc.addPage(); fondoPagina();
+                            headerBanda(categoria.nombre.toUpperCase());
                             y = 20;
+                            dc(LINEA); doc.setLineWidth(0.15);
+                            doc.line(M, y, W - M, y);
+                            prevSepY = y;
+                            y += 5;
+                            thisSepY = y + contentAdvance + 1;
                         }
 
-                        var precio = parseFloat(plato.precio).toFixed(2) + ' EUR';
+                        // Fondo exactamente entre prevSepY y thisSepY
+                        if (pIdx % 2 === 0) {
+                            fc(BG_ELEV);
+                            doc.rect(M - 3, prevSepY, W - M * 2 + 6, thisSepY - prevSepY, 'F');
+                        }
 
-                        doc.setFontSize(11);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(plato.nombre, margenIzq + 4, y);
-                        doc.text(precio, margenDer, y, { align: 'right' });
-                        y += 7;
+                        // Nombre del plato
+                        tc(INK); doc.setFont('times', 'italic'); doc.setFontSize(13.5);
+                        doc.text(plato.nombre, M, y);
+
+                        // Precio (terracota, alineado derecha)
+                        tc(TERRACOTA); doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5);
+                        doc.text(parseFloat(plato.precio).toFixed(2) + ' €', W - M, y, { align: 'right' });
+
+                        // Descripción del plato
+                        if (tieneDesc) {
+                            tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+                            doc.text(dP, M, y + 5.5);
+                        }
+
+                        // Separador al pie de la fila
+                        dc(LINEA); doc.setLineWidth(0.15);
+                        doc.line(M, thisSepY, W - M, thisSepY);
+                        prevSepY = thisSepY;
+                        y = thisSepY + 5;
                     });
                 }
 
-                y += 4;
+                footerBanda(nPag); nPag++;
             });
 
             doc.save('carta-el-olivo.pdf');

@@ -1,102 +1,82 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Mesas del dia - El Olivo</title>
+    <title>Mesas del día — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
     <style>
-        .filtro-fecha {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background-color: white;
-            padding: 16px 20px;
-            border: 1px solid var(--borde);
-            border-radius: 8px;
-            margin-bottom: 24px;
-        }
-        .filtro-fecha label { font-weight: bold; color: #444; white-space: nowrap; }
-        .filtro-fecha input[type="date"] { padding: 8px 12px; border: 1px solid var(--borde); border-radius: 5px; font-size: 0.95rem; }
-        .filtro-fecha input[type="date"]:focus { outline: none; border-color: var(--verde); }
-        .sin-asignar { color: #999; font-style: italic; }
-        .numero-mesa { font-weight: bold; color: #2c6e49; }
+        .sin-asignar { color:var(--ink-3); font-style:italic; }
+        .numero-mesa { font-family:var(--mono); font-weight:600; color:var(--olivo); }
 
+        /* Modal */
         .modal-fondo {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 200;
+            display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background:oklch(0.20 0.015 80 / .5); z-index:200;
         }
         .modal-caja {
-            background: white;
-            padding: 32px;
-            border-radius: 8px;
-            max-width: 400px;
-            margin: 12% auto;
+            background:var(--bg-elev); border:1px solid var(--line);
+            border-radius:var(--r-lg); padding:32px; max-width:420px; margin:10% auto;
+            box-shadow:var(--shadow-2);
         }
-        .modal-caja h3 { margin-bottom: 16px; color: #222; }
-        .modal-caja p  { margin-bottom: 16px; color: #555; }
-        .modal-campo { margin-bottom: 14px; }
-        .modal-campo label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        .modal-campo input,
-        .modal-campo select {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--borde);
-            border-radius: 5px;
-            font-size: 0.95rem;
-        }
-        .modal-botones { margin-top: 20px; display: flex; gap: 12px; }
+        .modal-caja h3 { font-family:var(--display); font-size:22px; margin-bottom:16px; font-weight:500; }
+        .modal-caja p  { margin-bottom:16px; color:var(--ink-2); font-size:13px; }
+        .modal-botones { margin-top:20px; display:flex; gap:12px; }
     </style>
 </head>
 <body>
 
-    <!-- Modal de asignacion -->
+    <!-- Modal de asignación -->
     <div id="modal-asignar" class="modal-fondo">
         <div class="modal-caja">
             <h3>Asignar mesa y camarero</h3>
             <p id="modal-nombre-cliente"></p>
 
-            <div class="modal-campo">
-                <label for="input-numero-mesa">Numero de mesa</label>
-                <input type="number" id="input-numero-mesa" min="1" placeholder="Ej: 5">
-            </div>
-
-            <div class="modal-campo">
-                <label for="select-camarero">Camarero</label>
-                <select id="select-camarero">
-                    <option value="">-- Sin asignar --</option>
-                </select>
-            </div>
-
-            <div id="modal-error" class="mensaje-error"></div>
-
-            <div class="modal-botones">
-                <button id="btn-confirmar-mesa" class="btn-primario">Confirmar</button>
-                <button onclick="cerrarModal()" class="btn-secundario">Cancelar</button>
+            <div class="col gap-4">
+                <div class="field">
+                    <label>Número de mesa</label>
+                    <input type="number" id="input-numero-mesa" min="1" placeholder="Ej: 5">
+                </div>
+                <div class="field">
+                    <label>Camarero</label>
+                    <select id="select-camarero">
+                        <option value="">— Sin asignar —</option>
+                    </select>
+                </div>
+                <div id="modal-error" class="mensaje-error"></div>
+                <div class="modal-botones">
+                    <button id="btn-confirmar-mesa" class="btn btn-primary">Confirmar</button>
+                    <button onclick="cerrarModal()" class="btn btn-ghost">Cancelar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <nav id="navbar"></nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <section class="seccion-landing">
-            <h2>Mesas del dia</h2>
-
-            <div class="filtro-fecha">
-                <label for="input-fecha">Fecha:</label>
-                <input type="date" id="input-fecha" onchange="cambiarFecha()">
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Jefe de sala · El Olivo</div>
+                <h1 class="display">Mesas del día</h1>
             </div>
+        </div>
+    </header>
 
-            <div id="mensaje-error-mesas" class="mensaje-error"></div>
+    <main class="page-main">
 
-            <table id="tabla-mesas" style="display: none;">
+        <div class="card card-body row gap-3" style="align-items:center; margin-bottom:22px; width:fit-content;">
+            <label class="label" style="white-space:nowrap;">Fecha:</label>
+            <input type="date" id="input-fecha" onchange="cambiarFecha()" style="width:180px;">
+        </div>
+
+        <div id="mensaje-error-mesas" class="mensaje-error"></div>
+        <p id="sin-mesas" style="display:none; color:var(--ink-3); font-size:13px;">No hay reservas para este día.</p>
+
+        <div class="card">
+            <table id="tabla-mesas" class="tbl" style="display:none;">
                 <thead>
                     <tr>
                         <th>Cliente</th>
@@ -105,18 +85,18 @@
                         <th>Estado</th>
                         <th>Mesa</th>
                         <th>Camarero</th>
-                        <th>Accion</th>
+                        <th style="text-align:right;">Acción</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo-mesas"></tbody>
             </table>
+        </div>
 
-            <p id="sin-mesas" style="display: none; color: #666;">No hay reservas para este dia.</p>
-        </section>
     </main>
 
     <footer class="footer">
-        <p>&copy; 2025 El Olivo &middot; Restaurante &middot; Madrid</p>
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
     <script src="../../js/utils.js"></script>
@@ -129,20 +109,16 @@
 
         checkSession().then(function (usuario) {
             if (!usuario) return;
-
             if (usuario.rol !== 'jefe_sala') {
                 window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
                 return;
             }
-
             cargarListaCamareros();
-
             var inputFecha = document.getElementById('input-fecha');
             inputFecha.value = obtenerFechaHoy();
             cargarPaginaMesas(inputFecha.value);
         });
 
-        // Carga la lista de camareros y rellena el select del modal
         function cargarListaCamareros() {
             fetchAPI('/ProyectoFinDeGrado/backend/empleados/listar_camareros.php')
                 .then(function (respuesta) {
@@ -160,7 +136,7 @@
         function cargarPaginaMesas(fecha) {
             cargarAsignaciones(fecha).then(function (reservas) {
                 if (reservas === null) {
-                    mostrarMensaje('mensaje-error-mesas', 'No se han podido cargar los datos. Intentalo de nuevo.');
+                    mostrarMensaje('mensaje-error-mesas', 'No se han podido cargar los datos. Inténtalo de nuevo.');
                     return;
                 }
                 mostrarAsignacionesJefe(reservas);
@@ -173,63 +149,57 @@
             cargarPaginaMesas(fecha);
         }
 
+        function estadoABadge(estado) {
+            var mapa = { confirmada: 'badge-ok', pendiente: 'badge-warn', cancelada: 'badge-err' };
+            var cls = mapa[estado] || 'badge-mute';
+            return '<span class="badge ' + cls + '"><span class="dot"></span>' + estado + '</span>';
+        }
+
         function mostrarAsignacionesJefe(reservas) {
             var tabla    = document.getElementById('tabla-mesas');
             var cuerpo   = document.getElementById('cuerpo-mesas');
             var sinDatos = document.getElementById('sin-mesas');
-
             cuerpo.innerHTML = '';
-
             if (!reservas || reservas.length === 0) {
                 tabla.style.display    = 'none';
                 sinDatos.style.display = 'block';
                 return;
             }
-
             sinDatos.style.display = 'none';
-
             reservas.forEach(function (r) {
-                var claseEstado    = 'estado-' + r.estado;
                 var horaInicio     = formatearHora(r.hora_inicio);
                 var horaFin        = formatearHora(r.hora_fin);
                 var nombreCompleto = r.nombre + ' ' + r.apellidos;
-
-                var celdaMesa = (r.numero_mesa)
+                var celdaMesa = r.numero_mesa
                     ? '<span class="numero-mesa">' + r.numero_mesa + '</span>'
                     : '<span class="sin-asignar">Sin asignar</span>';
-
-                var celdaCamarero = (r.nombre_camarero)
+                var celdaCamarero = r.nombre_camarero
                     ? r.nombre_camarero + ' ' + r.apellidos_camarero
                     : '<span class="sin-asignar">Sin asignar</span>';
-
                 var celdaAccion;
                 if (r.estado === 'cancelada') {
-                    celdaAccion = '';
+                    celdaAccion = '<span class="cell-mute" style="font-size:12px;">—</span>';
                 } else if (r.numero_mesa) {
-                    celdaAccion = '<button class="btn-secundario" onclick="abrirModal(' + r.id_reserva + ', \'' + nombreCompleto.replace(/'/g, "\\'") + '\', ' + (r.numero_mesa || 0) + ', ' + (r.id_camarero || 0) + ')">Reasignar</button>';
+                    celdaAccion = '<button class="btn btn-ghost btn-sm" onclick="abrirModal(' + r.id_reserva + ',\'' + nombreCompleto.replace(/'/g,"\\'") + '\',' + (r.numero_mesa||0) + ',' + (r.id_camarero||0) + ')">Reasignar</button>';
                 } else {
-                    celdaAccion = '<button class="btn-primario" onclick="abrirModal(' + r.id_reserva + ', \'' + nombreCompleto.replace(/'/g, "\\'") + '\', 0, 0)">Asignar</button>';
+                    celdaAccion = '<button class="btn btn-olive btn-sm" onclick="abrirModal(' + r.id_reserva + ',\'' + nombreCompleto.replace(/'/g,"\\'") + '\',0,0)">Asignar</button>';
                 }
-
                 var fila = document.createElement('tr');
                 fila.innerHTML =
-                    '<td>' + nombreCompleto + '</td>' +
-                    '<td>' + horaInicio + ' - ' + horaFin + '</td>' +
-                    '<td>' + r.num_personas + '</td>' +
-                    '<td><span class="' + claseEstado + '">' + r.estado + '</span></td>' +
+                    '<td style="font-weight:500;">' + nombreCompleto + '</td>' +
+                    '<td class="num">' + horaInicio + ' — ' + horaFin + '</td>' +
+                    '<td class="num">' + r.num_personas + '</td>' +
+                    '<td>' + estadoABadge(r.estado) + '</td>' +
                     '<td>' + celdaMesa + '</td>' +
                     '<td>' + celdaCamarero + '</td>' +
-                    '<td>' + celdaAccion + '</td>';
-
+                    '<td style="text-align:right;">' + celdaAccion + '</td>';
                 cuerpo.appendChild(fila);
             });
-
             tabla.style.display = 'table';
         }
 
         function abrirModal(idReserva, nombreCliente, mesaActual, camareroActual) {
             idReservaSeleccionada = idReserva;
-
             document.getElementById('modal-nombre-cliente').textContent = 'Cliente: ' + nombreCliente;
             document.getElementById('input-numero-mesa').value = mesaActual || '';
             document.getElementById('select-camarero').value  = camareroActual || '';
@@ -243,16 +213,14 @@
         }
 
         document.getElementById('btn-confirmar-mesa').addEventListener('click', function () {
-            var numeroMesa   = parseInt(document.getElementById('input-numero-mesa').value, 10);
-            var idCamarero   = document.getElementById('select-camarero').value;
-            var divError     = document.getElementById('modal-error');
-
+            var numeroMesa = parseInt(document.getElementById('input-numero-mesa').value, 10);
+            var idCamarero = document.getElementById('select-camarero').value;
+            var divError   = document.getElementById('modal-error');
             if (!numeroMesa || numeroMesa < 1) {
-                divError.textContent   = 'Introduce un numero de mesa valido.';
+                divError.textContent = 'Introduce un número de mesa válido.';
                 divError.style.display = 'block';
                 return;
             }
-
             fetchAPI('/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php', 'POST', {
                 id_reserva:  idReservaSeleccionada,
                 numero_mesa: numeroMesa,
@@ -262,7 +230,7 @@
                     cerrarModal();
                     cargarPaginaMesas(document.getElementById('input-fecha').value);
                 } else {
-                    divError.textContent   = respuesta.message || 'No se ha podido asignar.';
+                    divError.textContent = respuesta.message || 'No se ha podido asignar.';
                     divError.style.display = 'block';
                 }
             });

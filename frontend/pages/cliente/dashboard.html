@@ -1,61 +1,65 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Mis reservas - El Olivo</title>
+    <title>Mis reservas — El Olivo</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
 
-    <nav>
-        <span>El Olivo</span>
-        <ul>
-            <li><a href="dashboard.html">Mis reservas</a></li>
-            <li><a href="nueva_reserva.html">Nueva reserva</a></li>
-            <li><a href="#" onclick="cerrarSesion()">Cerrar sesion</a></li>
-        </ul>
-    </nav>
+    <nav id="navbar" class="nav"></nav>
 
-    <main>
-        <h2>Mis reservas</h2>
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Tu cuenta · El Olivo</div>
+                <h1 class="display">Mis reservas</h1>
+                <p class="subtitle">Tus reservas pasadas y futuras.</p>
+            </div>
+            <div class="page-actions">
+                <a href="nueva_reserva.html" class="btn btn-primary">+ Nueva reserva</a>
+            </div>
+        </div>
+    </header>
 
-        <!-- Mensaje si no hay reservas -->
-        <p id="sin-reservas" style="display: none; color: #666;">No tienes reservas aun.</p>
+    <main class="page-main">
 
-        <!-- Tabla de reservas (se rellena con JS) -->
-        <table id="tabla-reservas" style="display: none;">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Hora inicio</th>
-                    <th>Hora fin</th>
-                    <th>Personas</th>
-                    <th>Estado</th>
-                    <th>Accion</th>
-                </tr>
-            </thead>
-            <tbody id="cuerpo-tabla">
-                <!-- Las filas se insertan desde reservas.js -->
-            </tbody>
-        </table>
+        <p id="sin-reservas" style="display:none; color:var(--ink-3); font-size:13px; padding:28px 0;">No tienes reservas aún.</p>
+
+        <div class="card">
+            <table id="tabla-reservas" class="tbl" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora inicio</th>
+                        <th>Hora fin</th>
+                        <th>Personas</th>
+                        <th>Estado</th>
+                        <th style="text-align:right;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla"></tbody>
+            </table>
+        </div>
+
     </main>
+
+    <footer class="footer">
+        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
+    </footer>
 
     <script src="../../js/utils.js"></script>
     <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
     <script src="../../js/reservas.js"></script>
 
     <script>
-        // Inicializar la pagina: verificar sesion y cargar reservas
         (async function () {
             var usuario = await checkSession();
             if (!usuario) return;
-
-            // Mostrar nombre del usuario en la nav
-            var spanNombre = document.querySelector('nav span');
-            spanNombre.textContent = 'Hola, ' + usuario.nombre;
-
             cargarReservas();
         })();
     </script>
