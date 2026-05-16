@@ -42,10 +42,6 @@ if (isset($datos['descripcion'])) {
     $campos[] = 'descripcion = :descripcion';
     $params[':descripcion'] = trim($datos['descripcion']);
 }
-if (isset($datos['activo'])) {
-    $campos[] = 'activo = :activo';
-    $params[':activo'] = (int)$datos['activo'];
-}
 if (isset($datos['orden'])) {
     $campos[] = 'orden = :orden';
     $params[':orden'] = (int)$datos['orden'];

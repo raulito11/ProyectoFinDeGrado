@@ -22,8 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-// traigo todas las categorías, activas e inactivas
-$sql = "SELECT id_categoria, nombre, descripcion, activo, orden
+$sql = "SELECT id_categoria, nombre, descripcion, orden
         FROM categorias
         ORDER BY orden ASC, id_categoria ASC";
 

@@ -9,12 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-// traigo categorías activas con sus platos activos, ordenados por 'orden'
+// traigo todas las categorías con sus platos activos, ordenadas por 'orden'
 $sql = "SELECT c.id_categoria, c.nombre AS nombre_categoria, c.descripcion AS descripcion_categoria,
                p.id_plato, p.nombre, p.descripcion, p.precio, p.imagen
         FROM categorias c
         LEFT JOIN platos p ON p.id_categoria = c.id_categoria AND p.activo = 1
-        WHERE c.activo = 1
         ORDER BY c.orden ASC, c.id_categoria ASC, p.id_plato ASC";
 
 $stmt = $pdo->prepare($sql);

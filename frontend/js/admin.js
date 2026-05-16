@@ -586,8 +586,7 @@ function mostrarTablaCategorias(categorias) {
         var fila = document.createElement('tr');
         fila.innerHTML =
             '<td>' + c.nombre + '</td>' +
-            '<td>' + (c.descripcion || '-') + '</td>' +
-            '<td>' + (c.activo ? 'Si' : 'No') + '</td>';
+            '<td>' + (c.descripcion || '-') + '</td>';
         cuerpo.appendChild(fila);
     });
 
@@ -685,6 +684,9 @@ function mostrarTablaPlatos(platos) {
             '<td style="font-weight:500;">' + p.nombre + '</td>' +
             '<td><span class="mono" style="font-size:11px;color:var(--terracota);">' + p.nombre_categoria + '</span></td>' +
             '<td class="num" style="font-weight:600;">' + parseFloat(p.precio).toFixed(2) + ' €</td>' +
+            '<td>' + (p.activo == 1
+                ? '<span class="badge badge-ok">Sí</span>'
+                : '<span class="badge badge-mute">No</span>') + '</td>' +
             '<td>' + (p.destacado == 1
                 ? '<span class="badge badge-clay">Destacado</span>'
                 : '<span class="badge badge-mute">No</span>') + '</td>' +
