@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Usuarios — El Olivo Admin</title>
+    <title>Usuarios — Los Olivos Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
@@ -14,9 +14,12 @@
     <header class="page-header">
         <div class="page-header-inner">
             <div>
-                <div class="eyebrow">Administración · Usuarios</div>
+                <div class="eyebrow">Administración Usuarios</div>
                 <h1 class="display">Gestión de usuarios</h1>
                 <p class="subtitle">Crea, edita o elimina cuentas de clientes y empleados.</p>
+            </div>
+            <div class="page-actions">
+                <a href="crear_usuario.html" class="btn btn-primary btn-sm">+ Crear usuario</a>
             </div>
         </div>
     </header>
@@ -28,7 +31,7 @@
         <div id="mensaje-exito-usuarios" class="mensaje-exito"></div>
 
         <!-- Tabla -->
-        <div class="card" style="margin-bottom:24px;">
+        <div class="card">
             <p id="sin-usuarios" style="display:none; padding:28px; color:var(--ink-3); font-size:13px;">No hay usuarios registrados.</p>
             <table id="tabla-usuarios" class="tbl" style="display:none;">
                 <thead>
@@ -45,52 +48,10 @@
             </table>
         </div>
 
-        <!-- Formulario -->
-        <div class="card card-body">
-            <input type="hidden" id="id-usuario-editar" value="">
-
-            <div class="eyebrow" id="titulo-formulario-usuario" style="margin-bottom:20px;">Nuevo usuario</div>
-
-            <div class="col gap-4">
-                <div class="row gap-3">
-                    <div class="field" style="flex:1;">
-                        <label>Nombre</label>
-                        <input type="text" id="campo-nombre" placeholder="Nombre">
-                    </div>
-                    <div class="field" style="flex:1;">
-                        <label>Apellidos</label>
-                        <input type="text" id="campo-apellidos" placeholder="Apellidos">
-                    </div>
-                </div>
-                <div class="field">
-                    <label>Email</label>
-                    <input type="email" id="campo-email" placeholder="email@ejemplo.com">
-                </div>
-                <div class="field">
-                    <label>Contraseña <span id="label-password-opcional" style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--ink-3);">(dejar en blanco para no cambiar)</span></label>
-                    <input type="password" id="campo-password" placeholder="Contraseña">
-                </div>
-                <div class="row gap-3">
-                    <div class="field" style="flex:1;">
-                        <label>Teléfono</label>
-                        <input type="tel" id="campo-telefono" placeholder="600000000">
-                    </div>
-                    <div class="field" style="flex:1;">
-                        <label>Rol</label>
-                        <select id="campo-rol"></select>
-                    </div>
-                </div>
-                <div class="row gap-2">
-                    <button class="btn btn-primary" id="btn-guardar-usuario" onclick="guardarUsuario()">Crear usuario</button>
-                    <button class="btn btn-ghost" id="btn-cancelar-usuario" style="display:none;" onclick="cancelarEdicionUsuario()">Cancelar</button>
-                </div>
-            </div>
-        </div>
-
     </main>
 
     <footer class="footer">
-        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span>&copy; 2026 Los Olivos Madrid</span>
         <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 

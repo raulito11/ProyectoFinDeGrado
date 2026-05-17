@@ -27,6 +27,21 @@ function cargarHorarios() {
                 return parseInt(h.hora_inicio) >= 18;
             });
 
+            function horaEnMinutos(hora) {
+                var p = hora.split(':');
+                var min = parseInt(p[0]) * 60 + parseInt(p[1]);
+                return min === 0 ? 24 * 60 : min; // 00:00 equivale a 24:00
+            }
+
+            // Solo slots donde hora_inicio + 2h <= hora de cierre del turno
+            function turnosReserva(lista) {
+                if (lista.length === 0) return [];
+                var cierreMin = horaEnMinutos(lista[lista.length - 1].hora_fin);
+                return lista.filter(function(h) {
+                    return horaEnMinutos(h.hora_inicio) + 120 <= cierreMin;
+                });
+            }
+
             function bloqueHtml(titulo, rango, lista) {
                 var chips = lista.map(function(h) {
                     return '<span class="horario-chip">' + h.hora_inicio.substring(0,5) + '</span>';
@@ -41,11 +56,11 @@ function cargarHorarios() {
             var html = '';
             if (mediodia.length > 0) {
                 var rMed = mediodia[0].hora_inicio.substring(0,5) + ' — ' + mediodia[mediodia.length-1].hora_fin.substring(0,5);
-                html += bloqueHtml('Mediodía', rMed, mediodia);
+                html += bloqueHtml('Mediodía', rMed, turnosReserva(mediodia));
             }
             if (noche.length > 0) {
                 var rNoc = noche[0].hora_inicio.substring(0,5) + ' — ' + noche[noche.length-1].hora_fin.substring(0,5);
-                html += bloqueHtml('Noche', rNoc, noche);
+                html += bloqueHtml('Noche', rNoc, turnosReserva(noche));
             }
             contenedor.innerHTML = html;
 

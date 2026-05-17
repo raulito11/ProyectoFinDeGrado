@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Carta — El Olivo</title>
+    <title>Carta — Los Olivos</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
         @media print {
@@ -21,7 +21,7 @@
     <main class="page-main">
 
         <div style="text-align:center; margin-bottom:48px;">
-            <div class="eyebrow" style="margin-bottom:10px;">Carta de temporada · 2025</div>
+            <div class="eyebrow" style="margin-bottom:10px;">Carta de temporada 2025</div>
             <h1 class="display italic" style="font-size:clamp(40px,6vw,64px); line-height:1;">Nuestra carta.</h1>
             <p style="color:var(--ink-2); max-width:540px; margin:14px auto 0; font-size:15px; line-height:1.6;">
                 Los platos cambian cada estación. Todos los precios incluyen IVA.
@@ -47,7 +47,7 @@
     </main>
 
     <footer class="footer">
-        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span>&copy; 2026 Los Olivos Madrid</span>
         <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
@@ -160,7 +160,7 @@
                 fc(OLIVO); doc.rect(0, 0, W, 11, 'F');
                 tc(BLANCO);
                 doc.setFont('times', 'italic'); doc.setFontSize(10);
-                doc.text('El Olivo', M, 7.5);
+                doc.text('Los Olivos', M, 7.5);
                 doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
                 doc.text(titulo || 'CARTA DE TEMPORADA', W - M, 7.5, { align: 'right' });
             }
@@ -168,7 +168,7 @@
             function footerBanda(pag) {
                 dc(LINEA); doc.setLineWidth(0.25); doc.line(M, H - 12, W - M, H - 12);
                 tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-                doc.text('El Olivo · Cocina mediterránea · Madrid', M, H - 7);
+                doc.text('Los Olivos Cocina mediterránea Madrid', M, H - 7);
                 doc.text('Precios con IVA incluido', W / 2, H - 7, { align: 'center' });
                 if (pag) {
                     tc(OLIVO); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
@@ -187,9 +187,9 @@
             // Nombre restaurante
             tc(BLANCO);
             doc.setFont('times', 'italic'); doc.setFontSize(52);
-            doc.text('El Olivo', W / 2, 37, { align: 'center' });
+            doc.text('Los Olivos', W / 2, 37, { align: 'center' });
             doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-            doc.text('C  O  C  I  N  A   M  E  D  I  T  E  R  R  Á  N  E  A   ·   M  A  D  R  I  D', W / 2, 48, { align: 'center' });
+            doc.text('C  O  C  I  N  A   M  E  D  I  T  E  R  R  Á  N  E  A     M  A  D  R  I  D', W / 2, 48, { align: 'center' });
 
             // Título "Carta"
             tc(INK);
@@ -203,7 +203,7 @@
 
             // Temporada
             tc(INK3); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
-            doc.text('T E M P O R A D A   ·   2 0 2 5', W / 2, 91, { align: 'center' });
+            doc.text('T E M P O R A D A     2 0 2 5', W / 2, 91, { align: 'center' });
 
             // Descripción intro
             tc(INK2); doc.setFont('times', 'italic'); doc.setFontSize(11.5);

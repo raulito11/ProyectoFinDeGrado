@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
-    <title>Carta — El Olivo Admin</title>
+    <title>Carta — Los Olivos Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
     <header class="page-header">
         <div class="page-header-inner">
             <div>
-                <div class="eyebrow">Administración · Carta</div>
+                <div class="eyebrow">Administración Carta</div>
                 <h1 class="display">Gestión de la carta</h1>
                 <p class="subtitle">Administra categorías y platos del menú.</p>
             </div>
@@ -86,7 +86,7 @@
     </main>
 
     <footer class="footer">
-        <span>&copy; 2025 El Olivo · Madrid</span>
+        <span>&copy; 2026 Los Olivos Madrid</span>
         <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
     </footer>
 
@@ -103,8 +103,7 @@
                 return;
             }
             usuarioEnSesion = usuario;
-            cargarCategorias();
-            cargarPlatos();
+            cargarCategorias(cargarPlatos);
         });
 
         mostrarTablaCategorias = function (categorias) {
@@ -125,7 +124,10 @@
                     '<td style="font-weight:500;">' + c.nombre + '</td>' +
                     '<td style="color:var(--ink-3);">' + (c.descripcion || '—') + '</td>' +
                     '<td style="text-align:right;">' +
-                        '<button class="btn btn-ghost btn-sm" onclick="irAEditarCategoria(' + c.id_categoria + ')">Editar</button>' +
+                        '<div class="row gap-1" style="justify-content:flex-end;">' +
+                            '<button class="btn btn-ghost btn-sm" onclick="irAEditarCategoria(' + c.id_categoria + ')">Editar</button>' +
+                            '<button class="btn btn-danger btn-sm" onclick="eliminarCategoria(' + c.id_categoria + ')">Eliminar</button>' +
+                        '</div>' +
                     '</td>';
                 cuerpo.appendChild(fila);
             });

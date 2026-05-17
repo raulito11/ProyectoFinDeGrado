@@ -1,4 +1,4 @@
-// nav.js - Navbar dinamico segun el rol del usuario
+﻿// nav.js - Navbar dinamico segun el rol del usuario
 
 document.addEventListener('DOMContentLoaded', function () {
     construirNavbar();
@@ -27,7 +27,7 @@ function construirNavbar() {
 function brandHTML(base) {
     return '<a href="' + base + 'index.html" class="brand">' +
         '<div class="brand-mark">O</div>' +
-        '<span>El Olivo</span>' +
+        '<span>Los Olivos</span>' +
         '</a>';
 }
 

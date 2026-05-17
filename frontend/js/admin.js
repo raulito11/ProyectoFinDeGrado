@@ -422,106 +422,10 @@ function mostrarTablaUsuarios(usuarios) {
     tabla.style.display = 'table';
 }
 
-// Guarda en el formulario los datos del usuario a editar
+// Guarda el id en sessionStorage y navega a la pagina de edicion
 function editarUsuario(idUsuario) {
-    fetchAPI('/ProyectoFinDeGrado/backend/usuarios/listar_usuarios.php')
-        .then(function (respuesta) {
-            if (!respuesta.success) return;
-
-            var usuario = null;
-            respuesta.data.forEach(function (u) {
-                if (u.id_usuario === idUsuario) usuario = u;
-            });
-
-            if (!usuario) return;
-
-            // Rellenar el formulario con los datos del usuario
-            document.getElementById('id-usuario-editar').value  = usuario.id_usuario;
-            document.getElementById('campo-nombre').value        = usuario.nombre;
-            document.getElementById('campo-apellidos').value     = usuario.apellidos;
-            document.getElementById('campo-email').value         = usuario.email;
-            document.getElementById('campo-password').value      = '';
-            document.getElementById('campo-telefono').value      = usuario.telefono || '';
-            document.getElementById('campo-rol').value           = usuario.id_rol;
-
-            // Cambiar el titulo y el boton
-            document.getElementById('titulo-formulario-usuario').textContent = 'Editar usuario';
-            document.getElementById('btn-guardar-usuario').textContent       = 'Guardar cambios';
-            document.getElementById('btn-cancelar-usuario').style.display    = 'inline-block';
-
-            // Hacer scroll hasta el formulario
-            document.getElementById('campo-nombre').scrollIntoView({ behavior: 'smooth' });
-        });
-}
-
-// Vuelve el formulario al estado de creacion
-function cancelarEdicionUsuario() {
-    document.getElementById('id-usuario-editar').value   = '';
-    document.getElementById('campo-nombre').value         = '';
-    document.getElementById('campo-apellidos').value      = '';
-    document.getElementById('campo-email').value          = '';
-    document.getElementById('campo-password').value       = '';
-    document.getElementById('campo-telefono').value       = '';
-
-    document.getElementById('titulo-formulario-usuario').textContent = 'Nuevo usuario';
-    document.getElementById('btn-guardar-usuario').textContent       = 'Crear usuario';
-    document.getElementById('btn-cancelar-usuario').style.display    = 'none';
-}
-
-// Crea un usuario nuevo o guarda los cambios de uno existente
-function guardarUsuario() {
-    var idUsuario = document.getElementById('id-usuario-editar').value;
-    var nombre    = document.getElementById('campo-nombre').value.trim();
-    var apellidos = document.getElementById('campo-apellidos').value.trim();
-    var email     = document.getElementById('campo-email').value.trim();
-    var password  = document.getElementById('campo-password').value;
-    var telefono  = document.getElementById('campo-telefono').value.trim();
-    var idRol     = document.getElementById('campo-rol').value;
-
-    // Validacion basica
-    if (!nombre || !apellidos || !email || !idRol) {
-        mostrarMensaje('mensaje-error-usuarios', 'Nombre, apellidos, email y rol son obligatorios.');
-        return;
-    }
-
-    if (!idUsuario && !password) {
-        mostrarMensaje('mensaje-error-usuarios', 'La contrasena es obligatoria para crear un usuario.');
-        return;
-    }
-
-    var datos = {
-        nombre:    nombre,
-        apellidos: apellidos,
-        email:     email,
-        telefono:  telefono,
-        id_rol:    parseInt(idRol)
-    };
-
-    if (password) datos.password = password;
-
-    var url;
-    if (idUsuario) {
-        // Modo edicion
-        datos.id_usuario = parseInt(idUsuario);
-        url = '/ProyectoFinDeGrado/backend/usuarios/modificar_usuario.php';
-    } else {
-        // Modo creacion
-        url = '/ProyectoFinDeGrado/backend/usuarios/crear_usuario.php';
-    }
-
-    fetchAPI(url, 'POST', datos)
-        .then(function (respuesta) {
-            if (!respuesta.success) {
-                mostrarMensaje('mensaje-error-usuarios', respuesta.message || 'Error al guardar el usuario.');
-                return;
-            }
-            mostrarMensaje('mensaje-exito-usuarios', idUsuario ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.');
-            cancelarEdicionUsuario();
-            cargarUsuarios();
-        })
-        .catch(function (err) {
-            console.error('Error al guardar usuario:', err);
-        });
+    sessionStorage.setItem('idUsuarioEditar', idUsuario);
+    window.location.href = 'crear_usuario.html';
 }
 
 // Elimina un usuario tras confirmacion del admin
@@ -548,16 +452,21 @@ function eliminarUsuario(idUsuario) {
 // CARTA - CATEGORIAS
 // ─────────────────────────────────────────────
 
-// Carga las categorias y rellena la tabla
-function cargarCategorias() {
+// Orden de ids de categorias tal como aparecen en la tabla (se rellena al cargar)
+var ordenCategorias = [];
+
+// Carga las categorias y rellena la tabla; llama al callback opcional al terminar
+function cargarCategorias(callback) {
     fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_categorias.php')
         .then(function (respuesta) {
             if (!respuesta.success) {
                 mostrarMensaje('mensaje-error-categorias', respuesta.message || 'Error al cargar categorias.');
                 return;
             }
+            ordenCategorias = respuesta.data.map(function (c) { return parseInt(c.id_categoria); });
             mostrarTablaCategorias(respuesta.data);
             poblarSelectCategorias(respuesta.data);
+            if (callback) callback();
         })
         .catch(function (err) {
             console.error('Error de conexion al cargar categorias:', err);
@@ -673,6 +582,15 @@ function mostrarTablaPlatos(platos) {
 
     sinDatos.style.display = 'none';
 
+    // Ordenar por posicion de categoria igual que en la tabla de arriba
+    platos.sort(function (a, b) {
+        var posA = ordenCategorias.indexOf(parseInt(a.id_categoria));
+        var posB = ordenCategorias.indexOf(parseInt(b.id_categoria));
+        if (posA === -1) posA = 9999;
+        if (posB === -1) posB = 9999;
+        return posA - posB;
+    });
+
     platos.forEach(function (p) {
         var miniatura = p.imagen
             ? '<img src="/ProyectoFinDeGrado/frontend/' + p.imagen + '" alt="' + p.nombre + '" style="height:48px;width:64px;object-fit:cover;border-radius:var(--r-md);">'
@@ -708,6 +626,26 @@ function mostrarTablaPlatos(platos) {
 function irAEditarPlato(idPlato) {
     sessionStorage.setItem('idPlatoEditar', idPlato);
     window.location.href = 'nuevo_plato.html';
+}
+
+// Elimina una categoria tras confirmacion
+function eliminarCategoria(idCategoria) {
+    if (!confirm('¿Seguro que quieres eliminar esta categoría? No se puede eliminar si tiene platos asociados.')) return;
+
+    fetchAPI('/ProyectoFinDeGrado/backend/carta/eliminar_categoria.php', 'POST', {
+        id_categoria: idCategoria
+    })
+        .then(function (respuesta) {
+            if (!respuesta.success) {
+                mostrarMensaje('mensaje-error-categorias', respuesta.message || 'Error al eliminar la categoría.');
+                return;
+            }
+            mostrarMensaje('mensaje-exito-categorias', 'Categoría eliminada correctamente.');
+            cargarCategorias();
+        })
+        .catch(function (err) {
+            console.error('Error al eliminar categoría:', err);
+        });
 }
 
 // Elimina un plato tras confirmacion

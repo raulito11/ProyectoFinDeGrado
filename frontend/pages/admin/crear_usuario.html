@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <title>Usuario — Los Olivos Admin</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <nav id="navbar" class="nav"></nav>
+
+    <header class="page-header">
+        <div class="page-header-inner">
+            <div>
+                <div class="eyebrow">Administración Usuarios</div>
+                <h1 class="display" id="titulo-pagina">Nuevo usuario</h1>
+            </div>
+            <div class="page-actions">
+                <a href="usuarios.html" class="btn btn-secondary btn-sm">← Volver a usuarios</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-main" style="max-width:600px;">
+
+        <div id="mensaje-error" class="mensaje-error"></div>
+        <div id="mensaje-exito" class="mensaje-exito"></div>
+
+        <div class="card card-body col gap-4">
+
+            <div class="row gap-3">
+                <div class="field" style="flex:1;">
+                    <label>Nombre</label>
+                    <input type="text" id="campo-nombre" placeholder="Nombre">
+                </div>
+                <div class="field" style="flex:1;">
+                    <label>Apellidos</label>
+                    <input type="text" id="campo-apellidos" placeholder="Apellidos">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="campo-email" placeholder="email@ejemplo.com">
+            </div>
+
+            <div class="field">
+                <label>
+                    Contraseña
+                    <span id="label-password-hint" style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--ink-3);"></span>
+                </label>
+                <input type="password" id="campo-password" placeholder="Contraseña">
+            </div>
+
+            <div class="row gap-3">
+                <div class="field" style="flex:1;">
+                    <label>Teléfono <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--ink-3);">(opcional)</span></label>
+                    <input type="tel" id="campo-telefono" placeholder="600000000">
+                </div>
+                <div class="field" style="flex:1;">
+                    <label>Rol</label>
+                    <select id="campo-rol"></select>
+                </div>
+            </div>
+
+            <div class="row gap-2">
+                <button class="btn btn-primary" id="btn-guardar" onclick="guardarUsuario()">Crear usuario</button>
+                <a href="usuarios.html" class="btn btn-ghost">Cancelar</a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <span>&copy; 2026 Los Olivos Madrid</span>
+        <span class="mono" style="font-size:11px;">Cocina mediterránea</span>
+    </footer>
+
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/nav.js"></script>
+
+    <script>
+        var idUsuario = null;
+
+        var ROLES_FIJOS = { 1: 'admin', 2: 'camarero', 3: 'jefe_sala', 4: 'cliente' };
+
+        checkSession().then(function (usuario) {
+            if (!usuario) return;
+            if (usuario.rol !== 'admin') {
+                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                return;
+            }
+
+            cargarRoles().then(function () {
+                idUsuario = sessionStorage.getItem('idUsuarioEditar');
+                sessionStorage.removeItem('idUsuarioEditar');
+
+                if (idUsuario) {
+                    document.getElementById('titulo-pagina').textContent      = 'Editar usuario';
+                    document.getElementById('btn-guardar').textContent        = 'Guardar cambios';
+                    document.getElementById('label-password-hint').textContent = '(dejar en blanco para no cambiar)';
+                    cargarDatosUsuario(idUsuario);
+                } else {
+                    document.getElementById('label-password-hint').textContent = '';
+                }
+            });
+        });
+
+        function cargarRoles() {
+            return fetchAPI('/ProyectoFinDeGrado/backend/usuarios/listar_usuarios.php')
+                .then(function (respuesta) {
+                    var roles = {};
+
+                    if (respuesta.success && respuesta.data && respuesta.data.length > 0) {
+                        respuesta.data.forEach(function (u) {
+                            if (!roles[u.id_rol]) roles[u.id_rol] = u.nombre_rol;
+                        });
+                    }
+
+                    if (Object.keys(roles).length === 0) {
+                        roles = ROLES_FIJOS;
+                    }
+
+                    var select = document.getElementById('campo-rol');
+                    select.innerHTML = '';
+                    Object.keys(roles).forEach(function (id) {
+                        var option = document.createElement('option');
+                        option.value       = id;
+                        option.textContent = roles[id];
+                        select.appendChild(option);
+                    });
+                })
+                .catch(function () {
+                    var select = document.getElementById('campo-rol');
+                    select.innerHTML = '';
+                    Object.keys(ROLES_FIJOS).forEach(function (id) {
+                        var option = document.createElement('option');
+                        option.value       = id;
+                        option.textContent = ROLES_FIJOS[id];
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function cargarDatosUsuario(id) {
+            fetchAPI('/ProyectoFinDeGrado/backend/usuarios/listar_usuarios.php')
+                .then(function (respuesta) {
+                    if (!respuesta.success) {
+                        mostrarMensaje('mensaje-error', 'No se pudo cargar el usuario.');
+                        return;
+                    }
+
+                    var usuario = null;
+                    respuesta.data.forEach(function (u) {
+                        if (String(u.id_usuario) === String(id)) usuario = u;
+                    });
+
+                    if (!usuario) {
+                        mostrarMensaje('mensaje-error', 'Usuario no encontrado.');
+                        setTimeout(function () { window.location.href = 'usuarios.html'; }, 2000);
+                        return;
+                    }
+
+                    document.getElementById('campo-nombre').value    = usuario.nombre;
+                    document.getElementById('campo-apellidos').value = usuario.apellidos;
+                    document.getElementById('campo-email').value     = usuario.email;
+                    document.getElementById('campo-telefono').value  = usuario.telefono || '';
+                    document.getElementById('campo-rol').value       = usuario.id_rol;
+                })
+                .catch(function () {
+                    mostrarMensaje('mensaje-error', 'Error de conexión al cargar el usuario.');
+                });
+        }
+
+        function guardarUsuario() {
+            var nombre    = document.getElementById('campo-nombre').value.trim();
+            var apellidos = document.getElementById('campo-apellidos').value.trim();
+            var email     = document.getElementById('campo-email').value.trim();
+            var password  = document.getElementById('campo-password').value;
+            var telefono  = document.getElementById('campo-telefono').value.trim();
+            var idRol     = document.getElementById('campo-rol').value;
+
+            if (!nombre || !apellidos || !email || !idRol) {
+                mostrarMensaje('mensaje-error', 'Nombre, apellidos, email y rol son obligatorios.');
+                return;
+            }
+
+            if (!idUsuario && !password) {
+                mostrarMensaje('mensaje-error', 'La contraseña es obligatoria para crear un usuario.');
+                return;
+            }
+
+            var datos = {
+                nombre:    nombre,
+                apellidos: apellidos,
+                email:     email,
+                telefono:  telefono,
+                id_rol:    parseInt(idRol)
+            };
+
+            if (password) datos.password = password;
+
+            var url;
+            if (idUsuario) {
+                datos.id_usuario = parseInt(idUsuario);
+                url = '/ProyectoFinDeGrado/backend/usuarios/modificar_usuario.php';
+            } else {
+                url = '/ProyectoFinDeGrado/backend/usuarios/crear_usuario.php';
+            }
+
+            fetchAPI(url, 'POST', datos)
+                .then(function (respuesta) {
+                    if (!respuesta.success) {
+                        mostrarMensaje('mensaje-error', respuesta.message || 'Error al guardar el usuario.');
+                        return;
+                    }
+                    var msg = idUsuario ? 'Usuario actualizado correctamente.' : 'Usuario creado correctamente.';
+                    mostrarMensaje('mensaje-exito', msg + ' Volviendo...');
+                    setTimeout(function () { window.location.href = 'usuarios.html'; }, 1500);
+                })
+                .catch(function () {
+                    mostrarMensaje('mensaje-error', 'Error de conexión con el servidor.');
+                });
+        }
+
+        function mostrarMensaje(idDiv, texto) {
+            var div = document.getElementById(idDiv);
+            div.textContent   = texto;
+            div.style.display = 'block';
+            setTimeout(function () { div.style.display = 'none'; }, 4000);
+        }
+    </script>
+
+</body>
+</html>

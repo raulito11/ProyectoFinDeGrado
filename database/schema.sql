@@ -1,7 +1,7 @@
--- ============================================================
+﻿-- ============================================================
 -- TFG Restaurante - Esquema de base de datos
 -- Autor: Raúl García Manotas — DAW 2º curso
--- Descripcion: Sistema de reservas para restaurante El Olivo
+-- Descripcion: Sistema de reservas para restaurante Los Olivos
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS restaurante_tfg
