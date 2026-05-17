@@ -43,7 +43,7 @@ function registrarUsuario() {
         password: password
     }).then(function (respuesta) {
         if (respuesta.success) {
-            window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+            window.location.href = '/index.html';
         } else {
             mensajeError.textContent = respuesta.message;
             mensajeError.style.display = 'block';

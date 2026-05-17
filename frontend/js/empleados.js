@@ -222,9 +222,9 @@ function mostrarMensaje(idDiv, texto) {
 function cerrarSesion() {
     fetchAPI('/ProyectoFinDeGrado/backend/auth/logout.php', 'POST')
         .then(function () {
-            window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+            window.location.href = '/index.html';
         })
         .catch(function () {
-            window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+            window.location.href = '/index.html';
         });
 }

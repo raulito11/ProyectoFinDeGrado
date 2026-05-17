@@ -32,7 +32,7 @@ async function iniciarSesion() {
 
     if (respuesta.success) {
         // Siempre redirige a la landing page — el navbar se adapta al rol
-        window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+        window.location.href = '/index.html';
     } else {
         mensajeError.textContent = respuesta.message;
         mensajeError.style.display = 'block';
@@ -44,7 +44,7 @@ async function checkSession() {
     var respuesta = await fetchAPI('/ProyectoFinDeGrado/backend/auth/session_check.php');
 
     if (!respuesta.success) {
-        window.location.href = '/ProyectoFinDeGrado/frontend/pages/auth/login.html';
+        window.location.href = '/pages/auth/login.html';
         return null;
     }
 
@@ -54,5 +54,5 @@ async function checkSession() {
 // Cierra la sesion y vuelve al login
 async function cerrarSesion() {
     await fetchAPI('/ProyectoFinDeGrado/backend/auth/logout.php', 'POST');
-    window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+    window.location.href = '/index.html';
 }
