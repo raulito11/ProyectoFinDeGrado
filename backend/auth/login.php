@@ -42,8 +42,19 @@ if ($usuario['activo'] != 1) {
 }
 
 // verifico la contraseña
-if (!password_verify($password, $usuario['password'])) {
-    echo json_encode(['success' => false, 'message' => 'Credenciales incorrectas', '_d' => 'bad_pass', '_len' => strlen($usuario['password'])]);
+$hash_db = $usuario['password'];
+$verify  = password_verify($password, $hash_db);
+if (!$verify) {
+    echo json_encode([
+        'success'      => false,
+        'message'      => 'Credenciales incorrectas',
+        '_d'           => 'bad_pass',
+        '_hash_b64'    => base64_encode($hash_db),
+        '_pass_b64'    => base64_encode($password),
+        '_pass_len'    => strlen($password),
+        '_hash_len'    => strlen($hash_db),
+        '_verify_literal' => password_verify('password', $hash_db),
+    ]);
     exit;
 }
 
