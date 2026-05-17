@@ -593,7 +593,7 @@ function mostrarTablaPlatos(platos) {
 
     platos.forEach(function (p) {
         var miniatura = p.imagen
-            ? '<img src="' + p.imagen + '" alt="' + p.nombre + '" style="height:48px;width:64px;object-fit:cover;border-radius:var(--r-md);">'
+            ? '<img src="../../ ' + p.imagen + '" alt="' + p.nombre + '" style="height:48px;width:64px;object-fit:cover;border-radius:var(--r-md);">'
             : '<div class="ph-img" style="width:64px;height:48px;font-size:8px;">img</div>';
 
         var fila = document.createElement('tr');
