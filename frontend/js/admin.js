@@ -960,8 +960,7 @@ function cargarClientes() {
         url += '?desde=' + encodeURIComponent(desde) + '&hasta=' + encodeURIComponent(hasta);
     }
 
-    fetch(url)
-        .then(function (res) { return res.json(); })
+    fetchAPI(url)
         .then(function (respuesta) {
             if (!respuesta.success) {
                 mostrarMensaje('mensaje-error-clientes', respuesta.message || 'Error al cargar los clientes.');
