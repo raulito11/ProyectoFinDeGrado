@@ -518,7 +518,7 @@ table.tabla tbody tr:hover td { background: oklch(0.96 0.014 85); }
   min-height: 540px;
   background-image:
     linear-gradient(180deg, oklch(0.20 0.015 80 / .55) 0%, oklch(0.20 0.015 80 / .35) 50%, oklch(0.20 0.015 80 / .65) 100%),
-    url('/ProyectoFinDeGrado/frontend/el-olivo.jpg');
+    url('/el-olivo.jpg');
   background-size: cover;
   background-position: center;
   color: #fff;
@@ -603,7 +603,7 @@ table.tabla tbody tr:hover td { background: oklch(0.96 0.014 85); }
 .auth-page { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
 .auth-foto {
   background-image: linear-gradient(180deg, oklch(0.20 0.015 80 / .35), oklch(0.20 0.015 80 / .55)),
-                    url('/ProyectoFinDeGrado/frontend/el-olivo.jpg');
+                    url('/el-olivo.jpg');
   background-size: cover;
   background-position: center;
   color: #fff;
