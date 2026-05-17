@@ -1,13 +1,17 @@
 <?php
 // Archivo de diagnóstico temporal — ELIMINAR tras resolver el problema
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: Content-Type');
+
+$raw_input = file_get_contents('php://input');
+$datos     = json_decode($raw_input, true);
 
 require_once __DIR__ . '/config/db.php';
 
-$email = 'admin@restaurante.com';
-$password_prueba = 'password';
+$email    = isset($datos['email'])    ? trim($datos['email'])    : 'admin@restaurante.com';
+$password = isset($datos['password']) ? $datos['password']       : 'password';
 
-// 1. Buscar el usuario
 $sql = "SELECT u.id_usuario, u.nombre, u.email, u.password, u.activo, r.nombre AS rol
         FROM usuarios u
         JOIN roles r ON u.id_rol = r.id_rol
@@ -18,25 +22,11 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([':email' => $email]);
 $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$usuario) {
-    echo json_encode([
-        'paso' => 'usuario_no_encontrado',
-        'email_buscado' => $email
-    ]);
-    exit;
-}
-
-// 2. Verificar contraseña
-$hash_guardado = $usuario['password'];
-$verify = password_verify($password_prueba, $hash_guardado);
-
 echo json_encode([
-    'usuario_encontrado' => true,
-    'email' => $usuario['email'],
-    'rol' => $usuario['rol'],
-    'activo' => $usuario['activo'],
-    'longitud_hash' => strlen($hash_guardado),
-    'primeros_chars_hash' => substr($hash_guardado, 0, 10),
-    'password_verify_resultado' => $verify,
-    'php_version' => PHP_VERSION
+    'raw_input_recibido'     => $raw_input,
+    'email_usado'            => $email,
+    'password_usado'         => $password,
+    'usuario_encontrado'     => $usuario ? true : false,
+    'password_verify'        => $usuario ? password_verify($password, $usuario['password']) : null,
+    'longitud_hash'          => $usuario ? strlen($usuario['password']) : null,
 ]);
