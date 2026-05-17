@@ -117,7 +117,7 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
     }
 
     $campos[] = 'imagen = :imagen';
-    $params[':imagen'] = 'uploads/platos/' . $nombreArchivo;
+    $params[':imagen'] = '/uploads/platos/' . $nombreArchivo;
 }
 
 if (empty($campos)) {
