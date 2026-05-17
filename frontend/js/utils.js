@@ -1,7 +1,9 @@
 // utils.js - Funcion para llamar al backend desde cualquier pagina
 
-// URL base del backend (Railway en producción, vacío en local con XAMPP)
-var API_BASE = 'https://proyectofindegrado-production.up.railway.app';
+// El frontend llama a /api/* y Vercel lo proxea a Railway.
+// Asi la cookie de sesion es de primera parte (mismo dominio que el frontend)
+// y el navegador la acepta sin restricciones de SameSite.
+var API_BASE = '/api';
 
 async function fetchAPI(url, metodo = 'GET', datos = null) {
     // Redirigir llamadas al backend de Railway en producción
