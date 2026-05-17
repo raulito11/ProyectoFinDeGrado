@@ -10,7 +10,7 @@ function construirNavbar() {
 
     var base = '/';
 
-    fetch(API_BASE + '/auth/session_check.php')
+    fetch(API_BASE + '/auth/session_check.php', { credentials: 'include' })
         .then(function (res) { return res.json(); })
         .then(function (respuesta) {
             if (!respuesta.success) {
