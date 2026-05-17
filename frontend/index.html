@@ -119,7 +119,7 @@
         // Enlace de reserva según sesión
         document.addEventListener('DOMContentLoaded', function () {
             var btns = [document.getElementById('botonReserva'), document.getElementById('botonReserva2')];
-            fetch('/ProyectoFinDeGrado/backend/auth/session_check.php')
+            fetch(API_BASE + '/auth/session_check.php')
                 .then(function(r){ return r.json(); })
                 .then(function(d){
                     var href = d.success

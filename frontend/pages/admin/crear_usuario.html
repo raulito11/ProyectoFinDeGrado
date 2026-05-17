@@ -111,7 +111,7 @@
         });
 
         function cargarRoles() {
-            return fetchAPI('/ProyectoFinDeGrado/backend/usuarios/listar_usuarios.php')
+            return fetchAPI('usuarios/listar_usuarios.php')
                 .then(function (respuesta) {
                     var roles = {};
 
@@ -147,7 +147,7 @@
         }
 
         function cargarDatosUsuario(id) {
-            fetchAPI('/ProyectoFinDeGrado/backend/usuarios/listar_usuarios.php')
+            fetchAPI('usuarios/listar_usuarios.php')
                 .then(function (respuesta) {
                     if (!respuesta.success) {
                         mostrarMensaje('mensaje-error', 'No se pudo cargar el usuario.');
@@ -207,9 +207,9 @@
             var url;
             if (idUsuario) {
                 datos.id_usuario = parseInt(idUsuario);
-                url = '/ProyectoFinDeGrado/backend/usuarios/modificar_usuario.php';
+                url = 'usuarios/modificar_usuario.php';
             } else {
-                url = '/ProyectoFinDeGrado/backend/usuarios/crear_usuario.php';
+                url = 'usuarios/crear_usuario.php';
             }
 
             fetchAPI(url, 'POST', datos)

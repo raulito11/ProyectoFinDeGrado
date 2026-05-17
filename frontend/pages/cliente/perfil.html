@@ -101,7 +101,7 @@
             var usuario = await checkSession();
             if (!usuario) return;
 
-            var respuesta = await fetchAPI('/ProyectoFinDeGrado/backend/usuarios/obtener_perfil.php');
+            var respuesta = await fetchAPI('usuarios/obtener_perfil.php');
             document.getElementById('cargando').style.display = 'none';
 
             if (!respuesta.success) {
@@ -168,7 +168,7 @@
             btn.disabled = true;
             btn.textContent = 'Guardando...';
 
-            fetchAPI('/ProyectoFinDeGrado/backend/usuarios/actualizar_perfil.php', 'POST', payload)
+            fetchAPI('usuarios/actualizar_perfil.php', 'POST', payload)
                 .then(function (respuesta) {
                     btn.disabled = false;
                     btn.textContent = 'Guardar cambios';

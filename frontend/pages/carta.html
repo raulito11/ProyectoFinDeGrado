@@ -63,7 +63,7 @@
         });
 
         function cargarCarta() {
-            fetch('/ProyectoFinDeGrado/backend/carta/carta_publica.php', { method: 'GET', credentials: 'include' })
+            fetch(API_BASE + '/carta/carta_publica.php', { method: 'GET', credentials: 'include' })
                 .then(function (res) { return res.json(); })
                 .then(function (respuesta) {
                     document.getElementById('mensaje-carga').style.display = 'none';

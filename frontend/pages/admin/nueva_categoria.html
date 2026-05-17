@@ -77,7 +77,7 @@
         });
 
         function cargarCategoria(id) {
-            fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_categorias.php')
+            fetchAPI('carta/listar_categorias.php')
                 .then(function (respuesta) {
                     if (!respuesta.success) return;
                     var categoria = null;
@@ -100,8 +100,8 @@
             }
 
             var url = idCategoria
-                ? '/ProyectoFinDeGrado/backend/carta/modificar_categoria.php'
-                : '/ProyectoFinDeGrado/backend/carta/crear_categoria.php';
+                ? 'carta/modificar_categoria.php'
+                : 'carta/crear_categoria.php';
 
             var payload = { nombre: nombre, descripcion: descripcion, orden: parseInt(orden) };
             if (idCategoria) payload.id_categoria = parseInt(idCategoria);

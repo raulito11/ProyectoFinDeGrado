@@ -107,7 +107,7 @@
         });
 
         function cargarCategorias() {
-            return fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_categorias.php')
+            return fetchAPI('carta/listar_categorias.php')
                 .then(function (respuesta) {
                     var select = document.getElementById('campo-categoria');
                     select.innerHTML = '';
@@ -122,7 +122,7 @@
         }
 
         function cargarPlato(id) {
-            fetchAPI('/ProyectoFinDeGrado/backend/carta/listar_platos.php')
+            fetchAPI('carta/listar_platos.php')
                 .then(function (respuesta) {
                     if (!respuesta.success) return;
                     var plato = null;
@@ -168,9 +168,9 @@
             var url;
             if (idPlato) {
                 formData.append('id_plato', idPlato);
-                url = '/ProyectoFinDeGrado/backend/carta/modificar_plato.php';
+                url = 'carta/modificar_plato.php';
             } else {
-                url = '/ProyectoFinDeGrado/backend/carta/crear_plato.php';
+                url = 'carta/crear_plato.php';
             }
 
             fetch(url, { method: 'POST', credentials: 'include', body: formData })

@@ -120,7 +120,7 @@
         });
 
         function cargarListaCamareros() {
-            fetchAPI('/ProyectoFinDeGrado/backend/empleados/listar_camareros.php')
+            fetchAPI('empleados/listar_camareros.php')
                 .then(function (respuesta) {
                     if (!respuesta.success) return;
                     var select = document.getElementById('select-camarero');
@@ -221,7 +221,7 @@
                 divError.style.display = 'block';
                 return;
             }
-            fetchAPI('/ProyectoFinDeGrado/backend/empleados/asignar_mesa.php', 'POST', {
+            fetchAPI('empleados/asignar_mesa.php', 'POST', {
                 id_reserva:  idReservaSeleccionada,
                 numero_mesa: numeroMesa,
                 id_camarero: idCamarero ? parseInt(idCamarero, 10) : null
