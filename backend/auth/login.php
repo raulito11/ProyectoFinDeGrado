@@ -31,7 +31,7 @@ $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // compruebo que el usuario exista
 if (!$usuario) {
-    echo json_encode(['success' => false, 'message' => 'Credenciales incorrectas']);
+    echo json_encode(['success' => false, 'message' => 'Credenciales incorrectas', '_d' => 'no_user']);
     exit;
 }
 
@@ -43,7 +43,7 @@ if ($usuario['activo'] != 1) {
 
 // verifico la contraseña
 if (!password_verify($password, $usuario['password'])) {
-    echo json_encode(['success' => false, 'message' => 'Credenciales incorrectas']);
+    echo json_encode(['success' => false, 'message' => 'Credenciales incorrectas', '_d' => 'bad_pass', '_len' => strlen($usuario['password'])]);
     exit;
 }
 
