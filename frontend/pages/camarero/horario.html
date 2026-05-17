@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Mi horario — Los Olivos</title>
     <link rel="stylesheet" href="../../css/style.css">
@@ -73,7 +73,7 @@
         checkSession().then(function (usuario) {
             if (!usuario) return;
             if (usuario.rol !== 'camarero') {
-                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                window.location.href = '/index.html';
                 return;
             }
 

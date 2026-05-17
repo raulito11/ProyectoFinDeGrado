@@ -8,9 +8,9 @@ function construirNavbar() {
     var nav = document.getElementById('navbar');
     if (!nav) return;
 
-    var base = '/ProyectoFinDeGrado/frontend/';
+    var base = '/';
 
-    fetch('/ProyectoFinDeGrado/backend/auth/session_check.php')
+    fetch(API_BASE + '/auth/session_check.php')
         .then(function (res) { return res.json(); })
         .then(function (respuesta) {
             if (!respuesta.success) {

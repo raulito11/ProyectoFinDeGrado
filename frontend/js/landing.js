@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function cargarHorarios() {
-    fetch('/ProyectoFinDeGrado/backend/horarios/obtener_horarios.php')
+    fetch(API_BASE + '/horarios/obtener_horarios.php')
         .then(function (res) { return res.json(); })
         .then(function (respuesta) {
             var contenedor = document.getElementById('lista-horarios');
@@ -79,7 +79,7 @@ function cargarHorarios() {
 }
 
 function cargarPlatos() {
-    fetch('/ProyectoFinDeGrado/backend/carta/platos_publicos.php')
+    fetch(API_BASE + '/carta/platos_publicos.php')
         .then(function (res) { return res.json(); })
         .then(function (respuesta) {
             var contenedor = document.getElementById('lista-platos');

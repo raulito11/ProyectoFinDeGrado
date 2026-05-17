@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>Carta — Los Olivos</title>
     <link rel="stylesheet" href="../css/style.css">
     <style>
@@ -41,7 +41,7 @@
         <!-- CTA final -->
         <div style="margin-top:64px; padding:28px; border-top:1px solid var(--ink); display:flex; justify-content:space-between; align-items:center;">
             <div class="display italic" style="font-size:22px;">¿Te ha gustado lo que has visto?</div>
-            <a href="/ProyectoFinDeGrado/frontend/pages/auth/login.html" class="btn btn-olive btn-lg">Reservar mesa →</a>
+            <a href="/pages/auth/login.html" class="btn btn-olive btn-lg">Reservar mesa →</a>
         </div>
 
     </main>
@@ -106,7 +106,7 @@
                     htmlSeccion += '<div class="card divide-y">';
                     categoria.platos.forEach(function (plato) {
                         var imagenHtml = plato.imagen
-                            ? '<img src="/ProyectoFinDeGrado/frontend/' + plato.imagen + '" alt="' + plato.nombre + '" style="width:72px;height:72px;object-fit:cover;border-radius:var(--r-md);flex-shrink:0;">'
+                            ? '<img src="/' + plato.imagen + '" alt="' + plato.nombre + '" style="width:72px;height:72px;object-fit:cover;border-radius:var(--r-md);flex-shrink:0;">'
                             : '<div class="ph-img" style="width:72px;height:72px;flex-shrink:0;">plato</div>';
                         var descHtml = plato.descripcion
                             ? '<p style="color:var(--ink-2);font-size:13.5px;margin-top:4px;">' + plato.descripcion + '</p>'

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>Los Olivos — Restaurante</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -123,12 +123,12 @@
                 .then(function(r){ return r.json(); })
                 .then(function(d){
                     var href = d.success
-                        ? '/ProyectoFinDeGrado/frontend/pages/cliente/nueva_reserva.html'
-                        : '/ProyectoFinDeGrado/frontend/pages/auth/login.html';
+                        ? '/pages/cliente/nueva_reserva.html'
+                        : '/pages/auth/login.html';
                     btns.forEach(function(b){ if(b) b.href = href; });
                 })
                 .catch(function(){
-                    btns.forEach(function(b){ if(b) b.href = '/ProyectoFinDeGrado/frontend/pages/auth/login.html'; });
+                    btns.forEach(function(b){ if(b) b.href = '/pages/auth/login.html'; });
                 });
         });
     </script>

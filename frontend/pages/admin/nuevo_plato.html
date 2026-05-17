@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/ProyectoFinDeGrado/frontend/favicon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <title>Plato — Los Olivos Admin</title>
     <link rel="stylesheet" href="../../css/style.css">
 </head>
@@ -92,7 +92,7 @@
         checkSession().then(function (usuario) {
             if (!usuario) return;
             if (usuario.rol !== 'admin') {
-                window.location.href = '/ProyectoFinDeGrado/frontend/index.html';
+                window.location.href = '/index.html';
                 return;
             }
             idPlato = sessionStorage.getItem('idPlatoEditar');
@@ -136,7 +136,7 @@
                     document.getElementById('campo-destacado').value   = plato.destacado || 0;
                     if (plato.imagen) {
                         var preview = document.getElementById('preview-imagen');
-                        preview.src = '/ProyectoFinDeGrado/frontend/' + plato.imagen;
+                        preview.src = '/' + plato.imagen;
                         preview.style.display = 'block';
                     }
                 });
