@@ -78,7 +78,7 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
         exit;
     }
 
-    $rutaImagen = 'uploads/platos/' . $nombreArchivo;
+    $rutaImagen = '/uploads/platos/' . $nombreArchivo;
 }
 
 // si se quiere destacar, comprobar que no haya ya 3
