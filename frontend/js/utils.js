@@ -1,7 +1,7 @@
 // utils.js - Funcion para llamar al backend desde cualquier pagina
 
 // URL base del backend (Railway en producción, vacío en local con XAMPP)
-var API_BASE = 'https://proyectofindegrado-production.up.railway.app';
+var API_BASE = 'https://proyectofindegrado-production.up.railway.app/backend';
 
 async function fetchAPI(url, metodo = 'GET', datos = null) {
     // Redirigir llamadas al backend de Railway en producción
