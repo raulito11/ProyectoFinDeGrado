@@ -1,7 +1,5 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-
 session_start();
 
 // compruebo si hay una sesión activa mirando si existe el id de usuario
