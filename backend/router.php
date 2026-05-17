@@ -2,7 +2,7 @@
 // router.php - Punto de entrada único para Railway (php -S ... router.php)
 // Gestiona CORS, cookies de sesión cross-origin y enruta al endpoint correcto
 
-$origin = 'https://proyectofindegrado.vercel.app'; // ← actualizar con la URL real de Vercel tras el despliegue
+$origin = 'https://proyecto-fin-de-grado-9h1y.vercel.app';
 
 header('Access-Control-Allow-Origin: ' . $origin);
 header('Access-Control-Allow-Credentials: true');
