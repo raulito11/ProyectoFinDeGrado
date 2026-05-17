@@ -18,11 +18,12 @@ if (empty($datos['email']) || empty($datos['password'])) {
     exit;
 }
 
-$email    = trim($datos['email']);
-$password = $datos['password'];
-
-// incluyo la conexión a la base de datos
+// incluyo la conexión a la base de datos ANTES de extraer variables
+// (db.php define $password para MySQL y sobreescribiría la del usuario)
 require_once __DIR__ . '/../config/db.php';
+
+$email        = trim($datos['email']);
+$pass_usuario = $datos['password'];
 
 // Query simple sin JOIN — igual que el test que funciona
 $stmt = $pdo->prepare("SELECT id_usuario, nombre, email, password, activo, id_rol FROM usuarios WHERE email = ? LIMIT 1");
@@ -42,19 +43,8 @@ if ($usuario['activo'] != 1) {
 }
 
 // verifico la contraseña
-$hash_db = $usuario['password'];
-$verify  = password_verify($password, $hash_db);
-if (!$verify) {
-    echo json_encode([
-        'success'      => false,
-        'message'      => 'Credenciales incorrectas',
-        '_d'           => 'bad_pass',
-        '_hash_b64'    => base64_encode($hash_db),
-        '_pass_b64'    => base64_encode($password),
-        '_pass_len'    => strlen($password),
-        '_hash_len'    => strlen($hash_db),
-        '_verify_literal' => password_verify('password', $hash_db),
-    ]);
+if (!password_verify($pass_usuario, $usuario['password'])) {
+    echo json_encode(['success' => false, 'message' => 'Credenciales incorrectas']);
     exit;
 }
 
